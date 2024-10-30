@@ -1,0 +1,99 @@
+/* 페이지 전체 레이아웃을 수직, 수평으로 중앙 정렬 */
+.intro-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    height: 93%;
+    box-sizing: border-box;
+}
+
+/* Swiper 슬라이드 컨테이너 중앙 정렬 */
+.swiper-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 30px;
+    overflow: visible !important; /* 화살표 가려지지 않도록 */
+    position: static !important; /* Swiper 기본 상대 위치 제거 */
+    padding: 0 50px; /* 화살표 공간 확보 */
+}
+
+/* 슬라이드 콘텐츠 박스 */
+.slide-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid #000;
+    border-radius: 20px;
+    padding: 20px;
+    background-color: #fff;
+    height: auto;
+    min-height: 250px;
+}
+
+.slide-content.reverse {
+    flex-direction: row-reverse;
+}
+
+.slide-content.center {
+    justify-content: center;
+    text-align: center;
+}
+
+/* 이미지 스타일 */
+.slide-image {
+    width: auto;
+    height: 150px;
+    border-radius: 10px;
+}
+
+/* 텍스트 스타일 */
+.slide-text {
+    flex: 1;
+    margin-left: 20px;
+    font-size: 22px;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+
+/* Swiper 네비게이션 버튼 스타일 */
+.swiper-button-next, .swiper-button-prev {
+    color: #6200ea !important; /* 보라색 버튼 */
+    width: 30px;
+    height: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10; /* 슬라이드보다 위에 표시 */
+    opacity: 1; /* 버튼을 명확하게 표시 */
+}
+
+/* Swiper 버튼이 사진을 가리지 않도록 위치 조정 */
+.swiper-button-prev {
+    left: -50px; /* 왼쪽 버튼을 바깥쪽으로 이동 */
+}
+
+.swiper-button-next {
+    right: -50px; /* 오른쪽 버튼을 바깥쪽으로 이동 */
+}
+
+/* '시작하기' 버튼 중앙 정렬 */
+.start-button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.start-button {
+    background-color: #51017F;
+    color: white;
+    font-size: 18px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+

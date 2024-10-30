@@ -1,0 +1,115 @@
+.create-report-container {
+    flex-direction: column;
+    width: 100%;
+    height: 93%;
+    max-height: 93%;
+    font-family: Pretendard; /* 폰트를 상위 컨테이너에 설정 */
+}
+.report-grid {
+    display: grid;
+    padding-top: 0.5rem;
+    grid-template-columns: 0.2fr 2fr 2fr 2fr; /* 첫 번째 열은 label, 나머지는 데이터 */
+    gap: 0.5rem; /* 박스 간격을 1px로 설정 */    
+}
+.grid-label {
+    font-weight: bold;
+    text-align: right;
+    padding-right: 0.5rem;
+    align-self: center;
+}
+.grid-item {
+    border: 1px solid #ddd;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+.title {
+    width: 25rem;
+    height: 2rem;
+    flex-shrink: 0;
+}
+.image {
+    width: 25rem;
+    height: 12rem;
+    flex-shrink: 0;
+    ;
+}
+.content1 {
+    width: 26.5rem;
+    height: 19rem;
+    overflow-y: auto;
+    padding: 10px; /* 내부 여백 */
+    box-sizing: border-box;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+.selected {
+    background-color: #d1c7d7;
+    box-shadow: 0 0 10px #d1c7d7(0, 0, 255, 0.5);
+}
+.create-report-button {
+    padding: 0.3rem 0.7rem;
+    color: white;
+    background-color:#51017F;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.8rem;
+    font-style: normal;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 81rem;
+    
+}
+
+.create-report-button-container {
+    display: flex;
+    /* justify-content: flex-end; */
+    padding-left: 4rem;
+    padding-top: 0.3rem; /* 버튼 위에 간격 추가 */
+    
+}
+.preview-popup {
+    pointer-events: none;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px; /* 내부 여백 */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    width: 40rem; 
+    height: 35rem; 
+}
+.grid-item.image {
+    position: relative; 
+    padding: 10px; 
+  }
+  .image-content {
+    width: 100%;
+    height: 100%;
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(209, 199, 215, 0.6); /* 반투명한 파란색 오버레이 */
+    z-index: 1; 
+  }
+  .grid-item.title {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    font-weight: bold; 
+    font-size: 1.5rem; 
+    padding: 10px;
+    flex-grow: 1;
+  }
+
+
+  
+  

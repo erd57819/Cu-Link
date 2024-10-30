@@ -1,0 +1,51 @@
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 75%; /* 왼쪽과 오른쪽 공백을 합산하여 계산 */
+  height: 7%;
+  margin: 0 auto; /* 배너를 화면 중앙에 배치 */
+  padding-left: 12.5%; /* 양쪽에 추가 패딩 */
+  padding-right: 12.5%;
+  background-color: #F5F0F7;
+  color: black; /* 모든 텍스트를 검정색으로 설정 */
+}
+
+.left-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.mid-item {
+  display: flex;
+  align-items: center;
+  gap: 70px;
+}
+
+.right-item {
+  display: flex;
+  flex-direction: row;
+}
+
+/* 링크 스타일 수정: 모든 링크를 검정색으로 */
+.link {
+  color: black; /* 링크 텍스트 색상 검정으로 설정 */
+  text-decoration: none; /* 링크 밑줄 제거 */
+}
+
+/* 링크에 마우스를 올렸을 때 색상 유지 */
+.link:hover {
+  color: black;
+}
+
+
+.left-item h2 {
+  margin-bottom: 0; /* Cu-Link와 레포트가 쉬워지다 사이의 간격을 없앰 */
+}
+
+.left-item h5 {
+  margin-top: 0; /* p 태그의 상단 여백을 없앰 */
+}

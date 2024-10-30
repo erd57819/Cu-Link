@@ -1,0 +1,142 @@
+/* 기본 스타일 */
+.layout1 {
+  display: flex;
+  width: 100%;
+  /* 전체 화면 너비 */
+  height: 100%;
+  /* 전체 화면 높이 */
+}
+
+/* 왼쪽 빈 공간 */
+.left-space1 {
+  background-color: white;
+  /* 필요에 따라 배경 색상 설정 가능 */
+  width: 100%;
+}
+
+.search-bar1 {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  /* 상단바를 제외한 높이 설정 */
+  box-sizing: border-box;
+  padding: 1rem;
+}
+
+/* 선택 옵션 스타일 */
+.select-option1 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-select1 {
+  width: 250px;
+  height: 50px;
+  flex-shrink: 0;
+  border: 1px solid #51017F;
+  background: rgba(81, 1, 127, 0.06);
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.25) inset;
+  color: #51017F;
+  text-align: center;
+  font-family: Pretendard, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* 기본 화살표 제거 */
+}
+
+/* 커스텀 SVG 화살표 스타일 */
+.select-option1 svg {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+}
+
+/* 조건 입력 필드 */
+.condition-input1 {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  justify-content: flex-start;
+  /* 요소를 왼쪽으로 정렬하여 정렬 문제 해결 */
+}
+
+/* 조건 추가 버튼 */
+.add-condition-button1 {
+  background-color: #fff;
+  color: #51017F;
+  border: 1px solid #51017F;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* 날짜 범위 */
+.date-range1 {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.date-input1 {
+  width: 100%;
+  max-width: 100%;
+  height: 1.875rem;
+  border: 1px solid #51017F;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* 검색 버튼 */
+.search-submit1 {
+  width: 15.625rem;
+  max-width: 15.625rem;
+  height: 2.5rem;
+  background-color: #51017F;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 18px;
+  cursor: pointer;
+  text-align: center;
+  align-self: center;
+  margin-top: 1rem;
+}
+
+.search-submit1:hover {
+  background-color: #5d3474;
+}
+
+/* 조건 체크박스 */
+.condition-checkbox1 {
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+/* 조건 삭제 버튼 */
+.delete-condition-button1 {
+  background-color: transparent;
+  border: none;
+  color: #51017F;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}

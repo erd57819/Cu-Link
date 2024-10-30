@@ -1,0 +1,36 @@
+/* 전체 페이지 레이아웃 설정 */
+.app-container {
+  display: flex;
+  box-sizing: border-box;
+  gap: 2% ;
+  height: 93%;
+  /* SearchBar와 News 사이의 간격 */
+
+}
+
+.search-bar-container {
+  width: 28%;
+  height: 100%;
+}
+
+.news-container1 {
+  width: 70%;
+  height: 100%;
+}
+
+.report-container1 {
+  width: 70%;
+  height: 100%;
+}
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100%; /* React 앱의 root 요소에도 높이 100% 설정 */
+}
+

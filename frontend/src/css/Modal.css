@@ -1,0 +1,98 @@
+/* 모달 */
+.modal {
+  position: relative; /* 고정된 위치를 제거하여 상위 요소에 의해 위치 결정 */
+  display: inline-block; /* 버튼이 inline 요소로 동작하도록 설정 */
+}
+
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 배경을 어둡게 설정 */
+  z-index: 1000; /* 모달 콘텐츠보다 아래에 위치 */
+  overflow: hidden; /* 오버레이에는 스크롤이 생기지 않도록 설정 */
+}
+
+/* 모달 콘텐츠 */
+.modal-content {
+  position: absolute;
+  left: 0; /* 초기 위치 설정 */
+  top: 0;  /* 초기 위치 설정 */
+  width: 70%;
+  max-width: 800px;
+  max-height: 70%;
+  background-color: #ffffff; /* 모달 배경색 */
+  padding: 20px;
+  border-radius: 8px; /* 모서리를 둥글게 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  z-index: 1001; /* 오버레이보다 위에 위치 */
+  overflow: visible; /* hidden에서 visible로 수정 */
+}
+
+/* 닫기 버튼 */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1002;
+  color: #6200ee;
+  background: none;
+  border: none;
+  font-size: 35px;
+  cursor: pointer;
+}
+
+/* 모달 본문 스크롤바 스타일 */
+.modal-body {
+  padding: 20px;
+  overflow-y: auto; /* 세로 스크롤바 추가 */
+  max-height: 300px; /* 스크롤이 적용될 수 있도록 본문의 최대 높이 설정 */
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 12px; /* 스크롤바의 너비를 더 굵게 설정 */
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background-color: #6200ee; /* 보라색 스크롤바 */
+  border-radius: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* 모달 버튼 */
+.modal-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #6200ee;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-button:hover {
+  background-color: #3700b3;
+}
+
+/* 모달 헤더 */
+.modal-header {
+  cursor: move; /* 모달 헤더 전체에서 커서가 'move'로 변경 */
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  display: flex; /* 제목과 버튼 정렬 */
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 헤더 텍스트 */
+.modal-header span {
+  font-size: 18px;
+  font-weight: bold;
+}
