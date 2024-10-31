@@ -2,9 +2,8 @@ const express = require("express");
 const mainRouter = require("./routes/mainRouter"); // 메인 라우터 불러오기
 const loginRouter = require("./routes/loginRouter");
 const newsRouter = require("./routes/newsRouter");
-const createRouter = require("./routes/createRouter");
-const reportRouter = require('./routes/reportRouter');
-const sumRouter = require('./routes/sumRouter')
+const reportRouter = require("./routes/reportRouter");
+const sumRouter = require("./routes/sumRouter");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
@@ -25,14 +24,10 @@ app.use(bodyParser.json());
 app.use("/", mainRouter);
 app.use("/news", newsRouter);
 app.use("/auth", loginRouter);
-app.use("/createreport", createRouter);
+app.use("/report", reportRouter);
 
-// 레포트 생성 버튼 누를때 사용하는 라우터 - 아인
-app.use('/api/reports', reportRouter);
-
-
-// 요약 생성 버튼 누를때 사용하는 라우터 
-app.use('/api/sum', sumRouter);
+// 요약 생성 버튼 누를때 사용하는 라우터
+app.use("/api/sum", sumRouter);
 
 // 서버 시작
 app.listen(PORT, () => {

@@ -1,88 +1,95 @@
 import React, { useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import '../css/Report.css';
+import Swal from 'sweetalert2';
+import { useLocation } from 'react-router-dom';
 
 function Report() {
+  const location = useLocation();
+  const { title, image, content } = location.state || {};
+
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchReportData = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/createreport/getreport');
-        if (!response.ok) {
-          throw new Error('리포트 데이터를 가져오는 데 실패했습니다');
+  const handleSave = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/report/report', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: title,
+            image: image,
+            content: content,
+          }),
+        });
+    
+        if (res.ok) {
+          console.log('리포트가 성공적으로 저장되었습니다');
+          Swal.fire({
+            title: "리포트 저장 성공 o(〃＾▽＾〃)o",
+            icon: 'success'
+          })
+        } else {
+          console.error('리포트 생성 실패');
         }
-        const data = await response.json();
-        setReportData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error('에러 발생:', error);
       }
-    };
+  }
 
-    fetchReportData();
-  }, []);
-
-  const handleSave = () => {
-    console.log('저장하기 버튼 클릭');
-  };
-
+  
+  
   const handleSaveAsPDF = () => {
-    if (!reportData) return;
+    const reportContent = document.getElementById("reportContent");
+    const pdfButton = document.querySelector(".buttons-box"); // 버튼 요소 선택
 
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text(reportData.rep_title, 10, 10);
+    // 캡처 전에 버튼 숨기기
+    pdfButton.style.display = "none";
 
-    if (reportData.rep_img) {
-      doc.addImage(reportData.rep_img, 'JPEG', 10, 20, 180, 160);
-    }
+    html2canvas(reportContent, { useCORS: true }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      pdf.addImage(imgData, 'PNG', 0, 0, 210, 297); // A4 크기에 맞게 조절
+      pdf.save('report.pdf');
 
-    doc.setFontSize(12);
-    doc.text(reportData.rep_content, 10, 200);
-
-    doc.save('report.pdf');
+      // PDF 저장 후 버튼 다시 표시
+      pdfButton.style.display = "flex";
+    });
   };
-
-  if (loading) {
-    return <div className="spinner">로딩 중...</div>;
-  }
-
-  if (error) {
-    return <div>에러 발생: {error}</div>;
-  }
 
   return (
-    <div className="report-container2">
-      {reportData ? (
+    <div className="report-container1" id="reportContent">
         <div className="report-boxes">
-          {/* 제목 */}
           <div className="title-box">
-            <h3 className="report-title">{reportData.rep_title}</h3>
+            <h3 className="report-title">{title}</h3>
           </div>
-          
-          {/* 이미지 */}
           <div className="image-box">
-            <img src={reportData.rep_img} alt="Report" />
+            <img 
+              src={image} 
+              alt="Report" 
+            />
           </div>
-
-          {/* 본문 내용 */}
           <div className="content-box">
-            <div className="content-scroll">{reportData.rep_content}</div>
+            <div className="content-scroll">{content}</div>
           </div>
-
-          {/* 버튼 */}
           <div className="buttons-box">
-            <button className="button" onClick={handleSave}>저장하기</button>
-            <button className="button" onClick={handleSaveAsPDF}>PDF 파일로 저장하기</button>
+            <button 
+              className='button_save'
+              onClick={handleSave}
+            >저장하기</button>
+            <button 
+              className="button_save_pdf" 
+              onClick={handleSaveAsPDF} 
+            >
+              PDF 파일로 저장하기
+            </button>
           </div>
         </div>
-      ) : (
-        <p>리포트가 없습니다</p>
-      )}
+       
     </div>
   );
 }
