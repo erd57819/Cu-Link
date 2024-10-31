@@ -1,63 +1,59 @@
-.report-container2 {
-  max-width: 60rem;
-  margin: 1rem auto;
-  padding: 2rem;
+/* A4 사이즈 고정 스타일 */
+.report-container1 {
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto;
+  padding: 20mm;
   border: 1px solid #ddd;
-  border-radius: 20px;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
+  border-radius: 10px;
 }
 
+/* 제목 스타일 */
 .report-title {
-  font-size: 2rem;
+  font-size: 30px;
   font-weight: bold;
-  color: #003d33;
-  text-align: center; /* 제목 가운데 정렬 */
-  margin-bottom: 20px;
-  margin-top: 0px;
+  color: black;
+  text-align: center;
+  margin-bottom: 15px;
+  margin-top: -60px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
 }
 
+/* 이미지 박스 */
 .image-box {
   display: flex;
-  justify-content: center; /* 이미지 가운데 정렬 */
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
 .image-box img {
-  width: 100%;
-  max-width: 30rem;
-  height: 100%;
-  max-height: 18rem;
+  width: 100%; /* A4 기준 이미지 최대 너비 */
+  max-height: 120mm; /* A4 기준 이미지 최대 높이 */
   border-radius: 8px;
 }
 
+/* 본문 내용 박스 */
 .content-box {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #333;
-  text-align: left;
-  margin-top: 0.1rem;
-  padding: 0.5rem;
-  background-color: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  max-height: 18rem;
-  overflow-y: auto; /* 스크롤 가능하게 설정 */
+  font-size: 18px;
+  line-height: 2.0;
+  max-height: 185mm; /* A4 본문 최대 높이 */
+  overflow: hidden; /* 스크롤 제거 */
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
 }
 
-.content-scroll {
-  padding: 1rem;
-}
-
+/* 버튼 박스 */
 .buttons-box {
   display: flex;
-  justify-content: center; /* 버튼 가운데 정렬 */
-  margin-top: 1rem; /* 버튼 위치 조정 */
-  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.button {
+/* 버튼 스타일 */
+.button_save {
   padding: 10px 20px;
   background-color: #51017F;
   color: white;
@@ -66,6 +62,18 @@
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
+}
+
+.button_save_pdf {
+  padding: 10px 20px;
+  background-color: #51017F;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin-left: 5rem;
 }
 
 .button:hover {
