@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/News.css';
 import Modal from './Modal';
+import Swal from 'sweetalert2';
 
 const News = ({ articles }) => {
   const [selectedArticles, setSelectedArticles] = useState([]);  // 선택된 기사 목록
@@ -54,8 +55,13 @@ const News = ({ articles }) => {
   const handleSummarize = async () => {
     // 선택된 기사가 없을 때 알림
     if (selectedArticles.length === 0) {
-      alert("기사를 선택해주세요");
-      return;  // 함수 실행 종료
+        // SweetAlert2 스타일의 경고창 표시
+        Swal.fire({
+            title: "기사를 선택해주세요",
+            text: "선택된 기사가 없습니다. 요약할 기사를 선택해 주세요.",
+            icon: 'warning',
+        });
+        return;  // 함수 실행 종료
     }
 
     try {
