@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import '../css/News.css';
-import Modal from './Modal'; // 요약하기 버튼을 추가하기 위해 Modal 컴포넌트 임포트
+import Modal from './Modal';
 
 const News = ({ articles }) => {
-  const [selectedArticles, setSelectedArticles] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [articlesPerPage, setArticlesPerPage] = useState(6); // 기본 6개로 설정
+  const [selectedArticles, setSelectedArticles] = useState([]);  // 선택된 기사 목록
+  const [currentPage, setCurrentPage] = useState(1);  // 현재 페이지
+  const [articlesPerPage, setArticlesPerPage] = useState(6);  // 페이지 당 기사 수
+  const [summaryData, setSummaryData] = useState([]);  // 요약 데이터 저장 (리스트로 초기화)
+  const [isModalOpen, setIsModalOpen] = useState(false);  // 모달 열림 상태
 
+  // 화면 크기에 따른 페이지 당 기사 수 조절
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setArticlesPerPage(4); // 작은 화면에서는 4개만 표시
-      } else {
-        setArticlesPerPage(6); // 그 외에는 6개 표시
-      }
+      setArticlesPerPage(window.innerWidth <= 768 ? 4 : 6);
     };
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 페이지네이션 설정
   const pageRange = 5;
-
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
   const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
 
+  // 개별 기사 선택
   const handleCheckboxChange = (article) => {
     if (selectedArticles.includes(article)) {
       setSelectedArticles(selectedArticles.filter(item => item !== article));
@@ -34,6 +34,7 @@ const News = ({ articles }) => {
     }
   };
 
+  // 전체 선택/해제
   const handleSelectAll = () => {
     if (selectedArticles.length === currentArticles.length) {
       setSelectedArticles([]);
@@ -42,11 +43,44 @@ const News = ({ articles }) => {
     }
   };
 
+  // 페이지 변경
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   const totalPages = Math.ceil(articles.length / articlesPerPage);
   const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
+
+  // FastAPI에 선택된 기사를 배열 형태로 보내고 요약 요청 후 모달 열기
+  const handleSummarize = async () => {
+    // 선택된 기사가 없을 때 알림
+    if (selectedArticles.length === 0) {
+      alert("기사를 선택해주세요");
+      return;  // 함수 실행 종료
+    }
+
+    try {
+      console.log("요약하기 요청 시작");  // 요청 시작 로그
+      const response = await fetch('http://localhost:8000/api/summarize-articles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ articles: selectedArticles }), // 선택된 기사를 JSON 형태로 전송
+      });
+
+      if (!response.ok) {
+        throw new Error(`서버 응답 오류: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("서버 응답 데이터:", data);  // 응답 데이터 확인
+
+      setSummaryData(data.summary);  // 요약 데이터를 리스트로 상태에 저장
+      setIsModalOpen(true);  // 요약 데이터 설정 후 모달 열기
+    } catch (error) {
+      console.error('데이터 전송 오류:', error);
+    }
+  };
 
   return (
     <div className="news-container">
@@ -78,7 +112,6 @@ const News = ({ articles }) => {
           </div>
         ))}
       </div>
-      {/* 페이지네이션과 저장하기/요약하기/레포트 생성 버튼을 한 라인에 배치 */}
       <div className="pagination-buttons-container">
         <div className="pagination">
           {startPage > 1 && (
@@ -97,13 +130,14 @@ const News = ({ articles }) => {
             <button onClick={() => handlePageChange(endPage + 1)}>&raquo;</button>
           )}
         </div>
-        {/* 저장하기, 요약하기, 레포트 생성 버튼을 우측에 배치 */}
         <div className="fixed-buttons">
           <button className="save-button">저장하기</button>
-          <Modal /> {/* 요약하기 버튼이 Modal 컴포넌트를 통해 렌더링 */}
+          <button className="summarize-button" onClick={handleSummarize}>요약하기</button> {/* 요약하기 버튼 */}
           <button className="create-report-button1">레포트 생성</button>
         </div>
       </div>
+      {/* 요약된 데이터를 전달하며 Modal 컴포넌트 렌더링 */}
+      {isModalOpen && <Modal summaryData={summaryData} onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 };

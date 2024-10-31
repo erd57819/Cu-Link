@@ -1,32 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import '../css/Modal.css';
 
-function Modal() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+function Modal({ summaryData, onClose }) {
+  const modalRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const modalRef = useRef(null);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    if (!isDragging) {
-      setIsModalOpen(false);
-    }
-  };
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    const rect = modalRef.current.getBoundingClientRect();
-    setOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
-
-  const handleMouseMove = (e) => {
+  // 드래그 중 위치 이동 처리
+  const handleMouseMove = useCallback((e) => {
     if (!isDragging) return;
     const modal = modalRef.current;
     const newLeft = e.clientX - offset.x;
@@ -39,12 +20,14 @@ function Modal() {
 
     modal.style.left = `${clampedLeft}px`;
     modal.style.top = `${clampedTop}px`;
-  };
+  }, [isDragging, offset]);
 
-  const handleMouseUp = () => {
+  // 드래그 종료
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
+  // 드래그 이벤트 리스너 등록 및 해제
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -57,43 +40,46 @@ function Modal() {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  // 모달이 화면 중앙에 위치하도록 설정
   useEffect(() => {
-    if (isModalOpen && modalRef.current) {
+    if (modalRef.current) {
       const modal = modalRef.current;
       const left = (window.innerWidth - modal.offsetWidth) / 2;
       const top = (window.innerHeight - modal.offsetHeight) / 2;
       modal.style.left = `${left}px`;
       modal.style.top = `${top}px`;
     }
-  }, [isModalOpen]);
+  }, []);
 
   return (
-    <>
-      <button onClick={openModal} className='modal'>요약하기</button>
-      {isModalOpen && (
-        <div className='modal-overlay' onClick={closeModal}>
-          <div
-            ref={modalRef}
-            className='modal-content'
-            onClick={(e) => e.stopPropagation()} // 모달 전체 클릭 시 닫히지 않도록 설정
-          >
-            <div
-              className='modal-header'
-              onMouseDown={handleMouseDown}
-              onClick={(e) => e.stopPropagation()} // 헤더 클릭 시 닫힘 방지
-            >
-              <span>선택된 기사의 요약이에요!</span>
-              <button className='close-button' onClick={closeModal}>&times;</button>
-            </div>
-            <div className='modal-body' onClick={(e) => e.stopPropagation()}>
-              <p>모달 안의 본문 내용입니다.</p>
-            </div>
-          </div>
+    <div className='modal-overlay' onClick={onClose}>
+      <div
+        ref={modalRef}
+        className='modal-content'
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => {
+          setIsDragging(true);
+          const rect = modalRef.current.getBoundingClientRect();
+          setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        }}
+      >
+        <div className='modal-header'>
+          <span>요약 결과</span>
+          <button className='close-button' onClick={onClose}>&times;</button>
         </div>
-      )}
-    </>
+        <div className='modal-body'>
+          {summaryData && summaryData.length > 0 ? (
+            summaryData.map((item, index) => (
+              <p key={index}>{item}</p>  // 리스트 형태로 요약 결과를 표시
+            ))
+          ) : (
+            <p>요약 데이터를 불러오는 중입니다...</p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

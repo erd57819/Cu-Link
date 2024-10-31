@@ -42,7 +42,7 @@
     margin-top: 2%;
     margin-bottom: 1%;
     position: relative;
-    padding-left: 10%;
+    margin-left: 15%;
 }
 
 .article-header h3 {
@@ -95,11 +95,35 @@
 }
 
 /* 선택된 기사의 체크박스 (좌측 상단에 위치) */
+/* 체크박스 커스텀 스타일 */
 .article-checkbox {
     position: absolute;
     top: 10px;
     left: 10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    appearance: none; /* 기본 체크박스 스타일 제거 */
+    border: 2px solid #51017F; /* 테두리 색상 */
+    border-radius: 50%; /* 둥글게 설정 */
+    background-color: transparent;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
+
+.article-checkbox:checked {
+    background-color: #51017F; /* 체크 시 배경색 */
+    border-color: #51017F;
+}
+
+.article-checkbox:checked::before {
+    content: "✔"; /* 체크 표시 아이콘 */
+    display: block;
+    text-align: center;
+    color: white;
+    font-size: 12px;
+}
+
+
 
 
 /* 페이지네이션과 버튼을 한 줄로 배치 */
