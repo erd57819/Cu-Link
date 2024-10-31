@@ -1,27 +1,30 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import FastAPI, HTTPException, APIRouter
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import httpx
 
 router = APIRouter()
 
-# 텍스트 업로드용 데이터 모델 정의
-# 텍스트가 아니거나 할때 자동으로 유효성검사하는 모델
+# ID를 받기 위한 데이터 모델 정의
+class ArticleID(BaseModel):
+    cr_art_id: int
+
+# 요약 텍스트를 받기 위한 데이터 모델 정의
 class SummaryText(BaseModel):
     text: str
 
-# 모델에서 요약 텍스트 넘겨주는 엔드포인트
-@router.post("/sumresult")
-async def upload_summary(summary: SummaryText):
+# ID 값을 받는 엔드포인트
+@router.post("/selectArticle")
+async def receive_article_id(article_id: ArticleID):
     try:
-        # 요약 텍스트 처리 로직 (예: 데이터베이스에 저장하거나, 특정 처리 수행)
-        print(f"요약된 텍스트: {summary.text}")
-        return JSONResponse(content={"summaryText":summary.text})
-
+        # 받은 ID 값을 출력하여 확인
+        print(f"받은 ID 값: {article_id.cr_art_id}")
+        
+        # 받은 ID 값을 응답으로 반환하여 잘 전달되었는지 확인
+        return JSONResponse(content={"received_id": article_id.cr_art_id, "message": "ID 값을 성공적으로 받았습니다."})
     except Exception as e:
-        print(f"Error during summary upload: {str(e)}")
-        raise HTTPException(status_code=422, detail=f"요약 텍스트 업로드 중 오류 발생: {str(e)}")
-
+        print(f"Error during ID reception: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"ID 값 처리 중 오류 발생: {str(e)}")
 
 # 이미지 생성 모델에 전달할 텍스트 받는 엔드포인트
 @router.post("/imagetext")
@@ -46,4 +49,3 @@ async def upload_imagetext(summary: SummaryText):
     except Exception as e:
         print(f"Error during summary upload: {str(e)}")
         raise HTTPException(status_code=422, detail=f"요약 텍스트 업로드 중 오류 발생: {str(e)}")
-    

@@ -31,7 +31,7 @@ const Join = () => {
       let res = await axios.post('http://localhost:3000/auth/join', joinData);
       console.log(res.data);
 
-      if (res.data.result === "성공") {
+      if (res.data.result === "success") {
         alert('회원가입 성공');
         navigate('/');
       } else {
