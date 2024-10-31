@@ -1,30 +1,32 @@
 from fastapi import FastAPI, HTTPException, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
+from typing import List
 import httpx
-
 router = APIRouter()
 
-# ID를 받기 위한 데이터 모델 정의
-class ArticleID(BaseModel):
-    cr_art_id: int
+# 여러 기사 ID를 받기 위한 데이터 모델 정의
+class Articles(BaseModel):
+    articles: List[dict]
 
 # 요약 텍스트를 받기 위한 데이터 모델 정의
 class SummaryText(BaseModel):
     text: str
 
-# ID 값을 받는 엔드포인트
+# 여러 ID 값을 받는 엔드포인트
 @router.post("/selectArticle")
-async def receive_article_id(article_id: ArticleID):
+async def receive_article_ids(articles: Articles):
     try:
-        # 받은 ID 값을 출력하여 확인
-        print(f"받은 ID 값: {article_id.cr_art_id}")
+        # 받은 기사 ID들을 출력하여 확인
+        article_ids = [article['art_id'] for article in articles.articles if 'art_id' in article]
+        print(f"받은 기사 ID들: {article_ids}")
         
-        # 받은 ID 값을 응답으로 반환하여 잘 전달되었는지 확인
-        return JSONResponse(content={"received_id": article_id.cr_art_id, "message": "ID 값을 성공적으로 받았습니다."})
+        # 받은 기사 ID들을 응답으로 반환하여 잘 전달되었는지 확인
+        return JSONResponse(content={"received_ids": article_ids, "message": "기사 ID들을 성공적으로 받았습니다."})
     except Exception as e:
         print(f"Error during ID reception: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"ID 값 처리 중 오류 발생: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"기사 ID 처리 중 오류 발생: {str(e)}")
 
 # 이미지 생성 모델에 전달할 텍스트 받는 엔드포인트
 @router.post("/imagetext")
@@ -49,3 +51,4 @@ async def upload_imagetext(summary: SummaryText):
     except Exception as e:
         print(f"Error during summary upload: {str(e)}")
         raise HTTPException(status_code=422, detail=f"요약 텍스트 업로드 중 오류 발생: {str(e)}")
+

@@ -66,7 +66,7 @@ const News = ({ articles }) => {
 
     try {
       console.log("요약하기 요청 시작");  // 요청 시작 로그
-      const response = await fetch('http://localhost:8000/api/summarize-articles', {
+      const response = await fetch('http://localhost:8000/api/summarization/selectArticle', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
