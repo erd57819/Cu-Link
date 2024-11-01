@@ -66,6 +66,7 @@ const News = ({ articles }) => {
 
     try {
       console.log("요약하기 요청 시작");  // 요청 시작 로그
+      // http://localhost:8000/summarize/summarize-article 👈🏻 이걸로 변경되었어요!
       const response = await fetch('http://localhost:8000/api/summarization/selectArticle', {
         method: 'POST',
         headers: {

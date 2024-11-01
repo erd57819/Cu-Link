@@ -14,8 +14,8 @@ class Articles(BaseModel):
 class SummaryText(BaseModel):
     text: str
 
-# 여러 ID 값을 받는 엔드포인트
-@router.post("/selectArticle")
+# 요약하기 엔드포인트 - 수정됨 _ 아인
+@router.post("/summarize-article")
 async def receive_article_ids(articles: Articles):
     try:
         # 받은 기사 ID들을 출력하여 확인
