@@ -10,6 +10,7 @@ import FindPW from "./page/FindPW";
 import IntroPage from "./page/IntroPage";
 import ChatBot from "react-simple-chatbot";
 import Report from "./page/Report";
+import StartPage from "./page/StartPage";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/news" element={<MyPage />} />
         <Route path="/resetPW" element={<FindPW />} />
         <Route path="/report" element={<Report />} />
+        <Route path="/start" element={<StartPage />} />
       </Routes>
     </div>
   );

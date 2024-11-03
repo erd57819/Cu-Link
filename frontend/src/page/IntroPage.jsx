@@ -1,31 +1,39 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { Navigation, Pagination } from 'swiper';
-import '../css/IntroPage.css'; // CSS 파일 불러오기
+import { Pagination } from 'swiper';
+import '../css/IntroPage.css';
 
 const IntroPage = () => {
-  const navigate = useNavigate();
+  const swiperRef = useRef(null);
 
-  const handleStartClick = () => {
-    navigate('/'); // '시작하기' 버튼 클릭 시 메인 페이지로 이동
+
+  const handlePrevSlide = () => {
+    if (swiperRef.current) {
+      swiperRef.current.swiper.slidePrev();
+    }
   };
+
+  const handleNextSlide = () => {
+    if (swiperRef.current) {
+      swiperRef.current.swiper.slideNext();
+    }
+  };
+
 
   return (
     <div className="intro-page">
       {/* Swiper 컨테이너 */}
       <div className="swiper-container">
         <Swiper
-          spaceBetween={50}
-          slidesPerView={1}
-          navigation={true} // 네비게이션 버튼 활성화
+          ref={swiperRef}
+          spaceBetween={0}
+          slidesPerView={1} // 한 번에 한 슬라이드만 표시
+          centeredSlides={true} // 활성 슬라이드를 중앙에 표시
           pagination={{ clickable: true }} // 페이지네이션 활성화
           loop={true} // 무한 반복 슬라이드 설정
-          loopAdditionalSlides={0} // 복제되는 슬라이드를 최소화
-          modules={[Navigation, Pagination]} // Swiper 모듈 추가
+          modules={[Pagination]} // Swiper 모듈 추가
         >
           <SwiperSlide>
             <div className="slide-content">
@@ -53,13 +61,10 @@ const IntroPage = () => {
             </div>
           </SwiperSlide>
         </Swiper>
-      </div>
 
-      {/* Start Button */}
-      <div className="start-button-container">
-        <button className="start-button" onClick={handleStartClick}>
-          시작하기
-        </button>
+        {/* Custom Navigation Buttons */}
+        <button className="custom-prev-button" onClick={handlePrevSlide}>‹</button>
+        <button className="custom-next-button" onClick={handleNextSlide}>›</button>
       </div>
     </div>
   );
