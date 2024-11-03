@@ -2,28 +2,26 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../css/News.css';
 import Modal from './Modal';
+import Swal from 'sweetalert2';
 
 const MyNews = ({ articles }) => {
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage, setArticlesPerPage] = useState(6);
-  const [savedArticles, setSavedArticles] = useState([]); // 서버에서 불러온 저장된 기사
+  const [savedArticles, setSavedArticles] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [summaryData, setSummaryData] = useState([]);
   const pageRange = 5;
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setArticlesPerPage(4);
-      } else {
-        setArticlesPerPage(6);
-      }
+      setArticlesPerPage(window.innerWidth <= 768 ? 4 : 6);
     };
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 서버에서 저장된 기사 가져오기
   useEffect(() => {
     const fetchSavedArticles = async () => {
       try {
@@ -62,13 +60,27 @@ const MyNews = ({ articles }) => {
   const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
 
-  // 선택된 기사 저장하기
-  const handleSaveArticles = async () => {
+  // 요약하기 기능
+  const handleSummarize = async () => {
+    if (selectedArticles.length === 0) {
+      // SweetAlert2 스타일의 경고창 표시
+      Swal.fire({
+        title: "기사를 선택해주세요",
+        text: "선택된 기사가 없습니다. 요약할 기사를 선택해 주세요.",
+        icon: 'warning',
+      });
+      return;
+    }
+
     try {
-      await axios.post('/createreport', { articles: selectedArticles });
-      alert('기사 저장이 완료되었습니다.');
+      const response = await axios.post('http://localhost:8000/api/summarization/selectArticle', {
+        articles: selectedArticles,
+      });
+
+      setSummaryData(response.data.summary);
+      setIsModalOpen(true);
     } catch (error) {
-      console.error('기사를 저장하지 못했습니다:', error);
+      console.error('요약 요청 실패:', error);
     }
   };
 
@@ -121,10 +133,10 @@ const MyNews = ({ articles }) => {
           )}
         </div>
         <div className="fixed-buttons">
-          <Modal selectedArticles={selectedArticles} />
-          <button className="save-button" onClick={handleSaveArticles}>저장하기</button>
+          <button className="summarize-button" onClick={handleSummarize}>요약하기</button>
         </div>
       </div>
+      {isModalOpen && <Modal summaryData={summaryData} onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 };
