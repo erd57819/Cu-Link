@@ -70,18 +70,28 @@
     
 }
 .preview-popup {
-    pointer-events: none;
-    position: absolute;
-    top: 20px;
+    position: fixed; /* 화면 상단에 고정 */
+    line-height: 2.0;
+    top: 20%; /* 화면에서 적당한 위치로 설정 */
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -20%);
     padding: 20px; /* 내부 여백 */
     background-color: #fff;
     border: 1px solid #ddd;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    width: 40rem; 
-    height: 35rem; 
+    z-index: 1000; /* 다른 요소 위로 나타나도록 설정 */
+    width: 55rem;
+    height: 35rem;
+}
+.close-button {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1001;
+}
+.close-button:hover {
+    background: transparent; /* 호버 시 배경색을 유지하지 않음 */
 }
 .grid-item.image {
     position: relative; 

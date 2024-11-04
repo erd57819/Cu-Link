@@ -1,7 +1,7 @@
 // src/components/Login.jsx
 import React, { useRef } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '../css/Join.css'
 
@@ -9,9 +9,11 @@ const Login = () => {
   const id_Ref = useRef();
   const pw_Ref = useRef();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const handleLogin = async (e) => {
     e.preventDefault();
+    const redirectTo = location.state?.from ||'/';
 
     let logMember = {
       id: id_Ref.current.value,
@@ -28,7 +30,7 @@ const Login = () => {
           icon: 'success'
         }).then(() => {
           sessionStorage.setItem('userId', res.data.user_id); // 세션에 userId 저장
-          navigate('/'); // 메인 페이지로 이동
+          navigate(redirectTo); // 메인 페이지로 이동
         });
       } else {
         Swal.fire({
