@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 from typing import List
 import httpx
+from models.summary_openai import summarize_article  # 요약 함수 임포트
 router = APIRouter()
 
 # 여러 기사 ID를 받기 위한 데이터 모델 정의
@@ -16,17 +17,25 @@ class SummaryText(BaseModel):
 
 # 요약하기 엔드포인트 - 수정됨 _ 아인
 @router.post("/summarize-article")
-async def receive_article_ids(articles: Articles):
+async def receive_article_contents(articles: Articles):
     try:
-        # 받은 기사 ID들을 출력하여 확인
-        article_ids = [article['art_id'] for article in articles.articles if 'art_id' in article]
-        print(f"받은 기사 ID들: {article_ids}")
+        # 받은 기사 내용들을 추출
+        article_contents = [article['art_content'] for article in articles.articles if 'art_content' in article]
+        print(f"받은 기사 내용들: {article_contents}")
+
+        # 각 기사 내용에 대해 요약 수행
+        summarized_contents = []
+        for content in article_contents:
+            # 요약 함수 호출
+            summary = summarize_article(content)
+            summarized_contents.append(summary)
         
-        # 받은 기사 ID들을 응답으로 반환하여 잘 전달되었는지 확인
-        return JSONResponse(content={"received_ids": article_ids, "message": "기사 ID들을 성공적으로 받았습니다."})
+        # 요약된 결과를 반환
+        return JSONResponse(content={"summarized_contents": summarized_contents, "message": "기사 내용이 성공적으로 요약되었습니다."})
+
     except Exception as e:
-        print(f"Error during ID reception: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"기사 ID 처리 중 오류 발생: {str(e)}")
+        print(f"Error during content summarization: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"기사 요약 처리 중 오류 발생: {str(e)}")
 
 # 이미지 생성 모델에 전달할 텍스트 받는 엔드포인트
 @router.post("/imagetext")

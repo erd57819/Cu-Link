@@ -55,24 +55,22 @@ const News = ({ articles }) => {
   const handleSummarize = async () => {
     // 선택된 기사가 없을 때 알림
     if (selectedArticles.length === 0) {
-        // SweetAlert2 스타일의 경고창 표시
-        Swal.fire({
-            title: "기사를 선택해주세요",
-            text: "선택된 기사가 없습니다. 요약할 기사를 선택해 주세요.",
-            icon: 'warning',
-        });
-        return;  // 함수 실행 종료
+      Swal.fire({
+        title: "기사를 선택해주세요",
+        text: "선택된 기사가 없습니다. 요약할 기사를 선택해 주세요.",
+        icon: 'warning',
+      });
+      return;
     }
 
     try {
-      console.log("요약하기 요청 시작");  // 요청 시작 로그
-      // http://localhost:8000/summarize/summarize-article 👈🏻 이걸로 변경되었어요!
-      const response = await fetch('http://localhost:8000/api/summarization/selectArticle', {
+      console.log("요약하기 요청 시작");
+      const response = await fetch('http://localhost:8000/summarize/summarize-article', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ articles: selectedArticles }), // 선택된 기사를 JSON 형태로 전송
+        body: JSON.stringify({ articles: selectedArticles.map(article => ({ art_content: article.art_content })) }),
       });
 
       if (!response.ok) {
@@ -80,9 +78,9 @@ const News = ({ articles }) => {
       }
 
       const data = await response.json();
-      console.log("서버 응답 데이터:", data);  // 응답 데이터 확인
+      console.log("서버 응답 데이터:", data);
 
-      setSummaryData(data.summary);  // 요약 데이터를 리스트로 상태에 저장
+      setSummaryData(data.summarized_contents);  // 요약 데이터를 리스트로 상태에 저장
       setIsModalOpen(true);  // 요약 데이터 설정 후 모달 열기
     } catch (error) {
       console.error('데이터 전송 오류:', error);
