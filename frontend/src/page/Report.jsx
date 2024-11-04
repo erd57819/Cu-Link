@@ -17,9 +17,6 @@ function Report() {
     if(data){
       setReportData(data)
     }
-    return () =>{
-      sessionStorage.removeItem('reportData')
-    }
   },[location.state])
 
   const navigate = useNavigate(); 
