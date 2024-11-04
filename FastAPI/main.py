@@ -1,12 +1,18 @@
+# main.py의 맨 위쪽에 추가
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# 이미지 생성 라우터
-from routers.textToImageRouter import router as text_to_image_router
 # 요약하기 라우터
 from routers.summarizationRouter import router as summarization_router
 # 레포트 생성 라우터
 from routers.createReportRouter import router as createReport_router
+# 검색 라우터
+# from routers.searchRouter import router as searchRouter
+
 
 # 라우터 초기화
 app = FastAPI()
@@ -20,13 +26,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 라우터 등록
-app.include_router(text_to_image_router, prefix="/images") 
 # 요약모델 라우터 
 app.include_router(summarization_router, prefix="/summarize") 
 # 레포트 생성 라우터
 app.include_router(createReport_router, prefix="/report") 
-
+# 검색 라우터 
+# app.include_router(searchRouter, prefix="/search") 
 
 @app.get("/") # fastapi주소로 진입시 
 async def root():

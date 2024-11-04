@@ -1,21 +1,18 @@
 from fastapi import HTTPException
 import pymysql
 from pymysql.cursors import DictCursor
-import os
-from dotenv import load_dotenv
-# 환경 변수 로드
-load_dotenv()
+
 # 포트번호는 정수로 받아야 함
-port = int(os.getenv("DB_PORT"))
+
 # MySQL 연결 설정
-def get_db_connection():
+def get_db_connection(database_config):
     try:    
         return pymysql.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            database=os.getenv("DB_DATABASE"),
-            port=port,
+            host=database_config["DB_HOST"],
+            user=database_config["DB_USER"],
+            password=database_config["DB_PASSWORD"],
+            database=database_config["DB_DATABASE"],
+            port=database_config["DB_PORT"],
             cursorclass=DictCursor)
             # 결과를 딕셔너리 형태로 반환)
     except pymysql.MySQLError as e:
