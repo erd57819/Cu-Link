@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper';
+import { Pagination } from 'swiper/modules'; // 수정됨!!!!!!
 import '../css/IntroPage.css';
 
 const StartPage = () => {

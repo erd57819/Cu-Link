@@ -89,7 +89,7 @@ function Report() {
   };
 
   return (
-    <div className="report-container1" id="reportContent">
+    <div className="report-container3" id="reportContent">
       <div className="report-boxes">
         <div className="title-box">
           <h3 className="report-title">{reportData.title}</h3>

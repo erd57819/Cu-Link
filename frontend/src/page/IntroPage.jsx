@@ -2,12 +2,11 @@ import React, { useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper';
+import { Pagination } from 'swiper/modules'; // 수정됨!!!!!!
 import '../css/IntroPage.css';
 
 const IntroPage = () => {
   const swiperRef = useRef(null);
-
 
   const handlePrevSlide = () => {
     if (swiperRef.current) {
@@ -20,7 +19,6 @@ const IntroPage = () => {
       swiperRef.current.swiper.slideNext();
     }
   };
-
 
   return (
     <div className="intro-page">

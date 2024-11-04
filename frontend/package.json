@@ -16,7 +16,7 @@
     "react-scripts": "5.0.1",
     "react-simple-chatbot": "^0.6.1",
     "sweetalert2": "^11.14.4",
-    "swiper": "^7.4.1",
+    "swiper": "^11.1.14",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
