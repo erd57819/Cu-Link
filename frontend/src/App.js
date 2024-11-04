@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import Main from "./page/Main";
 import Baner from "./components/Baner";
@@ -13,9 +13,13 @@ import Report from "./page/Report";
 import StartPage from "./page/StartPage";
 
 function App() {
+  const location = useLocation();
+
   return (
     <div style={{ height: "100%" }}>
-      <Baner />
+      {/* 현재 경로가 '/start'가 아닌 경우에만 Baner를 렌더링 */}
+      {location.pathname !== "/start" && <Baner />}
+
       <ChatBot
         steps={[
           {
@@ -30,7 +34,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/intro" element={<IntroPage />} />
-        <Route path="/createreport" element={<CreateReport />}></Route>
+        <Route path="/createreport" element={<CreateReport />} />
         <Route path="/login" element={<Login />} />
         <Route path="/join" element={<Join />} />
         <Route path="/news" element={<MyPage />} />

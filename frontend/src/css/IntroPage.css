@@ -5,9 +5,33 @@
     justify-content: center;
     align-items: center;
     background-color: #fff;
-    height: 93%;
+    height: 100vh; /* 화면 높이 전체를 사용하여 완전 중앙 정렬 */
     box-sizing: border-box;
     overflow: hidden;
+    position: relative;
+}
+
+/* 로고와 슬로건 배너 스타일 */
+.banner1 {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 10px 20px;
+    position: absolute;
+    top: -1.95rem;
+    left: 10.75rem;
+    width: 100%;
+    background-color: white;
+}
+
+.banner1 .left-item h2 {
+    margin-bottom: 0;
+    color: black;
+}
+
+.banner1 .left-item h5 {
+    margin-top: 0;
+    color: black;
 }
 
 /* Swiper 슬라이드 컨테이너 중앙 정렬 */
@@ -17,11 +41,10 @@
     align-items: center;
     width: 100%;
     max-width: 900px;
-    margin-bottom: 30px;
     padding: 0 60px; /* 화살표를 위한 여백 추가 */
-    overflow: visible; /* 콘텐츠가 바깥으로 나갈 수 있도록 설정 */
     box-sizing: border-box;
     position: relative;
+    margin: 40px 0; /* 배너와 시작하기 버튼 사이에 공간 확보 */
 }
 
 /* 슬라이드 콘텐츠 박스 */
@@ -34,12 +57,12 @@
     padding: 20px;
     background-color: #fff;
     width: 100%;
-    max-width: 800px; /* 슬라이드의 최대 너비 고정 */
-    height: 300px; /* 슬라이드 높이 고정 */
+    max-width: 800px;
+    height: 300px;
     box-sizing: border-box;
-    margin: 10px 0; /* 잘리지 않도록 마진 추가 */
-    position: relative; /* 화살표가 슬라이드 바깥에 표시되도록 */
+    position: relative;
     z-index: 1;
+    text-align: left;
 }
 
 .slide-content.reverse {
@@ -51,48 +74,48 @@
     text-align: center;
 }
 
-/* 이미지 스타일 */
+/* 슬라이드 이미지 스타일 */
 .slide-image {
     width: 150px;
     height: 150px;
     border-radius: 10px;
-    flex-shrink: 0; /* 이미지 크기 고정 */
+    flex-shrink: 0;
 }
 
-/* 텍스트 스타일 */
+/* 슬라이드 텍스트 스타일 */
 .slide-text {
     flex: 1;
     margin-left: 20px;
     font-size: 22px;
     font-weight: 500;
     word-wrap: break-word;
-    max-width: 500px; /* 텍스트 영역의 최대 너비를 설정하여 균형 유지 */
+    max-width: 500px;
 }
 
 /* Swiper 네비게이션 버튼 스타일 */
 .swiper-button-next, .swiper-button-prev {
-    color: #6200ea !important; /* 보라색 버튼 */
+    color: #6200ea !important;
     width: 30px;
     height: 30px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 2; /* 슬라이드 박스 위에 표시 */
-    opacity: 1; /* 버튼을 명확하게 표시 */
+    z-index: 2;
 }
 
 /* Swiper 버튼이 슬라이드 박스 바깥에 위치하도록 조정 */
 .swiper-button-prev {
-    left: -25px; /* 왼쪽 버튼을 슬라이드 박스 바깥쪽으로 이동 */
+    left: -25px;
 }
 
 .swiper-button-next {
-    right: -25px; /* 오른쪽 버튼을 슬라이드 박스 바깥쪽으로 이동 */
+    right: -25px;
 }
 
 /* '시작하기' 버튼 중앙 정렬 */
 .start-button-container {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
 }
 
 .start-button {
@@ -106,30 +129,33 @@
     transition: background-color 0.3s ease;
 }
 
+.start-button:hover {
+    background-color: #7b1fa2;
+}
 
 /* Custom Navigation Buttons */
 .custom-prev-button, .custom-next-button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 5rem; /* 화살표 크기 조정 */
+    font-size: 5rem;
     background-color: transparent;
     border: none;
     color: #6200ea;
     cursor: pointer;
-    z-index: 10; /* 슬라이드보다 위에 표시 */
+    z-index: 10;
 }
 
 /* 위치 조정 */
 .custom-prev-button {
-    left: 10px; /* 왼쪽 버튼을 적절한 위치에 배치 */
+    left: 10px;
 }
 
 .custom-next-button {
-    right: 10px; /* 오른쪽 버튼을 적절한 위치에 배치 */
+    right: 10px;
 }
 
 /* 버튼 호버 효과 */
 .custom-prev-button:hover, .custom-next-button:hover {
-    color: #4500b0; /* 호버 시 색상 변경 */
+    color: #4500b0;
 }

@@ -28,6 +28,16 @@ const StartPage = () => {
 
     return (
         <div className="intro-page">
+            <div className='banner1'>
+                <div className='left-item'>
+                    <h2>Cu-Link</h2>
+                    <h5>레포트가 쉬워지다</h5>
+                </div>
+                <div className='mid-item'>
+                </div>
+                <div className='right-item'>
+                </div>
+            </div>
             {/* Swiper 컨테이너 */}
             <div className="swiper-container">
                 <Swiper

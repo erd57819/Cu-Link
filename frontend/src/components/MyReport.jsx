@@ -4,8 +4,8 @@ import '../css/MyReport.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/autoplay'; // 수정됨!!!!!!
-import { Navigation, Autoplay } from 'swiper/modules'; // 수정됨!!!!!!
+import 'swiper/css/autoplay'; // Autoplay CSS 추가
+import { Navigation, Autoplay } from 'swiper/modules'; // Autoplay 모듈 임포트
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 
 const MyReport = () => {
@@ -57,15 +57,15 @@ const MyReport = () => {
       <div className="myreport-slider-section">
         <Swiper
           navigation={true}
-          modules={[Navigation, Autoplay]} // 수정됨!!!!!!
+          modules={[Navigation, Autoplay]}
           className="myreport-slider"
-          spaceBetween={-30} // 슬라이드 간격 조정 - 수정됨!!!!!!
+          spaceBetween={-30} // 슬라이드 간격 조정
           slidesPerView="auto"
           centeredSlides={true}
           loop={true}
           autoplay={{
-            delay: 2500, // 슬라이드 전환 시간 - 수정됨!!!!!!
-            disableOnInteraction: false, // 사용자가 상호작용해도 자동 재생 유지 - 수정됨!!!!!!
+            delay: 2500, // 슬라이드 전환 시간
+            disableOnInteraction: false,
           }}
         >
           {articles.map((article) => (

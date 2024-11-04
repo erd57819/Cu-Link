@@ -11,6 +11,9 @@
   color: black; /* 모든 텍스트를 검정색으로 설정 */
 }
 
+
+
+
 .left-item {
   display: flex;
   flex-direction: column;

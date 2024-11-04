@@ -27,6 +27,7 @@
   justify-content: center;
   align-items: center;
   transition: transform 0.5s ease, opacity 0.5s ease;
+  flex-shrink: 0 !important; /* 추가: 슬라이드가 수축하지 않도록 강제 설정 */
 }
 
 /* 중앙 카드의 양옆 카드 크기 */
