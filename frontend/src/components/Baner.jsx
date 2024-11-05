@@ -1,11 +1,12 @@
 import React from 'react';
 import '../css/Baner.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 function Baner() {
   const navigate = useNavigate();
   const userId = sessionStorage.getItem('userId'); // 세션에서 userId 가져오기
+  const location = useLocation();
 
   const handleLogout = () => {
     Swal.fire({
@@ -25,6 +26,24 @@ function Baner() {
       // No를 클릭하면 아무 작업도 하지 않음
     });
   };
+  const handleMynews = () => {
+    if (!userId) {
+      Swal.fire({
+        title: "로그인이 필요한 서비스 입니다.",
+        text: "내 기사 기능을 사용하려면 로그인 해주세요",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '확인',
+        cancelButtonText: '로그인 하러가기'
+      }).then((result) => {
+        if (result.isDismissed) {
+          navigate('/login', { state: { from: location.pathname } });
+        }
+      });
+    } else {
+      navigate('/news'); // 로그인되어 있으면 '내 기사' 페이지로 이동
+    }
+  };
 
   return (
     <div className='banner'>
@@ -35,7 +54,7 @@ function Baner() {
       <div className='mid-item'>
         <span><Link to={'/intro'} className='link'>사용법</Link></span>
         <span>|</span>
-        <span><Link to={'/news'} className='link'>내 기사</Link></span>
+        <span onClick={handleMynews} style={{ cursor: 'pointer' }}>내 기사</span>
       </div>
       <div className='right-item'>
         {userId ? (

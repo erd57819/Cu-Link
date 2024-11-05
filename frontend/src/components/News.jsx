@@ -37,10 +37,17 @@ const News = ({ articles }) => {
 
   // 전체 선택/해제
   const handleSelectAll = () => {
-    if (selectedArticles.length === currentArticles.length) {
-      setSelectedArticles([]);
+    const allArticlesOnPageSelected = currentArticles.every(article =>
+      selectedArticles.includes(article)
+    );
+  
+    if (allArticlesOnPageSelected) {
+      // 현재 페이지의 모든 기사가 이미 선택된 경우: 페이지의 기사만 선택 해제
+      setSelectedArticles(selectedArticles.filter(article => !currentArticles.includes(article)));
     } else {
-      setSelectedArticles(currentArticles);
+      // 현재 페이지의 기사 중 선택되지 않은 것만 추가
+      const newSelections = currentArticles.filter(article => !selectedArticles.includes(article));
+      setSelectedArticles([...selectedArticles, ...newSelections]);
     }
   };
 

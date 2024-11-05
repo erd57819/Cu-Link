@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/SearchBar.css';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const SearchBar = ({ setFilteredArticles }) => {
   const [articles, setArticles] = useState([]);
@@ -73,12 +74,18 @@ const SearchBar = ({ setFilteredArticles }) => {
     }
 
     if (startDate && endDate) {
+      if(new Date(startDate) > new Date(endDate)) {
+        Swal.fire({
+          title : "시작 날짜는 종료 날짜보다 앞서야 합니다.",
+          icon:'warning'
+        })
+        return;
+      }
       filtered = filtered.filter(article => {
         const articleDate = new Date(article.art_date);
-        return articleDate >= new Date(startDate) && articleDate <= new Date(endDate);
-      });
+        return articleDate >= new Date(startDate) && articleDate <= new Date(endDate)
+      })
     }
-
     setFilteredArticles(filtered);
   };
 
@@ -155,6 +162,7 @@ const SearchBar = ({ setFilteredArticles }) => {
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+            min={startDate}
             max={currentDate}
             className="date-input"
           />

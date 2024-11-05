@@ -27,7 +27,7 @@ function Report() {
     if (!userId) {
       Swal.fire({
         title: "로그인이 필요합니다",
-        text: "저장 기능을 사용하려면 로그인해 주세요.",
+        text: "저장 기능을 사용하려면 로그인 해주세요.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: '확인',
