@@ -73,14 +73,14 @@ function Modal({ summaryData, onClose }) {
           {summaryData && summaryData.length > 0 ? (
             summaryData.map((item, index) => (
               <div key={index} className='summary-item'>
+                <h3 className='modal-header'>
                 {/* 제목을 클릭하면 해당 URL로 이동 */}
-                <h3>
-                  <a href={item.cr_art_url} target="_blank" rel="noopener noreferrer">
+                  <a href={item.cr_art_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit'}}>
                     {item.cr_art_title}
                   </a>
                 </h3>
                 {/* 요약 내용 */}
-                <p>{item.summary}</p>
+                <p className='modal-header span'>{item.summary}</p>
               </div>
             ))
           ) : (
