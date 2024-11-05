@@ -1,16 +1,50 @@
 # 임시 모델 파일
-import os
-from dotenv import load_dotenv
 import openai
 from langchain_community.llms import OpenAI
+from models.textToImage import generate_images_and_send
+from db.settings import openai_key
 
-# 환경 변수 로드
-load_dotenv()
-
-openai_key = os.getenv("OPEN_API_KEY")
 
 # API 키 설정
 openai.api_key = openai_key # open_ai 키
+
+def createReport_text(report_content):
+        # 프롬프트 설정: 보고서에서 핵심 문장 생성 요청
+    summary_prompt = f"""
+    당신은 능숙한 시각적 설명 작성자로, 보고서에서 핵심 내용을 파악하고 이를 바탕으로 이미지 생성을 위한 구체적인 문장을 생성하는 역할을 맡고 있습니다.
+
+    다음의 보고서 내용을 참고하여, 이미지로 시각화할 수 있는 핵심 문장을 작성해 주세요. 작성 시 다음 사항을 유의해 주세요:
+
+    1. 이미지로 시각화하기에 적합하도록 구체적이고 명확한 표현을 사용합니다.
+    2. 보고서의 주제를 효과적으로 표현할 수 있는 시각적 요소(예: 인물, 장소, 주요 사물 또는 상징적 장면 등)를 포함하여, 해당 주제의 핵심 메시지를 시각화할 수 있도록 작성합니다.
+    3. 보고서의 주요 분위기나 배경을 드러내는 표현을 사용해, 독자가 주제를 쉽게 이해할 수 있는 이미지로 연결될 수 있게 합니다.
+    4. 핵심 문장은 완전한 문장으로 끝맺음하여 명확하게 표현되어야 합니다.
+
+    보고서 내용:
+    {report_content}
+
+    이미지 생성에 적합한 핵심 문장:
+    """
+
+    # OpenAI API 호출: 핵심 문장 생성
+    summary_response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant for analyzing and summarizing documents."},
+            {"role": "user", "content": summary_prompt}
+        ],
+        max_tokens=90,
+        temperature=0.5,
+        request_timeout=10  # 타임아웃을 10초로 설정
+    )
+
+
+    # 생성된 핵심 문장
+    image_to_text = summary_response['choices'][0]['message']['content'].strip()
+    print(image_to_text)
+    generate_images_and_send(image_to_text)
+    return image_to_text
+
 
 def createReport_openAI(article_contents):
     try:
@@ -42,9 +76,14 @@ def createReport_openAI(article_contents):
                 max_tokens=700,  # max_tokens의 경우 700~1000 사이로 테스트해 가며 적절히 조정할 예정
                 temperature=0.6
             )
-
+            if len(reports) == 1 :
+                img_txt = createReport_text(reports)
             # 생성된 보고서
             reports.append(response['choices'][0]['message']['content'].strip())
-        return reports
+        print("최종 레포트 길이",len(reports))
+
+        return { "reports":reports,"img_txt" : img_txt }
+    
     except Exception as e:
         print(f"보고서 부분 에러 : {e}" )
+

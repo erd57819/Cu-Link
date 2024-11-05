@@ -43,16 +43,16 @@ def createReport_services(id_list: list):
             article_contents = fetch_article_content(id_list,bucket)
             # 레포트 생성 모델 결과 값
             report_data = createReport_openAI(article_contents)
+            # print("report_data", report_data)
             # 임의 문장 넣어보기
-            text = "한국 첨단 산업의 경쟁력 강화를 위해 노동시간 규제 유연화가 필요하며, 엔비디아의 다우지수 편입은 AI 시대의 반도체 산업 변화를 상징적으로 보여줍니다."
+            text = report_data["img_txt"]
             # 생성된 이미지 바이너리 데이터
             report_images = generate_images_and_send(text)
             en_report_images = encode_images(report_images)
-            
             # 바이너리 처리를 위해 딕셔너리로 묶어 주기
             combined_data = {
                 'metadata' : conv_metadata,
-                'report_data' : report_data,
+                'report_data' : report_data["reports"],
                 'report_images' : en_report_images,
                 'created_at': datetime.now().isoformat(),
             }
