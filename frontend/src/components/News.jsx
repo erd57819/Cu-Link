@@ -77,9 +77,14 @@ const News = ({ articles }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ articles: selectedArticles.map(article => ({ art_content: article.art_content })) }),
+        body: JSON.stringify({
+          articles: selectedArticles.map(article => ({
+            cr_art_id: article.cr_art_id,
+            cr_art_title: article.cr_art_title,
+            cr_art_url: article.cr_art_url
+          })) }),
       });
-
+      console.log("type", typeof(articles.cr_art_id ));
       if (!response.ok) {
         throw new Error(`서버 응답 오류: ${response.status}`);
       }
@@ -102,23 +107,23 @@ const News = ({ articles }) => {
       </div>
       <div className="articles">
         {currentArticles.map((news) => (
-          <div key={news.art_id} className="article">
+          <div key={news.cr_art_id} className="article">
             <input 
               type="checkbox" 
               className="article-checkbox" 
               checked={selectedArticles.includes(news)} 
               onChange={() => handleCheckboxChange(news)} 
             />
-            <div className="article-content" onClick={() => window.open(news.art_url, '_blank')}>
+            <div className="article-content" onClick={() => window.open(news.cr_art_url, '_blank')}>
               <div className="article-header">
-                <h3>{news.art_title}</h3>
-                <p>{new Date(news.art_date).toLocaleDateString()}</p>
+                <h3>{news.cr_art_title}</h3>
+                <p>{new Date(news.cr_art_date).toLocaleDateString()}</p>
               </div>
-              <div className="article-body">
+              {/* <div className="article-body">
                 <p>{news.art_content.length > 100 ? `${news.art_content.slice(0, 100)}...` : news.art_content}</p>
-              </div>
+              </div> */}
               <div className="article-image">
-                <img src={news.art_img} alt={news.art_title} />
+                <img src={news.cr_art_img} alt={news.cr_art_title} />
               </div>
             </div>
           </div>

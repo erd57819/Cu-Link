@@ -72,7 +72,16 @@ function Modal({ summaryData, onClose }) {
         <div className='modal-body'>
           {summaryData && summaryData.length > 0 ? (
             summaryData.map((item, index) => (
-              <p key={index}>{item}</p>  // 리스트 형태로 요약 결과를 표시
+              <div key={index} className='summary-item'>
+                {/* 제목을 클릭하면 해당 URL로 이동 */}
+                <h3>
+                  <a href={item.cr_art_url} target="_blank" rel="noopener noreferrer">
+                    {item.cr_art_title}
+                  </a>
+                </h3>
+                {/* 요약 내용 */}
+                <p>{item.summary}</p>
+              </div>
             ))
           ) : (
             <p>요약 데이터를 불러오는 중입니다...</p>

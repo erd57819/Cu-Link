@@ -1,63 +1,55 @@
-from fastapi import FastAPI, HTTPException, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi import HTTPException, APIRouter
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from typing import List
-import httpx
 from models.summary_openai import summarize_article  # 요약 함수 임포트
+from utils.firebase_utils import fetch_article_content
+
+from firebase_admin import storage  # Firebase 스토리지 사용
+
 router = APIRouter()
 
-# 여러 기사 ID를 받기 위한 데이터 모델 정의
+# 여러 기사 ID와 제목을 받기 위한 데이터 모델 정의
+class Article(BaseModel):
+    cr_art_id: int
+    cr_art_title: str
+    cr_art_url : str
+
 class Articles(BaseModel):
-    articles: List[dict]
+    articles: List[Article]
 
-# 요약 텍스트를 받기 위한 데이터 모델 정의
-class SummaryText(BaseModel):
-    text: str
-
-# 요약하기 엔드포인트 - 수정됨 _ 아인
+# 요약하기 엔드포인트
 @router.post("/summarize-article")
 async def receive_article_contents(articles: Articles):
     try:
         # 받은 기사 내용들을 추출
-        article_contents = [article['art_content'] for article in articles.articles if 'art_content' in article]
-        print(f"받은 기사 내용들: {article_contents}")
+        article_ids = [article.cr_art_id for article in articles.articles]
+        article_titles = {article.cr_art_id: article.cr_art_title for article in articles.articles}
+        article_url = {article.cr_art_id: article.cr_art_url for article in articles.articles}
+        print(f"받은 기사 ID들: {article_ids}")
+
+        # Firebase에서 기사 원문을 가져오기
+        bucket = storage.bucket()  # Firebase 버킷 객체 생성
+        contents = fetch_article_content(article_ids, bucket)
+        print(f"가져온 기사 원문: {contents}")
 
         # 각 기사 내용에 대해 요약 수행
         summarized_contents = []
-        for content in article_contents:
-            # 요약 함수 호출
-            summary = summarize_article(content)
-            summarized_contents.append(summary)
-        
+        for content_dict in contents:
+            for article_id, content in content_dict.items():
+                # 요약 함수 호출
+                summary = summarize_article(content)
+                # ID, 제목, 요약 내용을 포함한 결과 추가
+                summarized_contents.append({
+                    "cr_art_id": article_id,
+                    "cr_art_title": article_titles[article_id],
+                    "cr_art_url":article_url[article_id],
+                    "summary": summary
+                })
+
         # 요약된 결과를 반환
         return JSONResponse(content={"summarized_contents": summarized_contents, "message": "기사 내용이 성공적으로 요약되었습니다."})
 
     except Exception as e:
         print(f"Error during content summarization: {str(e)}")
         raise HTTPException(status_code=400, detail=f"기사 요약 처리 중 오류 발생: {str(e)}")
-
-# 이미지 생성 모델에 전달할 텍스트 받는 엔드포인트
-@router.post("/imagetext")
-async def upload_imagetext(summary: SummaryText):
-    try:
-        # 요약 텍스트를 '/createImages'로 전달
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "http://localhost:8000/api/createImages",
-                json={"text": summary.text}
-            )
-
-        if response.status_code == 200:
-            print(f"이미지 생성 작업 시작: {summary.text}")
-            return JSONResponse(content={"summaryText": summary.text})
-        else:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=f"이미지 생성 작업 요청 실패: {response.text}"
-            )
-
-    except Exception as e:
-        print(f"Error during summary upload: {str(e)}")
-        raise HTTPException(status_code=422, detail=f"요약 텍스트 업로드 중 오류 발생: {str(e)}")
-
