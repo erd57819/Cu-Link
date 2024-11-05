@@ -1,4 +1,11 @@
-/* 뉴스 컨테이너: 전체 기사 리스트를 감싸는 컨테이너 */
+/* 기본 레이아웃 */
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+  }
+
 .news-container {
     box-sizing: border-box;
     margin-left: 0;
@@ -9,51 +16,45 @@
     height: 100%;
 }
 
-/* 기사 리스트 */
+/* 기사 리스트 레이아웃 */
 .articles {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 기본 3열 레이아웃 */
-    grid-auto-rows: minmax(10rem, 1fr); /* 줄어든 높이로 고정 */
+    grid-auto-rows: minmax(10rem, 1fr);
 }
 
-/* 각 기사를 감싸는 사각형 박스 */
+/* 개별 기사 박스 스타일 */
 .article {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* 내용이 위에서부터 차곡차곡 쌓임 */
+    justify-content: flex-start;
     border: 1px solid #ccc;
-    box-sizing: border-box;
+    border-radius: 1.2rem;
     cursor: pointer;
     transition: transform 0.3s ease;
     position: relative;
     overflow: hidden;
-    border-radius: 1.2rem; /* 약간 더 줄인 둥글기 */
-    width: 95%; /* 전체 너비를 줄여서 공간 절약 */
-    height: 95%; /* 전체 높이도 조절 */
+    width: 95%;
+    height: 95%;
 }
-
 
 .article:hover {
-    transform: scale(1.02); /* 마우스를 올렸을 때 약간 확대 */
+    transform: scale(1.02); /* 마우스 올렸을 때 확대 */
 }
 
-/* 기사 상단 (제목, 날짜 등) */
+/* 기사 제목과 날짜 */
 .article-header {
-    margin-top: 2%;
-    margin-bottom: 1%;
-    position: relative;
-    margin-left: 15%;
+    margin: 2% 0 1% 15%;
 }
 
 .article-header h3 {
     font-size: 1rem;
     margin: 0;
-    padding-right: 1rem;
     color: #333;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 1; /* 제목을 2줄로 제한 */
+    -webkit-line-clamp: 1; /* 제목 줄 수 제한 */
     -webkit-box-orient: vertical;
 }
 
@@ -66,36 +67,32 @@
 /* 기사 본문 */
 .article-body {
     height: 30%;
-    flex-grow: 1; /* 본문이 남는 공간을 모두 차지 */
     padding: 0rem 1rem;
     font-size: 0.9rem;
     color: #333;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal;
     display: -webkit-box;
-    -webkit-line-clamp: 1; /* 본문을 3줄까지만 표시 */
+    -webkit-line-clamp: 1; /* 본문 줄 수 제한 */
     -webkit-box-orient: vertical;
-    line-height: 1.2; /* 줄 간격 설정 */
+    line-height: 1.2;
 }
 
 /* 기사 이미지 */
 .article-image {
-    margin-top: auto; /* 이미지가 컨테이너 하단에 위치하도록 설정 */
     width: 100%;
-    height: 12rem; /* 높이를 고정하여 일관성 유지 */
-    object-fit: cover; /* 이미지를 비율에 맞게 카드 크기에 맞춤 */
+    height: 12rem;
+    object-fit: cover;
 }
 
 .article-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 0 0 1.5rem 1.5rem; /* 이미지 하단 모서리 둥글게 */
+    border-radius: 0 0 1.5rem 1.5rem;
 }
 
-/* 선택된 기사의 체크박스 (좌측 상단에 위치) */
-/* 체크박스 커스텀 스타일 */
+/* 체크박스 스타일 */
 .article-checkbox {
     position: absolute;
     top: 10px;
@@ -103,50 +100,46 @@
     width: 20px;
     height: 20px;
     cursor: pointer;
-    appearance: none; /* 기본 체크박스 스타일 제거 */
-    border: 2px solid #51017F; /* 테두리 색상 */
-    border-radius: 50%; /* 둥글게 설정 */
+    appearance: none;
+    border: 2px solid #51017F;
+    border-radius: 50%;
     background-color: transparent;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .article-checkbox:checked {
-    background-color: #51017F; /* 체크 시 배경색 */
+    background-color: #51017F;
     border-color: #51017F;
 }
 
 .article-checkbox:checked::before {
-    content: "✔"; /* 체크 표시 아이콘 */
+    content: "✔";
     display: block;
     text-align: center;
     color: white;
     font-size: 12px;
 }
 
-
-
-
-/* 페이지네이션과 버튼을 한 줄로 배치 */
+/* 페이지네이션 스타일 */
 .pagination-buttons-container {
     display: flex;
-    justify-content: center; /* 페이지네이션을 중앙에 정렬 */
+    justify-content: center;
     align-items: center;
     margin-top: 1%;
     position: relative;
-    z-index: 1; /* 페이지네이션이 다른 요소들보다 위에 보이도록 설정 */
+    z-index: 1;
     margin-left: 14rem;
 }
 
-/* 페이지네이션을 중앙에 배치 */
 .pagination {
     display: flex;
     justify-content: center;
-    margin: 0 auto; /* 중앙으로 완전히 배치 */
+    margin: 0 auto;
 }
 
 .pagination button {
     margin: 0 5px;
-    padding: 6px 10px; /* 버튼 크기를 줄임 */
+    padding: 6px 10px;
     border: none;
     background-color: white;
     cursor: pointer;
@@ -164,50 +157,34 @@
     color: #fff;
 }
 
-/* 요약하기, 저장하기, 레포트 생성 버튼을 줄이고 아래쪽에 배치 */
-.fixed-buttons {
-    display: flex;
-    justify-content: center; /* 버튼을 중앙 정렬 */
-    align-items: center;
-    gap: 5px; /* 버튼 간 간격을 줄임 */
-    position: relative;
-    z-index: 0; /* 페이지네이션과 충돌하지 않도록 설정 */
-}
-
-/* 버튼 스타일 통일 */
-.fixed-buttons button, .create-report-button1 {
-    padding: 0.3rem 0.7rem; /* 버튼 크기를 줄임 */
-    font-size: 0.8rem; /* 글자 크기를 줄임 */
-    
-    background-color: #51017F;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.fixed-buttons button:hover, .create-report-button1:hover {
-    background-color: #51017F;
-}
-
 /* 전체 선택 버튼 및 기사 개수 표시 */
 .select-all {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1%;
-    margin-top: 1%;
+    margin: 1% 0;
 }
 
 .select-all button {
-    padding: 8px 16px;
-    border: none;
-    background-color: #51017F;
-    color: white;
-    font-size: 0.9rem;
+    border: 2px solid #51017F;
+    background-color: #fff;
+    color: #51017F;
+    border-radius: 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    text-align: center;
+    font-family: 'Pretendard-Regular';
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    display: flex;
+    width: 105px;
+    height: 30px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .select-all button:hover {
@@ -218,3 +195,73 @@
     font-size: 0.9rem;
     color: #555;
 }
+
+/* 고정된 버튼 컨테이너 */
+.fixed-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+    z-index: 0;
+}
+
+/* .fixed-buttons 내 모든 버튼 스타일 */
+.fixed-buttons > .save-button,
+.fixed-buttons > .summarize-button {
+    /* padding: 0.3rem 0.7rem; */
+    /* font-size: 0.8rem; */
+    border: 2px solid #51017F;
+    background-color: #fff;
+    color: #51017F;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    font-family: 'Pretendard-Regular';
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    display: flex;
+    width: 105px;
+    height: 30px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.fixed-buttons > .save-button:hover,
+.fixed-buttons > .summarize-button:hover {
+    background-color: #51017F;
+    color: #fff;
+}
+
+/* .create-report-button1을 독립적으로 스타일링 */
+.create-report-button1 {
+    border: 2px solid #51017F;
+    background-color: #51017F;
+    color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    font-family: 'Pretendard-Regular';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    display: flex;
+    width: 105px;
+    height: 30px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.create-report-button1:hover {
+    background-color: #644377;
+}
+
