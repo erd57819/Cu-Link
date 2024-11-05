@@ -21,3 +21,6 @@ openai_key = os.getenv("OPEN_API_KEY")
 
 #================= HUGGINGFACE ==================
 huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
+
+#================= 벡터 모델 경로 ================
+model_dir = os.getenv('VECTOR_MODEL_DIR')
