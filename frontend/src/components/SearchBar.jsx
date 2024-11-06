@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 
 const SearchBar = ({ setFilteredArticles }) => {
   const [articles, setArticles] = useState([]);
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState(''); // 키워드 상태
   const [isKeywordChecked, setIsKeywordChecked] = useState(false);
   const [conditions, setConditions] = useState([]);
   const [checkedConditions, setCheckedConditions] = useState([]);
@@ -42,65 +42,81 @@ const SearchBar = ({ setFilteredArticles }) => {
 
   const filterArticles = () => {
     let filtered = articles;
-
+  
     if (keyword) {
-      if (isKeywordChecked) {
-        filtered = filtered.filter(article =>
-          article.art_content.toLowerCase().includes(keyword.toLowerCase())
-        );
-      } else {
-        filtered = filtered.filter(article =>
-          article.art_content.toLowerCase().includes(keyword.toLowerCase())
-        );
-      }
+      filtered = filtered.filter(article =>
+        (article.art_content || '').toLowerCase().includes(keyword.toLowerCase())
+      );
     }
-
+  
     conditions.forEach((condition, index) => {
       if (checkedConditions[index]) {
         filtered = filtered.filter(article =>
-          article.art_content.toLowerCase().includes(condition.toLowerCase())
+          (article.art_content || '').toLowerCase().includes(condition.toLowerCase())
         );
       }
     });
-
+  
     const orConditions = conditions.filter((_, index) => !checkedConditions[index]);
-
+  
     if (orConditions.length > 0) {
       filtered = filtered.filter(article =>
         orConditions.some(condition =>
-          article.art_content.toLowerCase().includes(condition.toLowerCase())
+          (article.art_content || '').toLowerCase().includes(condition.toLowerCase())
         )
       );
     }
-
+  
     if (startDate && endDate) {
-      if(new Date(startDate) > new Date(endDate)) {
+      if (new Date(startDate) > new Date(endDate)) {
         Swal.fire({
-          title : "시작 날짜는 종료 날짜보다 앞서야 합니다.",
-          icon:'warning'
-        })
+          title: "시작 날짜는 종료 날짜보다 앞서야 합니다.",
+          icon: 'warning'
+        });
         return;
       }
       filtered = filtered.filter(article => {
         const articleDate = new Date(article.art_date);
-        return articleDate >= new Date(startDate) && articleDate <= new Date(endDate)
-      })
+        return articleDate >= new Date(startDate) && articleDate <= new Date(endDate);
+      });
     }
     setFilteredArticles(filtered);
   };
+  
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     filterArticles();
+
+    // 선택된 날짜와 키워드를 FastAPI에 전송
+    const dateValues = [startDate, endDate].filter(Boolean); // 빈 값 제외
+    console.log(dateValues,keyword)
+    try {
+      const response = await fetch('http://localhost:8000/search/keywords',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          date: dateValues,
+          keyword: keyword, })
+      });
+        
+        
+        
+         
+      
+      console.log('서버 응답:', response.data);
+    } catch (error) {
+      console.error('서버 요청 중 오류 발생:', error);
+    }
   };
 
   const currentDate = new Date().toISOString().split('T')[0];
 
   return (
     <div className="layout">
-      {/* 왼쪽 빈 공간 */}
       <div className="left-space"></div>
       
-      {/* 오른쪽 검색바 */}
       <div className="search-bar">
         <div className="condition-input">
           <input

@@ -1,7 +1,9 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/CreateReport.css';
 import Swal from 'sweetalert2';
+
+
 
 function CreateReport() {
   const location = useLocation();
@@ -12,9 +14,32 @@ function CreateReport() {
 
   // 초기 데이터 설정
   const title = parsedData?.metadata.map((item) => item.cr_art_title) || [];
-  const image = parsedData?.report_images.map((item) => {
-    console.log("Image Data:", item.image_data); // 디버그 용도로 추가
-    return `data:image/png;base64,${item.image_data.trim()}`; // trim()으로 공백 제거
+  const image = parsedData?.report_images.map((item, index) => {
+  const cleanedImageData = item.image_data.trim();
+  console.log(parsedData)
+    // 오류 메시지가 포함되어 있는지 확인
+    try {
+      const decodedData = atob(cleanedImageData); // Base64 디코딩
+      if (decodedData.includes('error')) {
+        console.error(`Image ${index + 1} contains error message:`, decodedData);
+        Swal.fire({
+          title: "이미지 생성 오류",
+          text: `Image ${index + 1} 생성 중 오류가 발생했습니다. 잠시 후 다시 시도하세요.`,
+          icon: 'error'
+        });
+        return null; // 오류가 발생한 이미지는 표시하지 않음
+      }
+    } catch (e) {
+      console.error("Base64 decoding failed:", e);
+      return null;
+    }
+
+    // 디버그 용도: Base64 데이터 및 최종 src 문자열 확인
+    console.log(`Image ${index + 1} Base64 data:`, cleanedImageData);
+    const imgSrc = `data:image/png;base64,${cleanedImageData}`;
+    console.log(`Image ${index + 1} src:`, imgSrc);
+
+    return imgSrc;
   }) || [];
   const contents = parsedData?.report_data || [];
 
@@ -23,6 +48,8 @@ function CreateReport() {
   const [selectedContents, setSelectedContents] = useState(Array(contents.length).fill(false));
   const [previewContent, setPreviewContent] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+
+  const getSelectedIndex = (selectedArray) => selectedArray.findIndex(Boolean);
 
   const handleCreateReport = async () => {
     const isTitleSelected = selectedTitles.includes(true);
@@ -35,17 +62,16 @@ function CreateReport() {
       if (!isImageSelected) missingItems.push("Image");
       if (!isContentSelected) missingItems.push("Contents");
 
-      const alertMessage = `${missingItems.join(", ")} 항목을 선택해 주세요.`;
       Swal.fire({
-        title: alertMessage,
+        title: `${missingItems.join(", ")} 항목을 선택해 주세요.`,
         icon: 'warning',
       });
       return;
     }
 
-    const selectedTitle = title[selectedTitles.findIndex(Boolean)];
-    const selectedImage = image[selectedImages.findIndex(Boolean)];
-    const selectedContent = contents[selectedContents.findIndex(Boolean)];
+    const selectedTitle = title[getSelectedIndex(selectedTitles)];
+    const selectedImage = image[getSelectedIndex(selectedImages)];
+    const selectedContent = contents[getSelectedIndex(selectedContents)];
 
     Swal.fire({
       title: "리포트 생성 성공 o(〃＾▽＾〃)o",
@@ -67,17 +93,11 @@ function CreateReport() {
     setShowPreview(true);
   };
 
-  const handleClosePreview = () => {
-    setShowPreview(false);
-  };
+  const handleClosePreview = () => setShowPreview(false);
 
-  const handleSelect = (index, setSelectedState, selectedState) => {
-    setSelectedState(prev => prev.map((item, i) => (i === index ? !selectedState[i] : false)));
+  const handleSelect = (index, setSelectedState) => {
+    setSelectedState((prev) => prev.map((item, i) => (i === index ? !item : false)));
   };
-
-  const handleTitleSelect = (index) => handleSelect(index, setSelectedTitles, selectedTitles);
-  const handleImageSelect = (index) => handleSelect(index, setSelectedImages, selectedImages);
-  const handleContentSelect = (index) => handleSelect(index, setSelectedContents, selectedContents);
 
   return (
     <div className="create-report-container">
@@ -87,7 +107,7 @@ function CreateReport() {
           <div
             key={index}
             className={`grid-item title ${selectedTitles[index] ? 'selected' : ''}`}
-            onClick={() => handleTitleSelect(index)}
+            onClick={() => handleSelect(index, setSelectedTitles)}
           >
             {item}
           </div>
@@ -95,14 +115,16 @@ function CreateReport() {
 
         <div className="grid-label">Image</div>
         {image.map((imgSrc, index) => (
-          <div
-            key={index}
-            className={`grid-item image ${selectedImages[index] ? 'selected' : ''}`}
-            onClick={() => handleImageSelect(index)}
-          >
-            <img src={imgSrc} alt={`Report ${index + 1}`} className="image-content" key={imgSrc} />
-            {selectedImages[index] && <div className="overlay"></div>}
-          </div>
+          imgSrc && (
+            <div
+              key={index}
+              className={`grid-item image ${selectedImages[index] ? 'selected' : ''}`}
+              onClick={() => handleSelect(index, setSelectedImages)}
+            >
+              <img src={imgSrc} alt={`Report ${index + 1}`} className="image-content" />
+              {selectedImages[index] && <div className="overlay"></div>}
+            </div>
+          )
         ))}
 
         <div className="grid-label">Contents</div>
@@ -111,7 +133,7 @@ function CreateReport() {
             key={index}
             className={`grid-item content1 ${selectedContents[index] ? 'selected' : ''}`}
             onDoubleClick={() => handleDoubleClick(index)}
-            onClick={() => handleContentSelect(index)}
+            onClick={() => handleSelect(index, setSelectedContents)}
           >
             {item}
           </div>

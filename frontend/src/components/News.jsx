@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import '../css/News.css';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
-import pako from 'pako';  // pako import 추가
+import pako from 'pako';
+import { ClimbingBoxLoader } from "react-spinners";
 
 const News = ({ articles }) => {
   const [selectedArticles, setSelectedArticles] = useState([]);  // 선택된 기사 목록
@@ -11,6 +12,7 @@ const News = ({ articles }) => {
   const [articlesPerPage, setArticlesPerPage] = useState(6);  // 페이지 당 기사 수
   const [summaryData, setSummaryData] = useState([]);  // 요약 데이터 저장 (리스트로 초기화)
   const [isModalOpen, setIsModalOpen] = useState(false);  // 모달 열림 상태
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
   const navigate = useNavigate();
 
   // 화면 크기에 따른 페이지 당 기사 수 조절
@@ -73,8 +75,11 @@ const News = ({ articles }) => {
       return;
     }
 
+    setIsLoading(true); // 로딩 시작
+
     try {
       console.log("요약하기 요청 시작");
+      console.log("선택된 기사 데이터:", selectedArticles); // 선택된 기사 로그 출력
       const response = await fetch('http://localhost:8000/summarize/summarize-article', {
         method: 'POST',
         headers: {
@@ -87,6 +92,7 @@ const News = ({ articles }) => {
             cr_art_url: article.cr_art_url
           })) }),
       });
+      console.log("서버 응답 상태 코드:", response.status); // 서버 응답 상태 코드 확인
       console.log("type", typeof(articles.cr_art_id ));
       if (!response.ok) {
         throw new Error(`서버 응답 오류: ${response.status}`);
@@ -99,6 +105,13 @@ const News = ({ articles }) => {
       setIsModalOpen(true);  // 요약 데이터 설정 후 모달 열기
     } catch (error) {
       console.error('데이터 전송 오류:', error);
+      Swal.fire({
+        title: '요약 요청에 실패했습니다.',
+        text: error.message,
+        icon: 'error',
+      });
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
   const handleSave = async () => {
@@ -179,6 +192,8 @@ const News = ({ articles }) => {
       return;
     }
 
+    setIsLoading(true); // 로딩 시작
+
     try {
       const response = await fetch('http://localhost:8000/report/createReport', {
         method: 'POST',
@@ -215,6 +230,8 @@ const News = ({ articles }) => {
         text: error.message,
         icon: 'error',
       });
+    }finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
@@ -272,6 +289,13 @@ const News = ({ articles }) => {
           <button className="create-report-button1" onClick={handleCreateReport}>레포트 생성</button>
         </div>
       </div>
+      {/* 로딩 오버레이 */}
+      {isLoading && (
+        <div className="loading-overlay">
+          {/* <h1>잠시만 기다려주세요.</h1> */}
+          <ClimbingBoxLoader color="#51017F" size={50} />
+        </div>
+      )}
       {/* 요약된 데이터를 전달하며 Modal 컴포넌트 렌더링 */}
       {isModalOpen && <Modal summaryData={summaryData} onClose={() => setIsModalOpen(false)} />}
     </div>
