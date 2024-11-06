@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../css/News.css';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
+import pako from 'pako';  // pako import 추가
 
 const News = ({ articles }) => {
   const [selectedArticles, setSelectedArticles] = useState([]);  // 선택된 기사 목록
@@ -9,6 +11,7 @@ const News = ({ articles }) => {
   const [articlesPerPage, setArticlesPerPage] = useState(6);  // 페이지 당 기사 수
   const [summaryData, setSummaryData] = useState([]);  // 요약 데이터 저장 (리스트로 초기화)
   const [isModalOpen, setIsModalOpen] = useState(false);  // 모달 열림 상태
+  const navigate = useNavigate();
 
   // 화면 크기에 따른 페이지 당 기사 수 조절
   useEffect(() => {
@@ -98,6 +101,56 @@ const News = ({ articles }) => {
       console.error('데이터 전송 오류:', error);
     }
   };
+  const handleCreateReport = async () => {
+    const selectedArticleIds = selectedArticles.map(article => article.cr_art_id);
+
+    if (selectedArticleIds.length === 0) {
+      Swal.fire({
+        title: "기사를 선택해주세요",
+        text: "선택된 기사가 없습니다.",
+        icon: 'warning',
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8000/report/createReport', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: selectedArticleIds }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`서버 응답 오류: ${response.status}`);
+      }
+
+      const compressedData = await response.arrayBuffer();
+      const decompressedData = pako.inflate(new Uint8Array(compressedData));
+      const textDecoder = new TextDecoder('utf-8');
+      const jsonString = textDecoder.decode(decompressedData);
+      const parsedData = JSON.parse(jsonString);
+      console.log(parsedData);
+
+
+      Swal.fire({
+        title: '레포트가 성공적으로 생성되었습니다',
+        icon: 'success',
+      });
+
+      navigate('/createreport', {
+        state:{parsedData}
+      }); // 페이지 이동
+    } catch (error) {
+      console.error("Error fetching compressed data:", error);
+      Swal.fire({
+        title: '레포트 생성에 실패했습니다',
+        text: error.message,
+        icon: 'error',
+      });
+    }
+  };
 
   return (
     <div className="news-container">
@@ -150,7 +203,7 @@ const News = ({ articles }) => {
         <div className="fixed-buttons">
           <button className="save-button">저장하기</button>
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button> {/* 요약하기 버튼 */}
-          <button className="create-report-button1">레포트 생성</button>
+          <button className="create-report-button1" onClick={handleCreateReport}>레포트 생성</button>
         </div>
       </div>
       {/* 요약된 데이터를 전달하며 Modal 컴포넌트 렌더링 */}
