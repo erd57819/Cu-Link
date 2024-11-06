@@ -101,6 +101,71 @@ const News = ({ articles }) => {
       console.error('데이터 전송 오류:', error);
     }
   };
+  const handleSave = async () => {
+    // 선택된 기사가 없는 경우 알림
+    if (selectedArticles.length === 0) {
+      Swal.fire({
+        title: "기사를 선택해주세요",
+        text: "저장할 기사를 선택해 주세요.",
+        icon: 'warning',
+      });
+      return;
+    }
+  
+    // sessionStorage에서 userId 가져오기
+    const userId = sessionStorage.getItem('userId');
+  
+    // userId가 없는 경우 로그인 요구
+    if (!userId) {
+      Swal.fire({
+        title: "로그인이 필요합니다",
+        text: "기사를 저장하려면 로그인이 필요합니다.",
+        icon: 'warning',
+      });
+      return;
+    }
+  
+    try {
+      // 서버로 기사 저장 요청
+      const response = await fetch(`http://localhost:3000/news/saved/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          articles: selectedArticles.map(article => ({
+            cr_art_id: article.cr_art_id,
+          })),
+        }),
+      });
+  
+      // 서버 응답 확인
+      if (!response.ok) {
+        // 서버 응답의 오류 상태 확인 (텍스트 응답 확인)
+        const errorMessage = await response.text();
+        throw new Error(`서버 응답 오류: ${response.status} - ${errorMessage}`);
+      }
+  
+      // 저장 완료 알림
+      Swal.fire({
+        title: "저장 완료",
+        text: "선택된 기사가 저장되었습니다.",
+        icon: 'success',
+      });
+  
+      // 저장 완료 후 선택된 기사 초기화
+      setSelectedArticles([]);
+    } catch (error) {
+      console.error('저장 요청 실패:', error);
+      Swal.fire({
+        title: "저장 실패",
+        text: "저장 중 오류가 발생했습니다. 다시 시도해 주세요.",
+        icon: 'error',
+      });
+    }
+  };
+  
   const handleCreateReport = async () => {
     const selectedArticleIds = selectedArticles.map(article => article.cr_art_id);
 
@@ -201,7 +266,7 @@ const News = ({ articles }) => {
           )}
         </div>
         <div className="fixed-buttons">
-          <button className="save-button">저장하기</button>
+          <button className="save-button"onClick={handleSave }>저장하기</button>
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button> {/* 요약하기 버튼 */}
           <button className="create-report-button1" onClick={handleCreateReport}>레포트 생성</button>
         </div>
