@@ -59,9 +59,9 @@ const MyReport = () => {
           navigation={true}
           modules={[Navigation, Autoplay]}
           className="myreport-slider"
-          spaceBetween={-30} // 슬라이드 간격 조정
-          slidesPerView="auto"
-          centeredSlides={true}
+          spaceBetween={0} // 슬라이드 간격을 0으로 설정
+          slidesPerView={3} // 한 번에 3개의 슬라이드 표시
+          centeredSlides={true} // 가운데 슬라이드 중심 정렬
           loop={true}
           autoplay={{
             delay: 2500, // 슬라이드 전환 시간

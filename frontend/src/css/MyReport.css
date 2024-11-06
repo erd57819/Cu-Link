@@ -11,37 +11,46 @@
 
 .myreport-slider-section {
   margin-bottom: 40px;
-}
-
-.myreport-slider {
-  padding: 20px 0;
-  position: relative;
-  max-width: 1000px;
-  height: 380px;
-  margin: 0 auto;
-}
-
-/* 슬라이드 크기 조정 - 수정됨!!!!!! */
-.myreport-swiper-slide {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  flex-shrink: 0 !important; /* 추가: 슬라이드가 수축하지 않도록 강제 설정 */
 }
 
-/* 중앙 카드의 양옆 카드 크기 */
-.myreport-swiper-slide-next .myreport-card,
-.myreport-swiper-slide-prev .myreport-card {
-  transform: scale(0.85); /* 2번과 4번 카드 크기 */
-  opacity: 0.7;
+.myreport-slider {
+  width: 100%;
+  max-width: 1000px;
+  padding: 20px 0;
+  position: relative;
+  margin: 0 auto;
+  overflow: visible; /* 오버플로우를 보여주도록 설정 */
 }
 
-/* 바깥쪽 카드 크기 (1번과 5번) - 수정됨!!!!!! */
-.myreport-swiper-slide-next ~ .myreport-swiper-slide .myreport-card,
-.myreport-swiper-slide-prev ~ .myreport-swiper-slide .myreport-card {
-  transform: scale(0.7); /* 1번과 5번 카드 크기 */
-  opacity: 0.5;
+.myreport-swiper-slide {
+  width: auto !important;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  overflow: visible; /* 슬라이드 자체에서도 오버플로우를 보여줌 */
+}
+
+/* 모든 카드에 기본 축소 및 투명도 적용 */
+.myreport-swiper-slide .myreport-card {
+  transform: scale(0.8);
+  opacity: 0.6;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.swiper-slide-active .myreport-card {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.swiper-slide-prev .myreport-card,
+.swiper-slide-next .myreport-card {
+  transform: scale(0.9);
+  opacity: 0.8;
 }
 
 .myreport-card {
@@ -49,14 +58,14 @@
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   overflow: hidden;
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
   text-align: left;
-  width: 280px; /* 카드 기본 크기 */
+  width: 280px;
   height: 340px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
+  margin: 0;
 }
 
 .myreport-card:hover {
@@ -167,7 +176,8 @@
 }
 
 /* 화살표 버튼 스타일 */
-.swiper-button-next, .swiper-button-prev {
+.swiper-button-next,
+.swiper-button-prev {
   color: #6200ee !important;
   font-size: 24px;
   width: 40px;
