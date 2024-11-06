@@ -5,7 +5,7 @@ import requests
 from PIL import Image
 from translate import Translator
 from db.settings import huggingface_token
-
+import time  # 시간 대기용 모듈 추가
 # Hugging Face 로그인
 try:
     login(token=huggingface_token, add_to_git_credential=True)
@@ -29,6 +29,7 @@ def translate_kr_to_en(keyword_ko):
 
 def query(payload):
     response = requests.post(API_URL, headers=headers, json=payload)
+    print("이미지생성 확인 메세지 ", response)
     return response.content
 
 
@@ -43,11 +44,14 @@ def generate_images(keyword, styles):
             images.append((style, image_bytes))
         else:
             print(f"이미지 생성 실패 스타일 : {style}")
+        # 각 이미지 생성 후 1분 대기 - 동시 생성 요청으로 인한 제한으로 추가함
+        # print("1분 대기 중...")
+        # # time.sleep(60)    
     return images
 
 # 이미지를 생성하고 FastAPI로 전송하는 함수
 def generate_images_and_send(translated_text):
-    print("이미지 생성 시작 함수 시작")
+    print("이미지 생성 함수 시작")
     styles = ["watercolor", "comic", "photorealistic"]  # 스타일 리스트
 
     # 번역된 키워드를 키워드 변수에 할당
@@ -84,4 +88,5 @@ def generate_images_and_send(translated_text):
         except Exception as e:
             print(f"이미지 구성 에러 {style}: {e}")
             continue  # 다음 이미지 처리로 이동
+    print("이미지 생성 완료")
     return images

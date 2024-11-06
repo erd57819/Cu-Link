@@ -8,6 +8,8 @@ from db.settings import openai_key
 # API 키 설정
 openai.api_key = openai_key # open_ai 키
 
+
+#===================== 요약 문장 생성 함수 =======================
 def createReport_text(report_contents):
     report_content = report_contents[0]
         # 프롬프트 설정: 보고서에서 핵심 문장 생성 요청
@@ -39,14 +41,12 @@ def createReport_text(report_contents):
         request_timeout=10  # 타임아웃을 10초로 설정
     )
 
-
     # 생성된 핵심 문장
     image_to_text = summary_response['choices'][0]['message']['content'].strip()
-    print(image_to_text)
-    generate_images_and_send(image_to_text)
+    # print(image_to_text)
     return image_to_text
 
-
+#===================== 레포트 생성 함수 =======================
 def createReport_openAI(article_contents):
     try:
         reports = []
