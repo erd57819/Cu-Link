@@ -8,8 +8,6 @@ from db.settings import openai_key
 # API 키 설정
 openai.api_key = openai_key # open_ai 키
 
-
-#===================== 요약 문장 생성 함수 =======================
 def createReport_text(report_contents):
     report_content = report_contents[0]
         # 프롬프트 설정: 보고서에서 핵심 문장 생성 요청
@@ -46,11 +44,11 @@ def createReport_text(report_contents):
     # print(image_to_text)
     return image_to_text
 
-#===================== 레포트 생성 함수 =======================
+
 def createReport_openAI(article_contents):
     try:
         reports = []
-        for art_content in article_contents:
+        for _ in range(3):
             # 간결한 프롬프트 설정
             prompt_text = f"""
             당신은 능숙한 분석가이자 보고서 작성자로, 여러 개의 기사에서 핵심 내용을 파악하고 이를 바탕으로 새로운 인사이트를 도출하여 보고서를 작성하는 역할을 맡고 있습니다.
@@ -62,7 +60,7 @@ def createReport_openAI(article_contents):
             3. **새로운 인사이트**: 기사에서 발견한 공통된 트렌드, 패턴, 문제점 등을 바탕으로 새롭거나 주목할 만한 인사이트를 제공합니다.
             4. **보고서 구성**: 요약, 분석, 인사이트의 순서로 구성하여 완결된 형태의 보고서를 작성하세요. 보고서 내 각 문단은 일관성 있고 자연스럽게 연결되도록 작성합니다.
             5. **구체적 사례 및 데이터**: 기사에서 제공하는 수치나 구체적인 사례가 있다면 이를 반영하여 인사이트를 구체화하세요.
-            기사 목록:{art_content}
+            기사 목록:{article_contents}
             
             보고서:
             """
