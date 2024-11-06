@@ -17,8 +17,11 @@ def createReport(request: ArticleIdList):
         # ids가 리스트인지 확인하고, 아니라면 오류 반환
         if not isinstance(request.ids, list):
             raise HTTPException(status_code=400, detail="ids 필드는 리스트 형식이어야 합니다.")
+        print("Received IDs:", request.ids)
+
         print("레포트 생성 시작")
         comprs_data = createReport_services(request.ids)
+        print(comprs_data)
         
         # 리액트로 전달할 값
         print("레포트 전송 완료")
