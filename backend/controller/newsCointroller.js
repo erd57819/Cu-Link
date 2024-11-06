@@ -2,8 +2,8 @@ const conn = require('../config/db'); // DB 연결 모듈 불러오기
 
 // 사용자가 저장한 기사 정보를 조회하는 함수
 exports.getSavedArticles = (req, res) => {
-    const userId = req.params.userId; // 임시로 userId를 하드코딩. 실제로는 req.query.userId로 받을 수 있음
-    console.log(req.params.userId);
+    const userId = req.session.userId // 임시로 userId를 하드코딩. 실제로는 req.query.userId로 받을 수 있음
+    console.log(req.session);
     
 
     if (!userId) {

@@ -1,3 +1,4 @@
+// MySearchBar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import '../css/MySearchBar.css';
 import axios from 'axios';
@@ -10,17 +11,18 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
   const [checkedConditions, setCheckedConditions] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [selectedOption, setSelectedOption] = useState('articles'); // 선택된 옵션 상태 추가
-  const selectRef = useRef(null); // useRef를 사용해 select 요소에 접근
+  const [selectedOption, setSelectedOption] = useState('articles');
+  const selectRef = useRef(null);
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/news/saved');
-        setArticles(response.data);
-        setFilteredArticles(response.data); // 초기 필터링 설정
+        const response = await axios.get('http://localhost:3000/news/saved', { withCredentials: true });
+        setArticles(response.data || []);
+        setFilteredArticles(response.data || []);
       } catch (error) {
         console.error('뉴스 데이터를 가져오는데 실패했습니다:', error);
+        setArticles([]);
       }
     };
 
@@ -44,14 +46,12 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
   const filterArticles = () => {
     let filtered = articles;
 
-    // 키워드 필터링
     if (keyword) {
       filtered = filtered.filter(article =>
         article.art_content && article.art_content.toLowerCase().includes(keyword.toLowerCase())
       );
     }
 
-    // 조건 필터링 (AND 조건)
     conditions.forEach((condition, index) => {
       if (checkedConditions[index] && condition) {
         filtered = filtered.filter(article =>
@@ -60,7 +60,6 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
       }
     });
 
-    // 조건 필터링 (OR 조건)
     const orConditions = conditions.filter((_, index) => !checkedConditions[index]);
     if (orConditions.length > 0) {
       filtered = filtered.filter(article =>
@@ -70,7 +69,6 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
       );
     }
 
-    // 날짜 필터링
     if (startDate && endDate) {
       filtered = filtered.filter(article => {
         const articleDate = new Date(article.art_date);
@@ -78,7 +76,6 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
       });
     }
 
-    // 필터링된 결과를 상위 컴포넌트로 전달
     setFilteredArticles(filtered);
   };
 
@@ -88,26 +85,23 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
 
   const currentDate = new Date().toISOString().split('T')[0];
 
-  // SVG 클릭 시 select를 열어주는 함수
   const handleSvgClick = () => {
     if (selectRef.current) {
-      selectRef.current.focus(); // select에 포커스를 줌으로써 드롭다운을 열 수 있도록 함
+      selectRef.current.focus();
     }
   };
 
   return (
     <div className="layout1">
-      {/* 왼쪽 빈 공간 */}
       <div className="left-space1"></div>
       <div className="search-bar1">
-        {/* 선택 옵션 (기사 또는 레포트) */}
         <div className="select-option1">
           <select
             ref={selectRef}
             value={selectedOption}
             onChange={(e) => {
               setSelectedOption(e.target.value);
-              setView(e.target.value); // 선택한 옵션에 따라 화면 전환
+              setView(e.target.value);
             }}
             className="search-select1"
           >
@@ -127,7 +121,6 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
           </svg>
         </div>
 
-        {/* 첫 번째 키워드와 체크박스 UI */}
         <div className="condition-input1">
           <input
             type="checkbox"

@@ -21,7 +21,7 @@ const Login = () => {
     };
 
     try {
-      let res = await axios.post('http://localhost:3000/auth/login', logMember);
+      let res = await axios.post('http://localhost:3000/auth/login', logMember,{withCredentials:true});
 
       if (res.data.result === 'success') {
         Swal.fire({

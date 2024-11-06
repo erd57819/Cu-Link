@@ -29,13 +29,15 @@ exports.login = (req, res) => {
         }
 
         if (rows.length > 0) {
+            req.session.userId = rows[0].user_id;
+            console.log(req.session.userId);
+            
             res.send({ result: 'success', user_id: rows[0].user_id });
         } else {
             res.status(200).json({ result: 'fail', message: '아이디 또는 비밀번호가 잘못되었습니다.' });
         }
     });
 };
-
 // 비밀번호 찾기(재설정) 함수
 exports.resetPassword = (req, res) => {
     const { id, question, answer, newPassword } = req.body;
