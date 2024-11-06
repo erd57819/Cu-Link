@@ -129,6 +129,7 @@ const News = ({ articles }) => {
       // 서버로 기사 저장 요청
       const response = await fetch(`http://localhost:3000/news/saved/${userId}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
