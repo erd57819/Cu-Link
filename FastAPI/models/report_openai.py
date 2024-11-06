@@ -8,7 +8,8 @@ from db.settings import openai_key
 # API 키 설정
 openai.api_key = openai_key # open_ai 키
 
-def createReport_text(report_content):
+def createReport_text(report_contents):
+    report_content = report_contents[0]
         # 프롬프트 설정: 보고서에서 핵심 문장 생성 요청
     summary_prompt = f"""
     당신은 능숙한 시각적 설명 작성자로, 보고서에서 핵심 내용을 파악하고 이를 바탕으로 이미지 생성을 위한 구체적인 문장을 생성하는 역할을 맡고 있습니다.
@@ -76,14 +77,11 @@ def createReport_openAI(article_contents):
                 max_tokens=700,  # max_tokens의 경우 700~1000 사이로 테스트해 가며 적절히 조정할 예정
                 temperature=0.6
             )
-            if len(reports) == 1 :
-                img_txt = createReport_text(reports)
             # 생성된 보고서
             reports.append(response['choices'][0]['message']['content'].strip())
         print("최종 레포트 길이",len(reports))
-
+        img_txt = createReport_text(reports)
         return { "reports":reports,"img_txt" : img_txt }
-    
     except Exception as e:
         print(f"보고서 부분 에러 : {e}" )
 
