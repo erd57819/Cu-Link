@@ -1,134 +1,148 @@
 /* 전체 레이아웃을 좌우로 나누는 Flexbox */
 .layout {
   display: flex;
-  width: 100%; /* 전체 화면 너비 */
-  height: 100%; /* 전체 화면 높이 */
+  width: 100%;
+  height: 100%; /* 화면 전체 높이 */
 }
 
 /* 왼쪽 빈 공간 */
 .left-space {
-  background-color: white; /* 필요에 따라 배경 색상 설정 가능 */
-  width: 100%;
+  background-color: white;
+  width: 50%; /* 화면의 절반을 차지 */
 }
 
 /* 오른쪽 검색바가 들어갈 공간 */
 .search-bar {
+  margin-top: 3rem;
   background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  height: 100%; /* 상단바를 제외한 높이 설정 */
+  width: 50%; /* 화면의 절반을 차지 */
+  height: 90%; /* 화면의 90% 높이 사용 */
   box-sizing: border-box;
-  padding: 1rem;
+  padding: 1rem; /* 패딩을 넉넉하게 */
+  border: 1px solid #d3d3d3; /* 회색 테두리 */
+  border-radius: 15px; /* 둥근 모서리 */
+  position: relative;
+  justify-content: flex-start; /* 상단 정렬 */
 }
 
-/* 첫 번째 검색창 크기 조절 */
-.search-input.keyword-first {
-  width: 12rem; /* 다른 검색창과 동일한 너비 설정 */
-  padding: 0.25rem;
-  border: 1px solid #51017F;
-  border-radius: 1.25rem;
-  font-size: 1.125rem;
-  text-align: center; /* 텍스트 중앙 정렬 */
-  box-sizing: border-box; /* 패딩을 포함한 박스 모델로 설정 */
-  margin-right: 0; /* 불필요한 마진 제거하여 정렬 문제 해결 */
+/* 검색 섹션 */
+.search-section {
+  align-self: center;
+  margin-bottom: 1rem; /* 검색창과 기간 섹션 간 간격 */
 }
 
-/* 다른 검색창들의 너비 */
+/* 날짜 섹션 */
+.date-section {
+  align-self: center;
+  text-align: center;
+  margin-bottom: 1rem; /* 날짜 섹션과 검색 버튼 간 간격 */
+}
+
+/* 검색 버튼 섹션 */
+.search-button-section {
+  align-self: center;
+  margin-top: auto; /* 하단 고정 */
+}
+
+/* 검색창과 ? 버튼을 함께 수평 정렬 */
+.search-input-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+/* 검색창 */
 .search-input {
-  width: 12rem; /* 모든 검색 입력 필드의 너비를 동일하게 설정 */
-  padding: 0.25rem; /* 패딩 설정을 동일하게 유지 */
+  width: 10rem;
+  padding: 0.5rem;
   border: 1px solid #51017F;
   border-radius: 1.25rem;
-  font-size: 1.125rem;
-  text-align: center; /* 텍스트 중앙 정렬 */
-  box-sizing: border-box; /* 패딩을 포함한 박스 모델로 설정 */
+  font-size: 0.8rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* 툴팁 버튼 - 원형 테두리 */
+.tooltip-button {
+  background: none;
+  border: 1px solid #51017F;
+  color: #51017F;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 50%; /* 원형 모양 */
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+}
+
+/* 툴팁 */
+.tooltip {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.5rem); /* 검색창의 오른쪽에 여백을 두고 위치 */
+  transform: translateY(-50%);
+  background-color: #fff;
+  color: #333;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  width: 17rem; /* 툴팁 너비 고정 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  text-align: left;
+  white-space: normal; /* 텍스트 줄 바꿈 허용 */
+}
+
+.tooltip-button:hover + .tooltip {
+  display: block;
 }
 
 /* 구분선 */
 .separator {
-  width: 100%; /* 구분선 너비를 100%로 설정 */
+  width: 80%;
   height: 1px;
   background-color: #51017F;
-  margin: 16px 0;
-}
-
-/* 조건 입력 필드 */
-.condition-input {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  justify-content: flex-start; /* 요소를 왼쪽으로 정렬하여 정렬 문제 해결 */
-}
-
-/* 조건 추가 버튼 */
-.add-condition-button {
-  background-color: #fff;
-  color: #51017F;
-  border: 1px solid #51017F;
-  border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.5rem;
-  cursor: pointer;
+  margin: 0.1rem 0;
 }
 
 /* 날짜 범위 */
 .date-range {
-  align-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.5rem;
+  gap: 0.3rem;
 }
 
 .date-input {
-  width: 100%;
-  max-width: 100%;
-  height: 1.875rem;
+  width: 5rem; /* 날짜 입력창 너비 축소 */
+  height: 1.5rem;
   border: 1px solid #51017F;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 0.7rem;
   text-align: center;
-  margin-bottom: 1rem;
 }
 
 /* 검색 버튼 */
 .search-submit {
-  width: 15.625rem;
-  max-width: 15.625rem;
-  height: 2.5rem;
+  width: 12rem;
+  height: 2.2rem;
   background-color: #51017F;
   color: #fff;
   border: none;
   border-radius: 20px;
-  font-size: 18px;
+  font-size: 1rem;
   cursor: pointer;
   text-align: center;
-  align-self: center;
-  margin-top: 1rem;
 }
 
 .search-submit:hover {
   background-color: #5d3474;
-}
-
-/* 조건 체크박스 */
-.condition-checkbox {
-  cursor: pointer;
-  margin-right: 0.5rem;
-}
-
-/* 조건 삭제 버튼 */
-.delete-condition-button {
-  background-color: transparent;
-  border: none;
-  color: #51017F;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-left: 0.5rem;
 }
