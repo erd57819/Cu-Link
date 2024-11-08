@@ -85,10 +85,39 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
     setFilteredArticles(filtered);
   };
 
-  const handleSearch = () => {
-    filterArticles();
-  };
+  const handleSearch = async () => {
+    const { andKeywords, orKeywords, notKeywords } = parseKeywords(keyword);
+    const dateValues = [startDate, endDate].filter(Boolean);
 
+    // 콘솔에 파싱된 데이터 확인
+    console.log("AND 조건:", andKeywords);
+    console.log("OR 조건:", orKeywords);
+    console.log("NOT 조건:", notKeywords);
+    console.log("날짜 범위:", dateValues);
+
+    // 검색 필터링 함수 호출
+    filterArticles();
+
+    // FastAPI 엔드포인트로 데이터 전송
+    try {
+      const response = await fetch('http://localhost:8000/search/keywords', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          andKeywords,
+          orKeywords,
+          notKeywords,
+          dateRange: dateValues,
+        }),
+      });
+      const data = await response.json();
+      console.log('서버 응답:', data);
+    } catch (error) {
+      console.error('서버 요청 중 오류 발생:', error);
+    }
+  };
   const currentDate = new Date().toISOString().split('T')[0];
   const minDate = "2024-11-01"; // 최소 선택 가능한 날짜 설정
 
