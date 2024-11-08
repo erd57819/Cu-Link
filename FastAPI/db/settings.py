@@ -18,6 +18,9 @@ firebase_key = os.getenv('FIREBASE_SERVICE_ACCOUNT_PATH')
 
 #================== openAI_key ==================
 openai_key = os.getenv("OPEN_API_KEY")
+summary_openai_key = os.getenv("SUMMARY_OPEN_API_KEY")
+report_openai_key = os.getenv("REPORT_OPEN_API_KEY")
+chatbot_openai_key = os.getenv("CHATBOT_OPEN_API_KEY")
 
 #================= HUGGINGFACE ==================
 huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
