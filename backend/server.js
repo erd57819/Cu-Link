@@ -7,19 +7,22 @@ const sumRouter = require("./routes/sumRouter");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require('express-session');
-
+const fileStore = require('session-file-store')(session);
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.use(cors({
-  origin: 'http://localhost:3001', // 허용할 클라이언트 주소 (프론트엔드 서버)
-  credentials: true, // 쿠키를 포함한 요청 허용
-}));
 
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
+  store: new fileStore(),
   cookie: { secure: false } // localhost에서 개발 중이라면 secure는 false로 설정합니다.
+}));
+
+
+app.use(cors({
+  origin: 'http://localhost:3001', // 허용할 클라이언트 주소 (프론트엔드 서버)
+  credentials: true, // 쿠키를 포함한 요청 허용
 }));
 
 // 경로설정

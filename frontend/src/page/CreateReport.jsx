@@ -10,7 +10,7 @@ function CreateReport() {
   const parsedData = location.state?.parsedData;
   const [alertShown, setAlertShown] = useState(false); // 플래그 추가
 
-  const title = parsedData?.metadata.map((item) => item.cr_art_title) || [];
+  const title = parsedData?.report_titles.map((item) => item) || [];
   const image = parsedData?.report_images.map((item, index) => {
     const cleanedImageData = item.image_data.trim();
     

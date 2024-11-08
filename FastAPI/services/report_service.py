@@ -52,6 +52,7 @@ def createReport_services(id_list: list):
             # 바이너리 처리를 위해 딕셔너리로 묶어 주기
             combined_data = {
                 'metadata' : conv_metadata,
+                'report_titles':report_data['titles'],
                 'report_data' : report_data["reports"],
                 'report_images' : en_report_images,
                 'created_at': datetime.now().isoformat(),
