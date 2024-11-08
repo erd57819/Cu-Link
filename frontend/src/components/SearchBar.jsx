@@ -104,7 +104,7 @@ const SearchBar = ({ setFilteredArticles }) => {
 
     // FastAPI 엔드포인트로 데이터 전송
     try {
-      const response = await fetch('http://localhost:8000/search/keywords', {
+      const response = await fetch('http://localhost:8000/keywords', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,6 +124,7 @@ const SearchBar = ({ setFilteredArticles }) => {
   };
 
   const currentDate = new Date().toISOString().split('T')[0];
+  const minDate = "2024-11-01"; // 최소 선택 가능한 날짜 설정
 
   return (
     <div className="layout">
@@ -163,7 +164,8 @@ const SearchBar = ({ setFilteredArticles }) => {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              max={currentDate}
+              min={minDate}       // 최소 선택 날짜 설정
+              max={currentDate}    // 최대 선택 날짜는 오늘 날짜
               className="date-input"
             />
             <span> - </span>
@@ -171,8 +173,8 @@ const SearchBar = ({ setFilteredArticles }) => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              min={startDate}
-              max={currentDate}
+              min={minDate}       // 최소 선택 날짜 설정
+              max={currentDate}    // 최대 선택 날짜는 오늘 날짜
               className="date-input"
             />
           </div>
