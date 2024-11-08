@@ -49,7 +49,7 @@ function Baner() {
     <div className='banner'>
       <div className='left-item'>
         <h2><Link to={'/'} className='link'>Cu-Link</Link></h2>
-        <h5>레포트가 쉬워지다</h5>
+        <h5><Link to={'/'} className='link'>레포트가 쉬워지다</Link></h5>
       </div>
       <div className='mid-item'>
         <span><Link to={'/intro'} className='link'>사용법</Link></span>
