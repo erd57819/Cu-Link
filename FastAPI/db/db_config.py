@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 import pymysql
 from pymysql.cursors import DictCursor
-
+from db.settings import database_config
 # 포트번호는 정수로 받아야 함
 
 # MySQL 연결 설정

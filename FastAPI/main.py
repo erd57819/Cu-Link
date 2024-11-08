@@ -12,7 +12,8 @@ from routers.summarizationRouter import router as summarization_router
 from routers.createReportRouter import router as createReport_router
 # 검색 라우터
 from routers.searchRouter import router as searchRouter
-
+# 뉴스데이터 라우터
+from routers.articlesRouter import router as articles_router
 
 # 라우터 초기화
 app = FastAPI()
@@ -32,6 +33,8 @@ app.include_router(summarization_router, prefix="/summarize")
 app.include_router(createReport_router, prefix="/report") 
 # 검색 라우터 
 app.include_router(searchRouter, prefix="/search") 
+# articles 라우터 등록 
+app.include_router(articles_router) 
 
 @app.get("/") # fastapi주소로 진입시 
 async def root():
