@@ -16,6 +16,9 @@ __pycache__/
 
 *.pyc
 model/
-faiss_index_new.bin
+
 news-data01-firebase-adminsdk-g4sha-ac12e342a2.json
-fine_tuned_model/
+
+faiss_index_new.bin
+
+fine_tuned_model
