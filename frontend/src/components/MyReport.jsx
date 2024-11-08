@@ -4,8 +4,8 @@ import '../css/MyReport.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/autoplay'; // Autoplay CSS 추가
-import { Navigation, Autoplay } from 'swiper/modules'; // Autoplay 모듈 임포트
+import 'swiper/css/autoplay';
+import { Navigation, Autoplay } from 'swiper/modules';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 
 const MyReport = () => {
@@ -15,8 +15,8 @@ const MyReport = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/news/reports');
-        setArticles(response.data);
+        const response = await axios.get('http://localhost:3000/report/getreport');
+        setArticles([response.data]); // 단일 리포트를 배열로 설정하여 컴포넌트 내에서 처리 가능하게 함
       } catch (error) {
         console.error('데이터를 가져오는 데 오류가 발생했습니다:', error);
       }
@@ -59,12 +59,12 @@ const MyReport = () => {
           navigation={true}
           modules={[Navigation, Autoplay]}
           className="myreport-slider"
-          spaceBetween={0} // 슬라이드 간격을 0으로 설정
-          slidesPerView={3} // 한 번에 3개의 슬라이드 표시
-          centeredSlides={true} // 가운데 슬라이드 중심 정렬
+          spaceBetween={0}
+          slidesPerView={3}
+          centeredSlides={true}
           loop={true}
           autoplay={{
-            delay: 2500, // 슬라이드 전환 시간
+            delay: 2500,
             disableOnInteraction: false,
           }}
         >
