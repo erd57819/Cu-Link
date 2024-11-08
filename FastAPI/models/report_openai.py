@@ -1,12 +1,10 @@
-# 임시 모델 파일
 import openai
 from langchain_community.llms import OpenAI
 from models.textToImage import generate_images_and_send
 from db.settings import openai_key
 
-
 # API 키 설정
-openai.api_key = openai_key # open_ai 키
+openai.api_key = openai_key  # OpenAI API 키
 
 def createReport_text(report_contents):
     report_content = report_contents[0]
@@ -27,7 +25,7 @@ def createReport_text(report_contents):
     이미지 생성에 적합한 핵심 문장:
     """
 
-    # OpenAI API 호출: 핵심 문장 생성
+    # OpenAI API 호출
     summary_response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -36,35 +34,81 @@ def createReport_text(report_contents):
         ],
         max_tokens=90,
         temperature=0.5,
-        request_timeout=10  # 타임아웃을 10초로 설정
+        request_timeout=10
     )
 
-    # 생성된 핵심 문장
-    image_to_text = summary_response['choices'][0]['message']['content'].strip()
-    # print(image_to_text)
-    return image_to_text
+    # 응답 유효성 확인
+    response_content = summary_response['choices'][0].get('message', {}).get('content', '').strip()
+    if not response_content:
+        raise ValueError("OpenAI 응답에서 유효한 내용을 찾을 수 없습니다.")
+    return response_content
 
 
 def createReport_openAI(article_contents):
     try:
-        reports = []
-        for _ in range(3):
-            # 간결한 프롬프트 설정
-            prompt_text = f"""
-            당신은 능숙한 분석가이자 보고서 작성자로, 여러 개의 기사에서 핵심 내용을 파악하고 이를 바탕으로 새로운 인사이트를 도출하여 보고서를 작성하는 역할을 맡고 있습니다.
+        # 3개의 프롬프트 템플릿
+        prompt_text_templates = [
+            f"""
+            You're a skilled analyst and report writer, and your role is to identify key takeaways from multiple articles and draw new insights from them to create a report.
 
-            다음의 기사를 바탕으로 중요한 정보와 공통된 이슈, 혹은 주목할 만한 패턴을 발견하고, 이를 통해 새로운 관점과 분석을 제공합니다. 보고서를 작성할 때 다음 사항을 유의해 주세요:
-            
-            1. **요약**: 각 기사의 핵심 내용을 간략히 요약하세요.
-            2. **공통점 및 차이점**: 각 기사 간의 주요 공통점과 차이점을 비교 분석하여 도출하세요.
-            3. **새로운 인사이트**: 기사에서 발견한 공통된 트렌드, 패턴, 문제점 등을 바탕으로 새롭거나 주목할 만한 인사이트를 제공합니다.
-            4. **보고서 구성**: 요약, 분석, 인사이트의 순서로 구성하여 완결된 형태의 보고서를 작성하세요. 보고서 내 각 문단은 일관성 있고 자연스럽게 연결되도록 작성합니다.
-            5. **구체적 사례 및 데이터**: 기사에서 제공하는 수치나 구체적인 사례가 있다면 이를 반영하여 인사이트를 구체화하세요.
-            기사 목록:{article_contents}
-            
-            보고서:
+            Based on the following articles, you've identified important information, common issues, or noteworthy patterns that will provide new perspectives and analysis. The title of the report should be on the first line, and the body of the report should flow naturally with no line breaks.
+
+            Here are a few things to keep in mind when writing your report:
+            1. In the first line, write a concise, one-line title that captures the focus of the report. **The title must not exceed 20 words.** Ensure that the title is clear, impactful, and uses relevant keywords.
+            2. The body of the report should flow logically and smoothly in the order of introduction, main content, and conclusion, without separate subheadings.
+            3. If you have specific numbers or examples from your article, use them to flesh out your insights.
+            4. Maintain an analytical, objective tone and include specific figures or data to lend credibility to your report.
+            5. At the end of your report, restate the most important takeaways from the topic to emphasize it.
+            6. Write the report in Korean.
+
+            Article list:
+            {article_contents}
+
+            Report:
+            """,
+            f"""
+            As a professional analyst, your task is to provide an insightful report based on the following articles.
+
+            Articles contain information about key trends, patterns, or common issues. Your report should synthesize these insights into a comprehensive, engaging report. The title should appear on the first line, and the body should flow naturally without line breaks or subheadings.
+
+            Remember:
+            1. Write a concise, impactful one-line title as the first line of the report. **The title must be 20 words or less.** Focus on making the title clear and engaging, with keywords that summarize the report.
+            2. The body of the report should be organized logically and flow in the order of introduction, main content, and conclusion.
+            3. Maintain a professional tone, using specific examples, figures, or patterns observed in the articles.
+            4. At the conclusion of your report, summarize the most significant findings succinctly.
+            5. Write the report in Korean.
+
+            Article list:
+            {article_contents}
+
+            Report:
+            """,
+            f"""
+            You are tasked with writing a professional report based on multiple articles. Your report should provide a detailed analysis, focusing on notable patterns, figures, and insights.
+
+            Key points to remember:
+            1. The first line should include a concise title summarizing the report in a single, impactful sentence. **Ensure that the title is no more than 20 words long.** The title should highlight the report's main focus and attract attention.
+            2. The body of the report should follow a logical structure, flowing smoothly from introduction to main content to conclusion.
+            3. Cite specific data or examples to support your analysis, where relevant.
+            4. End the report with a summary of key takeaways.
+            5. Write the report in Korean.
+
+            Article list:
+            {article_contents}
+
+            Report:
             """
+        ]
 
+
+
+        # 보고서를 저장할 리스트
+        reports = []
+        report_titles = []
+        report_contents = []
+
+        # 각 프롬프트로 보고서 생성
+        for i, prompt_text in enumerate(prompt_text_templates):
             # OpenAI API 호출
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
@@ -72,14 +116,39 @@ def createReport_openAI(article_contents):
                     {"role": "system", "content": "You are a helpful assistant for analyzing and summarizing news articles."},
                     {"role": "user", "content": prompt_text}
                 ],
-                max_tokens=700,  # max_tokens의 경우 700~1000 사이로 테스트해 가며 적절히 조정할 예정
-                temperature=0.6
+                max_tokens=2500,
+                temperature=0.65
             )
-            # 생성된 보고서
-            reports.append(response['choices'][0]['message']['content'].strip())
-        print("최종 레포트 길이",len(reports))
-        img_txt = createReport_text(reports)
-        return { "reports":reports,"img_txt" : img_txt }
-    except Exception as e:
-        print(f"보고서 부분 에러 : {e}" )
 
+            # 응답 유효성 확인
+            response_content = response['choices'][0].get('message', {}).get('content', '').strip()
+            if not response_content:
+                raise ValueError(f"프롬프트 {i+1}의 OpenAI 응답에서 유효한 내용을 찾을 수 없습니다.")
+
+            # 보고서를 저장
+            reports.append(response_content)
+
+            # 제목과 본문 분리
+            title_end_idx = response_content.find("\n")
+            report_title = response_content[:title_end_idx].strip()
+            report_content = response_content[title_end_idx:].strip()
+
+            report_titles.append(report_title)
+            report_contents.append(report_content)
+
+            # **디버깅용 출력** - 제목 확인
+            print(f"프롬프트 {i+1}로 생성된 제목: {report_title}")
+
+        # 이미지 생성 텍스트
+        img_txt = createReport_text(report_contents)
+
+        # 결과 반환
+        return {
+            "reports": reports,
+            "titles": report_titles,
+            "img_txt": img_txt
+        }
+
+    except Exception as e:
+        print(f"보고서 생성 중 에러 발생: {e}")
+        return {"error": str(e)}
