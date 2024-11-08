@@ -23,6 +23,7 @@ exports.login = (req, res) => {
     let sql = 'SELECT * FROM Users WHERE user_id = ? AND user_pw = ?';
 
     conn.query(sql, [id, pw], (err, rows) => {
+        console.log("데이터111111111111111222222222222222");
         if (err) {
             console.error('로그인 오류 발생:', err);
             return res.status(500).send({ result: 'fail', message: '서버 오류가 발생했습니다.' });
@@ -30,9 +31,12 @@ exports.login = (req, res) => {
 
         if (rows.length > 0) {
             req.session.userId = rows[0].user_id;
-            console.log(req.session.userId);
+        
             
-            res.send({ result: 'success', user_id: rows[0].user_id });
+            req.session.save(function () {
+                res.send({ result: 'success', user_id: rows[0].user_id });
+            })
+            
         } else {
             res.status(200).json({ result: 'fail', message: '아이디 또는 비밀번호가 잘못되었습니다.' });
         }

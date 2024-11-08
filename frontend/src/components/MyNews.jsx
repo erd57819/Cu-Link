@@ -12,6 +12,8 @@ const MyNews = () => {
   const [savedArticles, setSavedArticles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [summaryData, setSummaryData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [articles, setArticles] = useState([]);
   const pageRange = 5;
 
   useEffect(() => {
@@ -24,6 +26,8 @@ const MyNews = () => {
   }, []);
 
   useEffect(() => {
+    console.log(sessionStorage.getItem("userId"))
+    
     const fetchSavedArticles = async () => {
       try {
         const response = await axios.get('http://localhost:3000/news/saved', {
@@ -74,16 +78,53 @@ const MyNews = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      const response = await axios.post('http://localhost:8000/api/summarization/selectArticle', {
-        articles: selectedArticles,
+      console.log("요약하기 요청 시작");
+      const response = await fetch('http://localhost:8000/summarize/summarize-article', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          articles: selectedArticles.map(article => ({
+            cr_art_id: article.cr_art_id,
+            cr_art_title: article.cr_art_title,
+            cr_art_url: article.cr_art_url
+          }))
+        }),
       });
-      setSummaryData(response.data.summary);
+      if (!response.ok) {
+        throw new Error(`서버 응답 오류: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setSummaryData(data.summarized_contents);
       setIsModalOpen(true);
     } catch (error) {
-      console.error('요약 요청 실패:', error);
+      console.error('데이터 전송 오류:', error);
+      Swal.fire({
+        title: '요약 요청에 실패했습니다.',
+        text: error.message,
+        icon: 'error',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
+  const handleDelete = async () => {
+    try {
+      await Promise.all(
+        selectedArticles.map((article) => axios.delete(`http://localhost:3000/news/delete/${article.user_art_id}`))
+      );
+      setArticles(articles.filter((article) => !selectedArticles.includes(article.user_art_id)));
+      setSelectedArticles([]);
+    } catch (error) {
+      console.error('데이터를 삭제하는 데 오류가 발생했습니다:', error);
+    }
+  };
+  
 
   return (
     <div className="news-container">
@@ -98,23 +139,23 @@ const MyNews = () => {
       <div className="articles">
         {currentArticles.length > 0 ? (
           currentArticles.map((news) => (
-            <div key={news.art_id} className="article">
+            <div key={news.cr_art_id} className="article">
               <input
                 type="checkbox"
                 className="article-checkbox"
                 checked={selectedArticles.includes(news)}
                 onChange={() => handleCheckboxChange(news)}
               />
-              <div className="article-content" onClick={() => window.open(news.art_url, '_blank')}>
+              <div className="article-content" onClick={() => window.open(news.cr_art_url, '_blank')}>
                 <div className="article-header">
-                  <h3>{news.art_title}</h3>
-                  <p>{new Date(news.art_date).toLocaleDateString()}</p>
+                  <h3>{news.cr_art_title}</h3>
+                  <p>{new Date(news.cr_art_date).toLocaleDateString()}</p>
                 </div>
                 <div className="article-body">
                   <p>{news.art_content && news.art_content.length > 100 ? `${news.art_content.slice(0, 100)}...` : news.art_content}</p>
                 </div>
                 <div className="article-image">
-                  <img src={news.art_img} alt={news.art_title} />
+                  <img src={news.cr_art_img} alt={news.cr_art_title} />
                 </div>
               </div>
             </div>
@@ -143,11 +184,13 @@ const MyNews = () => {
         </div>
         <div className="fixed-buttons">
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button>
+          <button className="summarize-button" onClick={handleDelete}>삭제하기</button>
         </div>
       </div>
       {isModalOpen && <Modal summaryData={summaryData} onClose={() => setIsModalOpen(false)} />}
     </div>
   );
+  
 };
 
 export default MyNews;
