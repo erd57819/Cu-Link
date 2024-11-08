@@ -1,3 +1,5 @@
+import json
+import gzip
 import faiss as faiss
 from typing import List
 from db.settings import *
@@ -51,4 +53,6 @@ async def search_meta_and_contentdata(all_ids:list, date_list:list, connection):
         "metadata": article_metadata,
         "contents": article_contents
     }
-    return articles_data
+    json_text = json.dumps(articles_data).encode('utf-8')
+    articles_data_gzip = gzip.compress(json_text)
+    return articles_data_gzip
