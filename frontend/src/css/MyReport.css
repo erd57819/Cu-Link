@@ -42,11 +42,13 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+/* 현재 슬라이드 확대 효과 */
 .swiper-slide-active .myreport-card {
   transform: scale(1);
   opacity: 1;
 }
 
+/* 이전 및 다음 슬라이드 확대 비율 조정 */
 .swiper-slide-prev .myreport-card,
 .swiper-slide-next .myreport-card {
   transform: scale(0.9);
@@ -69,7 +71,7 @@
 }
 
 .myreport-card:hover {
-  transform: translateY(-10px);
+  transform: scale(0.9); /* hover 시 적당한 크기로 확대 */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
