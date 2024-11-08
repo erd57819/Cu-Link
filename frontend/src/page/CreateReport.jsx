@@ -3,30 +3,27 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/CreateReport.css';
 import Swal from 'sweetalert2';
 
-
-
 function CreateReport() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 전달된 데이터 수신
   const parsedData = location.state?.parsedData;
+  const [alertShown, setAlertShown] = useState(false); // 플래그 추가
 
-  // 초기 데이터 설정
   const title = parsedData?.metadata.map((item) => item.cr_art_title) || [];
   const image = parsedData?.report_images.map((item, index) => {
-  const cleanedImageData = item.image_data.trim();
-  console.log(parsedData)
-    // 오류 메시지가 포함되어 있는지 확인
+    const cleanedImageData = item.image_data.trim();
+    
     try {
       const decodedData = atob(cleanedImageData); // Base64 디코딩
-      if (decodedData.includes('error')) {
+      if (decodedData.includes('error') && !alertShown) {
         console.error(`Image ${index + 1} contains error message:`, decodedData);
         Swal.fire({
           title: "이미지 생성 오류",
           text: `Image ${index + 1} 생성 중 오류가 발생했습니다. 잠시 후 다시 시도하세요.`,
           icon: 'error'
         });
+        setAlertShown(true); // 오류 발생 후 플래그 업데이트
         return null; // 오류가 발생한 이미지는 표시하지 않음
       }
     } catch (e) {
@@ -34,13 +31,10 @@ function CreateReport() {
       return null;
     }
 
-    // 디버그 용도: Base64 데이터 및 최종 src 문자열 확인
-    console.log(`Image ${index + 1} Base64 data:`, cleanedImageData);
     const imgSrc = `data:image/png;base64,${cleanedImageData}`;
-    console.log(`Image ${index + 1} src:`, imgSrc);
-
     return imgSrc;
   }) || [];
+
   const contents = parsedData?.report_data || [];
 
   const [selectedTitles, setSelectedTitles] = useState(Array(title.length).fill(false));
