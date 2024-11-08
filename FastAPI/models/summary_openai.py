@@ -9,7 +9,7 @@ load_dotenv()
 openai_key = os.getenv("OPEN_API_KEY")
 
 # API 키 설정
-openai.api_key = openai_key # open_ai 키
+summary_openai_key = os.getenv("SUMMARY_OPEN_API_KEY")
 
 # 뉴스 요약 함수 article_content : 넘겨준 기사 원문 데이터
 def summarize_article(article_content: str) -> str:
