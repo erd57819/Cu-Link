@@ -248,6 +248,11 @@ const News = ({ articles }) => {
                   onError={(e) => (e.target.src = placeholderImage)}
                 />
               </div>
+              <div className="article-text">
+                <p>
+                  {news.cr_art_content}
+                </p>
+              </div>
             </div>
           </div>
         ))}

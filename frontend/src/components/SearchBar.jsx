@@ -10,17 +10,35 @@ const SearchBar = ({ setFilteredArticles }) => {
   const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
-    const fetchArticles = async () => {
+    const fetchAllArticles = async () => {
+      let allArticles = []; // 모든 페이지의 데이터를 담을 배열
+      let currentPage = 1;
+      let hasMoreData = true;
+
+
       try {
-        const response = await axios.get('http://localhost:3000/');
-        setArticles(response.data);
-        setFilteredArticles(response.data);
+        while (hasMoreData) {
+          const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&page_size=6`);
+          
+          // 데이터가 없으면 반복 종료
+          if (response.data.length === 0) {
+            hasMoreData = false;
+          } else {
+            allArticles = [...allArticles, ...response.data]; // 데이터를 누적
+            currentPage++; // 다음 페이지로 이동
+          }
+        }
+
+        setArticles(allArticles); // 모든 데이터를 상태에 저장
+        setFilteredArticles(allArticles); // 부모 컴포넌트에 전달
       } catch (error) {
-        console.error('뉴스 데이터를 가져오는데 실패했습니다:', error);
+        console.error('데이터를 가져오는데 실패했습니다:', error);
+      } finally {
+       
       }
     };
 
-    fetchArticles();
+    fetchAllArticles();
   }, [setFilteredArticles]);
 
   const parseKeywords = (keyword) => {
