@@ -95,7 +95,9 @@ function CreateReport() {
 
   return (
     <div className="create-report-container">
+      <p>생성할 레포트의 요소를 골라주세요!</p>
       <div className="report-grid">
+        
         <div className="grid-label">Title</div>
         {title.map((item, index) => (
           <div
