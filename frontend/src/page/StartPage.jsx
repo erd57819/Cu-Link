@@ -40,7 +40,7 @@ const StartPage = () => {
             </div>
             {/* Swiper 컨테이너 */}
             <div className="swiper-container">
-                <Swiper
+            <Swiper
                     ref={swiperRef}
                     spaceBetween={0}
                     slidesPerView={1} // 한 번에 한 슬라이드만 표시
@@ -51,28 +51,38 @@ const StartPage = () => {
                 >
                     <SwiperSlide>
                         <div className="slide-content">
-                            <img src="/images/intro1.jpg" alt="Slide 1" className="slide-image" />
+                            <img src="/images/start_img.png" alt="Slide 1" className="slide-image" />
                             <div className="slide-text">
-                                <h2>업무, 과제를 위한 <strong>기사 정리</strong>는 어렵다?</h2>
+                                <h2>
+                                    업무, 과제를 위한<br/> <strong className="highlight">기사 정리</strong>는 어렵다?
+                                </h2>
                             </div>
                         </div>
                     </SwiperSlide>
 
                     <SwiperSlide>
                         <div className="slide-content reverse">
-                            <img src="/images/intro2.jpg" alt="Slide 2" className="slide-image" />
-                            <div className="slide-text">
-                                <h2><strong>Cu-Link</strong>를 통해 필요한 기사를 요약하세요</h2>
+                            <img src="/images/start_img2.png" alt="Slide 2" className="slide-image2" />
+                            <div className="slide-text2">
+                                <h2>
+                                    <strong className="highlight">키워드 검색</strong>을 통해<br/> 필요한 기사를 <strong className="highlight">손쉽게 요약</strong>할 수 있어요
+                                </h2>
                             </div>
+
+
                         </div>
                     </SwiperSlide>
 
                     <SwiperSlide>
-                        <div className="slide-content center">
-                            <div className="slide-text">
-                                <h2>손쉽게 <strong>레포트 작성</strong>을 시작하세요!</h2>
-                            </div>
+                    <div className="slide-content center">
+                        <div className="slide-text3">
+                            <h2>
+                                <strong className = 'highlight'>Cu-Link</strong>을 시작하고<br />
+                                손쉽게 <strong className = 'highlight'>레포트를 작성</strong>해보세요!
+                            </h2>
                         </div>
+                    </div>
+
                     </SwiperSlide>
                 </Swiper>
 

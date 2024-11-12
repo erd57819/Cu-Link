@@ -52,13 +52,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 2px solid #000;
-    border-radius: 20px;
+    border: 1.5px solid #000;
+    border-radius: 15px;
     padding: 20px;
     background-color: #fff;
     width: 100%;
     max-width: 800px;
-    height: 300px;
+    height: 400px;
     box-sizing: border-box;
     position: relative;
     z-index: 1;
@@ -76,21 +76,68 @@
 
 /* 슬라이드 이미지 스타일 */
 .slide-image {
-    width: 150px;
-    height: 150px;
+    margin-left : 10%;
+    width: 250px;
+    height: 250px;
     border-radius: 10px;
     flex-shrink: 0;
+}
+
+.slide-image2{
+    margin-top : -10%;
+    margin-right : 3.5%;
+    border-radius : 10px;
+    flex-shrink : 0;
+    width : 380px;
+    height : auto;
 }
 
 /* 슬라이드 텍스트 스타일 */
 .slide-text {
     flex: 1;
-    margin-left: 20px;
-    font-size: 22px;
+    margin-left: 40px;
+    font-size: 1rem;
     font-weight: 500;
     word-wrap: break-word;
     max-width: 500px;
 }
+
+.slide-text2{
+    flex: 1;
+    margin-right : -40%;
+    margin-bottom : -30%;
+    font-size: 1rem;
+    font-weight: 500;
+    max-width: none; /* 너비 제한 제거 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    text-overflow: ellipsis; /* 필요시 말줄임표 추가 */
+}
+
+.slide-text3{
+    text-align: center; /* 텍스트 가운데 정렬 */
+    font-size: 1rem; /* 텍스트 크기 */
+    line-height: 1.6; /* 줄 간격 */
+    margin: 20px 0; /* 위아래 여백 */
+}
+
+
+.slide-text .highlight {
+  color: #000; /* 강세를 주기 위한 색상 */
+  font-weight: bold; /* 굵게 표시 */
+  font-size: 2rem; /* 크기를 조금 더 키워 강조 */
+}
+
+.slide-text2 .highlight {
+    color: #000; /* 강세를 주기 위한 색상 */
+    font-weight: bold; /* 굵게 표시 */
+    font-size: 1.8rem; /* 크기를 조금 더 키워 강조 */
+  }
+
+  .slide-text3 .highlight {
+    color: #000; /* 강세를 주기 위한 색상 */
+    font-weight: bold; /* 굵게 표시 */
+    font-size: 1.8rem; /* 크기를 조금 더 키워 강조 */
+  }
 
 /* Swiper 네비게이션 버튼 스타일 */
 .swiper-button-next, .swiper-button-prev {
@@ -126,11 +173,13 @@
     border: none;
     border-radius: 50px;
     cursor: pointer;
+    width : 300px;
+    height : 50px;
     transition: background-color 0.3s ease;
 }
 
 .start-button:hover {
-    background-color: #7b1fa2;
+    background-color: #8F8F8F;
 }
 
 /* Custom Navigation Buttons */
@@ -141,7 +190,7 @@
     font-size: 5rem;
     background-color: transparent;
     border: none;
-    color: #6200ea;
+    color: #51017F;
     cursor: pointer;
     z-index: 10;
 }
@@ -157,5 +206,5 @@
 
 /* 버튼 호버 효과 */
 .custom-prev-button:hover, .custom-next-button:hover {
-    color: #4500b0;
+    color: #8F8F8F;
 }
