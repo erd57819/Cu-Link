@@ -9,7 +9,7 @@
 /* 텍스트 스타일 */
 .article-text { /* 수정: 텍스트 영역을 이미지 아래로 조정 */
     margin-right: 10px;
-    margin-left: 34px;
+    margin-left: 37px;
     margin-top: -2rem;
     font-size: 0.9rem;
     color: #333;
@@ -69,19 +69,20 @@
 .article-header h3 {
     font-size: 1rem;
     margin-top: -11px;
-    margin-left: 35px;
+    margin-left: 38px;
     color: #3c3c3c;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* 제목 줄 수 제한 */
+    -webkit-line-clamp: 2; /* 2줄로 제한 */
     -webkit-box-orient: vertical;
+    min-height: 2.5em; /* 일관성을 위한 최소 높이 설정 */
 }
 
 .article-header p {
     font-size: 0.8rem;
     color: #3b3b3b;
-    margin-left: 36px;
+    margin-left: 39px;
     margin-top: -15px;
 }
 
@@ -179,8 +180,8 @@
 
 
 .pagination button {
-    width: 30px;
-    min-width: 30px;
+    width: 25px;
+    min-width: 25px;
     text-align: center;
     margin: 0 2px;
     padding: 8px;

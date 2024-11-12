@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../css/News.css';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
 import pako from 'pako';
-import { ClimbingBoxLoader } from "react-spinners";
+import { ClimbingBoxLoader } from 'react-spinners';
 
-// 대체 이미지 경로 설정
 const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 
-const News = ({ articles }) => {
+const News = () => {
+  const [articles, setArticles] = useState([]);
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage, setArticlesPerPage] = useState(6);
@@ -17,6 +18,25 @@ const News = ({ articles }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    console.log("Selected Page:", pageNumber);
+  };
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}`);
+        setArticles(response.data);
+        console.log("바뀌었니?", currentPage);
+      } catch (error) {
+        console.error('데이터를 가져오는데 실패했습니다:', error);
+      }
+    };
+
+    fetchArticles();
+  }, [currentPage, articlesPerPage]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,9 +48,7 @@ const News = ({ articles }) => {
   }, []);
 
   const pageRange = 5;
-  const indexOfLastArticle = currentPage * articlesPerPage;
-  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+  const currentArticles = articles;
 
   const handleCheckboxChange = (article) => {
     if (selectedArticles.includes(article)) {
@@ -53,9 +71,7 @@ const News = ({ articles }) => {
     }
   };
 
-  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
-
-  const totalPages = Math.ceil(articles.length / articlesPerPage);
+  const totalPages = 54;
   const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
 
@@ -72,7 +88,6 @@ const News = ({ articles }) => {
     setIsLoading(true);
 
     try {
-      console.log("요약하기 요청 시작");
       const response = await fetch('http://localhost:8000/summarize/summarize-article', {
         method: 'POST',
         headers: {
@@ -216,6 +231,9 @@ const News = ({ articles }) => {
     }
   };
 
+  console.log("전체 기사 배열:", articles);
+  console.log("현재 페이지 기사 배열:", currentArticles);
+  
   return (
     <div className="news-container">
       <div className="select-all">
@@ -223,42 +241,44 @@ const News = ({ articles }) => {
         <button onClick={handleSelectAll}>전체선택</button>
       </div>
       <div className="articles">
-        {currentArticles.map((news) => (
-          <div key={news.cr_art_id} className="article">
-            <div
-              className="article-checkbox-wrapper"
-              onClick={() => handleCheckboxChange(news)}
-            >
-              <input 
-                type="checkbox" 
-                className="article-checkbox" 
-                checked={selectedArticles.includes(news)} 
-                readOnly
-              />
-            </div>
-            <div className="article-content" onClick={() => window.open(news.cr_art_url, '_blank')}>
-              <div className="article-header">
-                <h3>{news.cr_art_title}</h3>
-                <p>{new Date(news.cr_art_date).toLocaleDateString()}</p>
-              </div>
-             
-              <div className="article-text">
-                <p>
-                  {news.cr_art_content}
-                </p>
-              </div>
-              <div className="article-image">
-                <img 
-                  src={news.cr_art_img || placeholderImage} 
-                  alt={news.cr_art_title}
-                  onError={(e) => (e.target.src = placeholderImage)}
+        {currentArticles.length > 0 ? (
+          currentArticles.map((article) => (
+            <div key={article.cr_art_id} className="article">
+              <div
+                className="article-checkbox-wrapper"
+                onClick={() => handleCheckboxChange(article)}
+              >
+                <input 
+                  type="checkbox" 
+                  className="article-checkbox" 
+                  checked={selectedArticles.includes(article)} 
+                  readOnly
                 />
-            
               </div>
-  
+              <div className="article-content" onClick={() => window.open(article.cr_art_url, '_blank')}>
+                <div className="article-header">
+                  <h3>{article.cr_art_title}</h3>
+                  <p>{new Date(article.cr_art_date).toLocaleDateString()}</p>
+                </div>
+               
+                <div className="article-text">
+                  <p>
+                    {article.cr_art_content}
+                  </p>
+                </div>
+                <div className="article-image">
+                  <img 
+                    src={article.cr_art_img || placeholderImage} 
+                    alt={article.cr_art_title}
+                    onError={(e) => (e.target.src = placeholderImage)}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>기사를 불러오는 중입니다...</p>
+        )}
       </div>
       <div className="pagination-container">
         <div className="pagination-buttons-container">
@@ -292,13 +312,13 @@ const News = ({ articles }) => {
           <button className="create-report-button1" onClick={handleCreateReport}>레포트 생성</button>
         </div>
       </div>
-
+  
       {isLoading && (
         <div className="loading-overlay">
           <ClimbingBoxLoader color="#51017F" size={50} />
         </div>
       )}
-
+  
       {isModalOpen && <Modal summaryData={summaryData} onClose={() => setIsModalOpen(false)} />}
     </div>
   );

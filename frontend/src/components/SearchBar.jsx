@@ -1,45 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../css/SearchBar.css';
-import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const SearchBar = ({ setFilteredArticles }) => {
-  const [articles, setArticles] = useState([]);
+const SearchBar = ({ articles, setFilteredArticles }) => {
   const [keyword, setKeyword] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-
-  useEffect(() => {
-    const fetchAllArticles = async () => {
-      let allArticles = []; // 모든 페이지의 데이터를 담을 배열
-      let currentPage = 1;
-      let hasMoreData = true;
-
-
-      try {
-        while (hasMoreData) {
-          const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&page_size=6`);
-          
-          // 데이터가 없으면 반복 종료
-          if (response.data.length === 0) {
-            hasMoreData = false;
-          } else {
-            allArticles = [...allArticles, ...response.data]; // 데이터를 누적
-            currentPage++; // 다음 페이지로 이동
-          }
-        }
-
-        setArticles(allArticles); // 모든 데이터를 상태에 저장
-        setFilteredArticles(allArticles); // 부모 컴포넌트에 전달
-      } catch (error) {
-        console.error('데이터를 가져오는데 실패했습니다:', error);
-      } finally {
-       
-      }
-    };
-
-    fetchAllArticles();
-  }, [setFilteredArticles]);
 
   const parseKeywords = (keyword) => {
     const andKeywords = [];
@@ -64,7 +30,7 @@ const SearchBar = ({ setFilteredArticles }) => {
   };
 
   const filterArticles = () => {
-    let filtered = articles;
+    let filtered = articles; // articles를 props로 받아서 사용
     const { andKeywords, orKeywords, notKeywords } = parseKeywords(keyword);
 
     // AND 조건 필터링
@@ -81,7 +47,7 @@ const SearchBar = ({ setFilteredArticles }) => {
           (article.art_content || '').toLowerCase().includes(orWord)
         )
       );
-    }
+    };
 
     // NOT 조건 필터링
     notKeywords.forEach(notWord => {
