@@ -241,18 +241,21 @@ const News = ({ articles }) => {
                 <h3>{news.cr_art_title}</h3>
                 <p>{new Date(news.cr_art_date).toLocaleDateString()}</p>
               </div>
+             
+              <div className="article-text">
+                <p>
+                  {news.cr_art_content}
+                </p>
+              </div>
               <div className="article-image">
                 <img 
                   src={news.cr_art_img || placeholderImage} 
                   alt={news.cr_art_title}
                   onError={(e) => (e.target.src = placeholderImage)}
                 />
+            
               </div>
-              <div className="article-text">
-                <p>
-                  {news.cr_art_content}
-                </p>
-              </div>
+  
             </div>
           </div>
         ))}

@@ -7,8 +7,10 @@
   }
 
 /* 텍스트 스타일 */
-.article-text {
-    padding: 0.5rem 1rem;
+.article-text { /* 수정: 텍스트 영역을 이미지 아래로 조정 */
+    margin-right: 10px;
+    margin-left: 34px;
+    margin-top: -2rem;
     font-size: 0.9rem;
     color: #333;
     overflow: hidden;
@@ -17,9 +19,7 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     line-height: 1.2;
-    margin-top: -4.5rem;
 }
-
 
 
 .news-container {
@@ -30,6 +30,7 @@
     flex-grow: 1;
     width: 80%;
     height: 100%;
+    margin-left: 10px;
 }
 
 /* 기사 리스트 레이아웃 */
@@ -59,25 +60,29 @@
 }
 
 /* 기사 제목과 날짜 */
-.article-header {
-    margin: 2% 0 1% 15%;
+.article-header { /* 수정: 제목과 텍스트 간격 조정 */
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: #a6a6a6;
 }
 
 .article-header h3 {
     font-size: 1rem;
-    margin: 0;
-    color: #333;
+    margin-top: -11px;
+    margin-left: 35px;
+    color: #3c3c3c;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 1; /* 제목 줄 수 제한 */
+    -webkit-line-clamp: 2; /* 제목 줄 수 제한 */
     -webkit-box-orient: vertical;
 }
 
 .article-header p {
     font-size: 0.8rem;
-    color: #888;
-    margin: 0.1rem 0;
+    color: #3b3b3b;
+    margin-left: 36px;
+    margin-top: -15px;
 }
 
 /* 기사 본문 */
@@ -97,15 +102,20 @@
 /* 기사 이미지 */
 .article-image {
     width: 100%;
-    height: 12rem;
-    object-fit: cover;
+    height: 130px; /* 이미지 높이 고정 */
+    overflow: hidden;
 }
 
 .article-image img {
     width: 100%;
-    height: 73%;
-    object-fit: cover;
-    
+    height: 100%;
+    object-fit: cover; /* 이미지가 박스를 넘지 않도록 설정 */
+}
+.article-content { /* 추가: 텍스트와 이미지 사이 간격 조절 */
+     /* 텍스트와 이미지 사이 간격 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* 체크박스 스타일 */
@@ -161,6 +171,7 @@
     margin-top: 0.5%;
     position: relative;
     z-index: 1;
+    margin-right: 15px;
 }
 .pagination {
     display: flex;
@@ -222,6 +233,7 @@
     align-items: center;
     gap: 10px;
     flex-shrink: 0;
+    margin-right: 12px;
 }
 
 .select-all button:hover {
@@ -230,8 +242,10 @@
 
 .select-all span {
     font-size: 0.9rem;
-    color: #555;
+    color: #3b3b3b;
     margin-left: 34rem;
+    background-color: #f4f2f7;
+    border-radius: 8px;
 }
 
 /* 고정된 버튼 컨테이너 */
@@ -320,3 +334,4 @@
     font-size: 3em;
     color: #333;
   }
+
