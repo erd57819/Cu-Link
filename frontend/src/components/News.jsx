@@ -10,7 +10,7 @@ import { ClimbingBoxLoader } from 'react-spinners';
 const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 
 const News = () => {
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState({ total_count: 0, articles: [] });
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage, setArticlesPerPage] = useState(6);
@@ -27,7 +27,7 @@ const News = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}`);
+        const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&page_size=${articlesPerPage}`);
         setArticles(response.data);
         console.log("바뀌었니?", currentPage);
       } catch (error) {
@@ -48,7 +48,7 @@ const News = () => {
   }, []);
 
   const pageRange = 5;
-  const currentArticles = articles;
+  const currentArticles = articles.articles; // articles 배열에 접근하기 위해 변경
 
   const handleCheckboxChange = (article) => {
     if (selectedArticles.includes(article)) {
@@ -71,7 +71,7 @@ const News = () => {
     }
   };
 
-  const totalPages = 54;
+  const totalPages = Math.ceil(articles.total_count / articlesPerPage); // 총 페이지 계산
   const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
 
@@ -231,13 +231,13 @@ const News = () => {
     }
   };
 
-  console.log("전체 기사 배열:", articles);
+  console.log("전체 기사 배열:", articles.articles);
   console.log("현재 페이지 기사 배열:", currentArticles);
-  
+
   return (
     <div className="news-container">
       <div className="select-all">
-        <span>{`선택된 기사 ${selectedArticles.length}개 / 총 ${articles.length}개`}</span>
+        <span>{`선택된 기사 ${selectedArticles.length}개 / 총 ${articles.total_count}개`}</span>
         <button onClick={handleSelectAll}>전체선택</button>
       </div>
       <div className="articles">
