@@ -66,8 +66,18 @@ const Login = () => {
             </div>
           </form>
           <div className='login-links'>
-          <p>Cu-Link이 처음이라면? <span><Link to={'/join'} className='link'>회원가입</Link></span></p>
-            <p>비밀번호가 기억나지 않아요 <span><Link to={'/resetPW'} className='link'>비밀번호찾기</Link></span></p>
+            <p>
+              <Link to={'/join'} className='link'>
+                <span>Cu-Link이 처음이라면? </span>
+                <span className='login-links_join'>회원가입</span>
+              </Link>
+            </p>
+            <p>
+              <Link to={'/resetPW'} className='link'>
+                <span>비밀번호가 기억나지 않아요 </span>
+                <span className='login-links_findpw'>비밀번호찾기</span>
+              </Link>
+            </p>
           </div>
         </div>
       </div>

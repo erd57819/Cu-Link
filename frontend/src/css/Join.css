@@ -23,9 +23,11 @@
   }
   
   .login-title {
+    text-align:left;
+    margin-left:15px;
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   
   .input-container {
@@ -59,5 +61,17 @@
   .login-links {
     margin-top: 20px;
     font-size: 14px;
+  }
+
+  .login-links_join{
+    margin-left:50px;
+    font-size:18px;
+    font-weight:700;
+  }
+
+  .login-links_findpw{
+    margin-left:50px;
+    font-size:18px;
+    font-weight:700;
   }
   
