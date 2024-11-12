@@ -30,13 +30,12 @@ def upload_image_to_firebase(image_data: str, rep_id: int):
     image_url = f"https://storage.googleapis.com/{bucket.name}/{file_name}"
     return image_url
 
-
 # 보고서 저장 엔드포인트
 @router.post("/savereport")
 async def save_report(report_data: ReportData):
     try:
-        # 숫자형 UUID 생성
-        rep_id = uuid.uuid4().int >> 64  # 64비트 숫자형 UUID 생성
+        # 63비트 이하의 숫자형 UUID 생성
+        rep_id = uuid.uuid4().int & (1 << 63) - 1
 
         # Firebase에 이미지 업로드 및 URL 가져오기
         image_url = upload_image_to_firebase(report_data.image, rep_id)
@@ -55,12 +54,13 @@ async def save_report(report_data: ReportData):
         values = (rep_id, report_data.title, report_data.content, rep_date, report_data.user_id)
         cursor.execute(sql, values)
         db_connection.commit()
-        
-        # 연결 닫기
+
+    except Exception as e:
+        print(f"Error saving report: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to save report: {e}")
+
+    finally:
         cursor.close()
         db_connection.close()
 
-        return {"message": "Report saved successfully", "rep_id": rep_id, "image_url": image_url}
-    except Exception as e:
-        print(f"Error saving report: {e}")
-        raise HTTPException(status_code=500, detail="Failed to save report")
+    return {"message": "Report saved successfully", "rep_id": rep_id, "image_url": image_url}
