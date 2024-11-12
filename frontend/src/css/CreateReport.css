@@ -1,15 +1,23 @@
 .create-report-container {
     flex-direction: column;
     width: 100%;
-    height: 93%;
-    max-height: 93%;
+    height: 92%;
+    max-height: 92%;
     font-family: Pretendard; /* 폰트를 상위 컨테이너에 설정 */
+}
+.create-report-container p {
+    position: absolute;
+    margin-left: 165px;
+    margin-top: 25px;
 }
 .report-grid {
     display: grid;
     padding-top: 0.5rem;
     grid-template-columns: 0.2fr 2fr 2fr 2fr; /* 첫 번째 열은 label, 나머지는 데이터 */
-    gap: 0.5rem; /* 박스 간격을 1px로 설정 */    
+    gap: 0.5rem; /* 박스 간격을 1px로 설정 */  
+    padding-left: 80px;
+    padding-right: 80px;
+    padding-top: 60px;  
 }
 .grid-label {
     font-weight: bold;
@@ -21,6 +29,7 @@
     border: 1px solid #ddd;
     transition: background-color 0.3s, box-shadow 0.3s;
     cursor: pointer;
+    
 }
 .title {
     width: 25rem;
@@ -29,18 +38,37 @@
 }
 .image {
     width: 25rem;
-    height: 12rem;
+    height: 11rem;
     flex-shrink: 0;
     ;
 }
 .content1 {
     width: 26.5rem;
-    height: 19rem;
+    height: 17rem;
     overflow-y: auto;
     padding: 10px; /* 내부 여백 */
     box-sizing: border-box;
     line-height: 1.5;
     font-size: 1rem;
+    border-radius: 10px;
+    scrollbar-width: thin; /* Firefox에서 스크롤바 너비 설정 */
+    scrollbar-color: #E5E5E5 transparent; /* 스크롤바 색상 (앞: 스크롤바, 뒤: 배경) */
+    
+}
+.content1::-webkit-scrollbar-button {
+    display: none; /* 스크롤바 화살표를 숨김 */
+}
+
+.content1::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px; /* 트랙에 둥근 모서리 적용 */
+
+}
+
+.content1::-webkit-scrollbar-thumb {
+    background-color: #d1c7d7;
+    border-radius: 10px; /* 썸에 둥근 모서리 적용 */
+    border: 2px solid #f4f4f4; /* 트랙과 썸 사이의 여백 */
 }
 .selected {
     background-color: #d1c7d7;
@@ -53,10 +81,9 @@
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     font-size: 0.8rem;
     font-style: normal;
-    margin-top: 10px;
+    margin-top: 5px;
     margin-bottom: 10px;
     margin-left: 81rem;
     
@@ -65,7 +92,7 @@
 .create-report-button-container {
     display: flex;
     /* justify-content: flex-end; */
-    padding-left: 4rem;
+    padding-left: 2rem;
     padding-top: 0.3rem; /* 버튼 위에 간격 추가 */
     
 }
@@ -95,7 +122,8 @@
 }
 .grid-item.image {
     position: relative; 
-    padding: 10px; 
+    padding: 11px; 
+    border-radius: 10px;
   }
   .image-content {
     width: 100%;
@@ -115,9 +143,10 @@
     justify-content: center; 
     align-items: center; 
     font-weight: bold; 
-    font-size: 1.5rem; 
-    padding: 10px;
+    font-size: 1rem; 
+    padding: 11px;
     flex-grow: 1;
+    border-radius: 10px;
   }
 
 
