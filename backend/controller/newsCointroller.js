@@ -51,7 +51,7 @@ exports.getReports = (req, res) => {
 };
 // 특정 보고서를 삭제하는 함수
 exports.deleteReport = (req, res) => {
-    const reportId = req.params.id; // 삭제할 보고서의 ID를 URL 파라미터로 받음
+    const reportId = req.session.userId; // 삭제할 보고서의 ID를 URL 파라미터로 받음
 
     if (!reportId) {
         return res.status(400).json({ error: '요청에 reportId가 필요합니다.' });
@@ -73,7 +73,7 @@ exports.deleteReport = (req, res) => {
 };
 
 exports.saveArticle = (req, res) => {
-    const userId = req.params.id || req.session.userId;
+    const userId = req.session.userId;
     const { articles } = req.body;
 
     if (!userId) {
@@ -156,7 +156,7 @@ exports.saveArticle = (req, res) => {
 
 exports.deleteArticle = (req, res) => {
     console.log("111111111111111111111",req.session)
-    const reportId = req.params.id; // 삭제할 보고서의 ID를 URL 파라미터로 받음
+    const reportId = req.session.userId; // 삭제할 보고서의 ID를 URL 파라미터로 받음
 
     if (!reportId) {
         return res.status(400).json({ error: '요청에 reportId가 필요합니다.' });

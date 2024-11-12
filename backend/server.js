@@ -7,15 +7,28 @@ const sumRouter = require("./routes/sumRouter");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require('express-session');
-const fileStore = require('session-file-store')(session);
+const MySQLStore = require("express-mysql-session")(session);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// MySQL 세션 저장소 옵션 설정
+const options = {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE
+};
+
+// MySQL 세션 저장소 생성
+const sessionStore = new MySQLStore(options);
+
 app.use(session({
+  key: "session_cookie_name",
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  store: new fileStore(),
+  store: sessionStore,
   cookie: { secure: false } // localhost에서 개발 중이라면 secure는 false로 설정합니다.
 }));
 
