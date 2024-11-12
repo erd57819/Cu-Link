@@ -41,12 +41,13 @@ function Report() {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/report/report', {
+      const res = await fetch('http://localhost:8000/savereport', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          user_id : userId,
           title: reportData.title,
           image: reportData.image,
           content: reportData.content,
