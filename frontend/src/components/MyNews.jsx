@@ -115,17 +115,47 @@ const MyNews = () => {
   };
   const handleDelete = async () => {
     try {
+      // 모든 선택된 기사에 대해 삭제 요청 보내기
       await Promise.all(
-        selectedArticles.map((article) => axios.delete(`http://localhost:3000/news/delete/${article.user_art_id}`))
+        selectedArticles.map(async (article) => {
+          const url = `http://localhost:3000/news/delete`;
+          console.log('삭제 요청 URL:', url); // 요청 URL 확인을 위한 로그
+  
+          const response = await fetch(url, {
+            method: 'DELETE',
+            credentials: 'include', // 세션 쿠키 포함
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_art_id: article.user_art_id }),
+          });
+  
+          // 서버 응답 확인
+          if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`서버 오류: ${response.status} - ${errorMessage}`);
+          }
+        })
       );
-      setArticles(articles.filter((article) => !selectedArticles.includes(article.user_art_id)));
+  
+      // 삭제된 기사들의 ID를 추출
+      const deletedArticleIds = selectedArticles.map((article) => article.user_art_id);
+  
+      // 삭제되지 않은 기사들만 남기기 위해 상태 업데이트
+      setArticles((prevArticles) =>
+        prevArticles.filter((article) => !deletedArticleIds.includes(article.user_art_id))
+      );
+  
+      // 선택된 기사 목록 초기화
       setSelectedArticles([]);
+  
+      // UI 업데이트 확인 로그
+      console.log('삭제 후 업데이트된 기사 목록:', articles);
     } catch (error) {
       console.error('데이터를 삭제하는 데 오류가 발생했습니다:', error);
     }
   };
   
-
   return (
     <div className="news-container">
       <div className="select-all">
@@ -152,7 +182,7 @@ const MyNews = () => {
                   <p>{new Date(news.cr_art_date).toLocaleDateString()}</p>
                 </div>
                 <div className="article-body">
-                  <p>{news.art_content && news.art_content.length > 100 ? `${news.art_content.slice(0, 100)}...` : news.art_content}</p>
+                  <p>{news.cr_art_content && news.cr_art_content.length > 100 ? `${news.cr_art_content.slice(0, 100)}...` : news.cr_art_content}</p>
                 </div>
                 <div className="article-image">
                   <img src={news.cr_art_img} alt={news.cr_art_title} />

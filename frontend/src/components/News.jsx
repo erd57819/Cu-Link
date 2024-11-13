@@ -137,9 +137,9 @@ const News = () => {
       });
       return;
     }
-
+  
     const userId = sessionStorage.getItem('userId');
-
+  
     if (!userId) {
       Swal.fire({
         title: "로그인이 필요합니다",
@@ -148,41 +148,55 @@ const News = () => {
       });
       return;
     }
-
+  
     try {
-      const response = await fetch(`http://localhost:3000/news/saved/${userId}`, {
+      // userId가 정수인지 확인하고 문자열이라면 정수로 변환
+      const userIdInt = parseInt(userId);
+      if (isNaN(userIdInt)) {
+        throw new Error("Invalid user ID");
+      }
+  
+      // 선택된 기사 ID들도 정수로 변환
+      const articleIds = Array.from(selectedArticleIds).map(id => parseInt(id));
+      
+      if (articleIds.some(isNaN)) {
+        throw new Error("Invalid article ID(s)");
+      }
+  
+      const response = await fetch(`http://localhost:8000/articles/save`, {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: userId,
-          articles: Array.from(selectedArticleIds).map(id => ({ cr_art_id: id })),
+          user_id: userIdInt, // 정수로 변환된 user_id
+          article_ids: articleIds // 선택된 기사 ID 배열
         }),
       });
-
+  
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(`Server error: ${response.status} - ${errorMessage}`);
       }
-
+  
       Swal.fire({
         title: "저장 완료",
         text: "선택된 기사가 저장되었습니다.",
         icon: 'success',
       });
-
-      setSelectedArticleIds(new Set());
     } catch (error) {
-      console.error('Save request failed:', error);
+      console.error('Error saving articles:', error);
       Swal.fire({
         title: "저장 실패",
-        text: "저장 중 오류가 발생했습니다. 다시 시도해 주세요.",
+        text: "기사를 저장하는 중 오류가 발생했습니다.",
         icon: 'error',
       });
     }
   };
+  
+  
+  
 
   const handleCreateReport = async () => {
     if (selectedArticleIds.size === 0) {
