@@ -1,6 +1,6 @@
-# reportsaveRouter.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from typing import List, Optional, Union, Any
 from db.firebase_config import bucket  # Firebase bucket import
 from db.db_config import get_db_connection, database_config  # Database connection import
 import base64
@@ -15,6 +15,7 @@ class ReportData(BaseModel):
     title: str
     image: str  # Base64 인코딩된 이미지
     content: str
+    art_ids: Optional[List[Union[int, str, Any]]] = []  # 선택한 기사 ID 리스트 (int 또는 str 가능)
 
 # Firebase에 이미지를 업로드하고 URL 반환 함수
 def upload_image_to_firebase(image_data: str, rep_id: int):
@@ -34,8 +35,8 @@ def upload_image_to_firebase(image_data: str, rep_id: int):
 @router.post("/savereport")
 async def save_report(report_data: ReportData):
     try:
-        # 63비트 이하의 숫자형 UUID 생성
-        rep_id = uuid.uuid4().int & (1 << 63) - 1
+        # 63비트 숫자형 UUID 생성
+        rep_id = uuid.uuid4().int & ((1 << 63) - 1)
 
         # Firebase에 이미지 업로드 및 URL 가져오기
         image_url = upload_image_to_firebase(report_data.image, rep_id)
@@ -47,20 +48,29 @@ async def save_report(report_data: ReportData):
         # 현재 날짜와 시간을 rep_date에 저장
         rep_date = datetime.now()
 
+        # Reports 테이블에 보고서 데이터 삽입
         sql = """
             INSERT INTO Reports (rep_id, rep_title, rep_content, rep_date, user_id)
             VALUES (%s, %s, %s, %s, %s)
         """
         values = (rep_id, report_data.title, report_data.content, rep_date, report_data.user_id)
         cursor.execute(sql, values)
+
+        # ArticleReports 테이블에 art_id와 rep_id 연결 데이터 삽입
+        if report_data.art_ids:
+            article_reports_sql = "INSERT INTO ArticleReports (rep_id, art_id) VALUES (%s, %s)"
+            # art_ids의 각 항목을 int로 변환하여 저장
+            article_reports_values = [(rep_id, int(art_id)) for art_id in report_data.art_ids if isinstance(art_id, (int, str))]
+            cursor.executemany(article_reports_sql, article_reports_values)
+
+        # 변경 사항을 커밋
         db_connection.commit()
-
-    except Exception as e:
-        print(f"Error saving report: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to save report: {e}")
-
-    finally:
+        
+        # 연결 닫기
         cursor.close()
         db_connection.close()
 
-    return {"message": "Report saved successfully", "rep_id": rep_id, "image_url": image_url}
+        return {"message": "Report saved successfully", "rep_id": rep_id, "image_url": image_url}
+    except Exception as e:
+        print(f"Error saving report: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save report")

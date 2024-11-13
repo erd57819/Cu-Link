@@ -8,18 +8,22 @@ import { useLocation, useNavigate } from 'react-router-dom';
 function Report() {
   const location = useLocation();
   const [reportData, setReportData] = useState({
-    title:'',
-    image:'',
-    content:''
-  })
-  useEffect(()=>{
-    const data = location.state || JSON.parse(sessionStorage.getItem('reportData'))
-    if(data){
-      setReportData(data)
-    }
-  },[location.state])
+    title: '',
+    image: '',
+    content: ''
+  });
+  const [selectedArticleIds, setSelectedArticleIds] = useState([]); // 선택한 기사 ID 리스트
 
-  const navigate = useNavigate(); 
+  useEffect(() => {
+    // `reportData`와 `selectedArticleIds`를 세션에서 불러오기
+    const data = location.state || JSON.parse(sessionStorage.getItem('reportData'));
+    const articleIds = JSON.parse(sessionStorage.getItem('selectedArticleIds'));
+
+    if (data) setReportData(data);
+    if (articleIds) setSelectedArticleIds(articleIds);
+  }, [location.state]);
+
+  const navigate = useNavigate();
   const userId = sessionStorage.getItem('userId');
   const pdfButtonRef = useRef();
 
@@ -34,7 +38,7 @@ function Report() {
         cancelButtonText: '로그인 하러가기'
       }).then((result) => {
         if (result.isDismissed) {
-          navigate('/login',{ state: { from: location.pathname }}); // '로그인 하러가기' 클릭 시 로그인 페이지로 이동
+          navigate('/login', { state: { from: location.pathname } });
         }
       });
       return;
@@ -47,10 +51,11 @@ function Report() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id : userId,
+          user_id: userId,
           title: reportData.title,
           image: reportData.image,
           content: reportData.content,
+          art_ids: selectedArticleIds // 선택된 기사 ID 포함
         }),
       });
 
@@ -59,6 +64,7 @@ function Report() {
           title: "리포트 저장 성공 o(〃＾▽＾〃)o",
           icon: 'success'
         });
+        sessionStorage.removeItem("selectedArticleIds");
       } else {
         Swal.fire({
           title: "리포트 저장 실패",

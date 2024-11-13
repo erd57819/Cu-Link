@@ -220,6 +220,7 @@ const News = () => {
     setIsLoading(true);
 
     try {
+      sessionStorage.setItem('selectedArticleIds', JSON.stringify(Array.from(selectedArticleIds)));
       const response = await fetch('http://localhost:8000/report/createReport', {
         method: 'POST',
         headers: {
