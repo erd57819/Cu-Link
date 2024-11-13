@@ -32,6 +32,22 @@ app.use(session({
   cookie: { secure: false } // localhost에서 개발 중이라면 secure는 false로 설정합니다.
 }));
 
+// 세션 체크 미들웨어 함수
+function checkSession(req, res, next) {
+  if (req.session && req.session.userId) {
+    // 세션이 있는 경우 다음 미들웨어로 이동
+    next();
+  } else {
+    // 세션이 없으면 로그인 페이지로 리디렉션
+    res.redirect('/login');
+  }
+}
+
+// /news 라우트에 세션 체크 적용
+app.get('/news', checkSession, (req, res) => {
+  res.send('이 페이지는 로그인된 사용자만 볼 수 있는 뉴스 페이지입니다.');
+});
+
 
 app.use(cors({
   origin: 'http://localhost:3001', // 허용할 클라이언트 주소 (프론트엔드 서버)

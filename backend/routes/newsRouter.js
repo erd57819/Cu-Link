@@ -7,6 +7,6 @@ router.get('/saved', newsController.getSavedArticles);
 router.get('/reports', newsController.getReports);
 router.delete('/reports/:id', newsController.deleteReport);
 router.post('/saved/:id', newsController.saveArticle);
-router.delete('/delete/:id', newsController.deleteArticle);
+router.delete('/delete', newsController.deleteArticle);
 
 module.exports = router;
