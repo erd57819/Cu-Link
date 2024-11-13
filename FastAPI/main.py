@@ -16,6 +16,8 @@ from routers.searchRouter import router as searchRouter
 from routers.articlesRouter import router as articles_router
 # 레포트 저장 라우터 
 from routers.saveReportRouter import router as saveReport_router
+# 챗봇 라우터
+from routers.chatbotRouter import router as chatbot_router
 # 라우터 초기화
 app = FastAPI()
 
@@ -38,6 +40,8 @@ app.include_router(searchRouter, prefix="/search")
 app.include_router(articles_router) 
 # 레포트 저장 라우터
 app.include_router(saveReport_router)
+# 챗봇 라우터
+app.include_router(chatbot_router)
 
 @app.get("/") # fastapi주소로 진입시 
 async def root():
