@@ -139,6 +139,92 @@
     font-size: 1.8rem; /* 크기를 조금 더 키워 강조 */
   }
 
+/* IntroPage SwiperSlide 정렬 스타일 */
+.slide-content.column {
+    flex-direction: column; /* 이미지 상단, 텍스트 하단 */
+    align-items: center; /* 가운데 정렬 */
+    gap: 20px; /* 이미지와 텍스트 간격 */
+  }
+
+/* IntroPage 이미지 스타일 */
+
+.intro-image1 {
+    order: 2; /* 이미지의 순서를 두 번째로 설정 */
+    right: 0; /* 이미지 정렬 */
+    width: 330px;
+    height: auto;
+    border-radius: 10px;
+    flex-shrink: 0;
+    box-shadow : 0px 10px 15px #F4F2F7;
+}
+
+.intro-image2{
+    margin-top : 5%;
+    margin-right : 0;
+    border-radius : 10px;
+    flex-shrink : 0;
+    width : 550px;
+    height : auto;
+    box-shadow : 0px 10px 15px #F4F2F7;
+}
+
+.intro-image3{
+    margin-top : 0;
+    border-radius : 10px;
+    flex-shrink : 0;
+    width : auto;
+    height : 220px;
+    box-shadow : 0px 10px 15px #F4F2F7;
+}
+/* IntroPage 텍스트 스타일 */
+
+.intro-text1 {
+    order: 1; /* 텍스트의 순서를 첫 번째로 설정 */
+    flex: 1;
+    font-size: 1.2rem;
+    font-weight: 500;
+    word-wrap: break-word;
+    max-width: 500px;
+    margin-left : 3%;
+}
+
+.intro-text1 .highlight {
+    color: #000; /* 강세를 주기 위한 색상 */
+    font-weight: bold; /* 굵게 표시 */
+    font-size: 1.5rem; /* 크기를 조금 더 키워 강조 */
+  }
+
+.intro-text2{
+    text-align : center;
+    font-size : 1.2rem;
+    line-height : 1.6;
+    font-weight : 500;
+}
+
+.intro-text2 .highlight{
+    font-weight : bold;
+}
+
+.intro-text3{
+    text-align : left;
+    font-size : 1rem;
+}
+.intro-text3 .highlight {
+    color: #000; /* 강세를 주기 위한 색상 */
+    font-weight: bold; /* 굵게 표시 */
+    font-size: 1.15rem; /* 크기를 조금 더 키워 강조 */
+  }
+
+.intro-text4{
+    text-align : left;
+    font-size : 1rem;
+}
+.intro-text4 .highlight {
+    color: #000; /* 강세를 주기 위한 색상 */
+    font-weight: bold; /* 굵게 표시 */
+    font-size: 1.15rem; /* 크기를 조금 더 키워 강조 */
+}
+
 /* Swiper 네비게이션 버튼 스타일 */
 .swiper-button-next, .swiper-button-prev {
     color: #6200ea !important;

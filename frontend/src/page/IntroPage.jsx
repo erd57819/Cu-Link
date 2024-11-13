@@ -35,30 +35,45 @@ const IntroPage = () => {
         >
           <SwiperSlide>
             <div className="slide-content">
-              <img src="/images/intro1.jpg" alt="Slide 1" className="slide-image" />
-              <div className="slide-text">
-                <h2>업무, 과제를 위한 <strong>기사 정리</strong>는 어렵다?</h2>
+              <img src="/images/use_img1.png" alt="Slide 1" className="intro-image1" />
+              <div className="intro-text1">
+                <p>
+                  <strong className='highlight'>키워드 입력</strong>을<br />
+                  통해 필요한 기사를 찾아주세요
+                </p>
+                <p>
+                  키워드는 <strong className="highlight">최대 5개</strong>까지 검색할 수 있어요
+                </p>
               </div>
             </div>
           </SwiperSlide>
 
           <SwiperSlide>
-            <div className="slide-content reverse">
-              <img src="/images/intro2.jpg" alt="Slide 2" className="slide-image" />
-              <div className="slide-text">
-                <h2><strong>Cu-Link</strong>를 통해 필요한 기사를 요약하세요</h2>
+            <div className="slide-content column">
+              <img src="/images/use_img2.png" alt="Slide 2" className="intro-image2" />
+              <div className="intro-text2">
+                <p>
+                  검색된 기사를 선택해서 <strong className='highlight'>요약</strong>하고<br/>
+                  기사를 바탕으로 <strong className='highlight'>레포트를 생성</strong>할 수 있어요</p>
               </div>
             </div>
           </SwiperSlide>
 
           <SwiperSlide>
             <div className="slide-content center">
+             <img src="/images/use_img3.png" alt="Slide 2" className="intro-image3" /> 
               <div className="slide-text">
-                <h2>손쉽게 <strong>레포트 작성</strong>을 시작하세요!</h2>
+                <p className = 'intro-text3'>
+                  요약된 기사를 바탕으로<br/><strong className = 'highlight'>레포트를 작성</strong>할 수 있어요
+                </p>
+                <p className = 'intro-text4'>
+                  여러 개의 레포트 요소 중<br/><strong className ='highlight'>원하는 요소를 선택, 조합해서<br/></strong> 레포트를 작성해보세요
+                </p>
               </div>
             </div>
           </SwiperSlide>
         </Swiper>
+
 
         {/* Custom Navigation Buttons */}
         <button className="custom-prev-button" onClick={handlePrevSlide}>‹</button>
