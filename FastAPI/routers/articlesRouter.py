@@ -1,11 +1,24 @@
 from fastapi import APIRouter, HTTPException, Query, Body
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from typing import List, Union
 from db.firebase_config import bucket
 from db.db_config import get_db_connection, database_config
 import json
 from datetime import datetime
 import traceback
+from firebase_admin import storage
 
 router = APIRouter()
+
+# 여러 기사 ID를 받기 위한 데이터 모델 정의
+class Article(BaseModel):
+    cr_art_id: int
+
+class Articles(BaseModel):
+    user_id: Union[int, str]
+    articles: List[Article]
+
 
 # Firebase에서 문자열 ID로 필요한 데이터 조회 함수
 def fetch_selected_data_from_storage(ids):
@@ -94,54 +107,41 @@ def get_articles(page: int = Query(1, ge=1), page_size: int = 6):
         print(f"Error fetching articles: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve articles")
 
-
-# 사용자가 선택한 기사를 저장할 때 Firebase에서 기사 내용도 가져오는 함수
-def save_article_with_content_to_mysql(user_id: int, article_id: int):
+@router.get("/articles/saved")
+def get_saved_articles(user_id: str = Query(...)):
     db = get_db_connection(database_config)
     try:
         cursor = db.cursor()
-        
-        # 이미 사용자가 해당 기사를 저장했는지 확인
-        check_query = """
-        SELECT * FROM Saved_Articles WHERE user_id = %s AND article_id = %s
+
+        # 사용자 ID로 저장된 기사 목록 조회 (Firebase에서 실제 기사 원문을 가져올 기사 ID만 필요)
+        query = """
+        SELECT art_id
+        FROM UserArticles
+        WHERE user_id = %s
         """
-        cursor.execute(check_query, (user_id, article_id))
-        result = cursor.fetchone()
-        
-        if result:
-            raise HTTPException(status_code=400, detail="Article already saved by the user.")
-        
-        # Firebase에서 기사 내용 가져오기
-        firebase_data = fetch_selected_data_from_storage({article_id})
-        content = firebase_data.get(article_id, "Content not available.")
-        
-        # 기사를 저장하는 쿼리 실행
-        insert_query = """
-        INSERT INTO Saved_Articles (user_id, article_id, content) VALUES (%s, %s, %s)
-        """
-        cursor.execute(insert_query, (user_id, article_id, content))
-        db.commit()
-        
+        cursor.execute(query, (user_id,))
+        saved_articles = cursor.fetchall()
+
+         # Firebase에서 기사 원문 가져오기
+        article_ids = [row["art_id"] for row in saved_articles]
+        firebase_data = fetch_selected_data_from_storage(article_ids)
+        print(f"가져온 기사 원문: {firebase_data}")
+
+        # 기사 원문 데이터를 반환
+        articles = []
+        for art_id in article_ids:
+            articles.append({
+                "cr_art_id": str(art_id),
+                "cr_art_content": firebase_data.get(art_id, "Content not available"),
+            })
+
+        return {"saved_articles": articles}
+    
     except Exception as e:
-        print(f"Database Insert Error: {e}")
+        print(f"Error fetching saved articles: {e}")
         traceback.print_exc()  # 상세 오류 추적 정보 출력
-        raise HTTPException(status_code=500, detail="Failed to save article to database")
+        raise HTTPException(status_code=500, detail="Failed to fetch saved articles")
     finally:
         cursor.close()
         db.close()
-
-@router.post("/articles/save")
-def save_article(user_id: int = Body(...), article_ids: list = Body(...)):
-    try:
-        for article_id in article_ids:
-            # 사용자가 선택한 기사를 저장할 때 Firebase에서 내용도 함께 저장
-            save_article_with_content_to_mysql(user_id, article_id)
-        
-        # 저장 성공 응답 반환
-        return {"message": "Articles saved successfully."}
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        print(f"Error saving articles: {e}")
-        raise HTTPException(status_code=500, detail="Failed to save articles")
 

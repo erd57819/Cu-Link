@@ -4,6 +4,9 @@ import axios from 'axios';
 import '../css/News.css';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
+import { ClimbingBoxLoader } from 'react-spinners';
+
+const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 
 const MyNews = () => {
   const [selectedArticles, setSelectedArticles] = useState([]);
@@ -26,22 +29,54 @@ const MyNews = () => {
   }, []);
 
   useEffect(() => {
-    console.log(sessionStorage.getItem("userId"))
-    
+    const userId = sessionStorage.getItem("userId");
+  
+    if (!userId) {
+      Swal.fire({
+        title: "로그인이 필요합니다",
+        text: "저장된 기사를 조회하려면 로그인이 필요합니다.",
+        icon: 'warning',
+      });
+      return;
+    }
+  
     const fetchSavedArticles = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/news/saved', {
-          withCredentials: true
+        // 첫 번째 요청: Node.js 서버에서 기사 기본 정보 가져오기
+        const response1 = await axios.get('http://localhost:3000/news/saved', {
+          withCredentials: true,
         });
-        setSavedArticles(response.data || []);
+        const savedArticles = response1.data || [];
+  
+        // 두 번째 요청: FastAPI 서버에서 Firebase 관련 기사 내용 가져오기
+        const response2 = await axios.get(`http://localhost:8000/articles/saved`, {
+          params: { user_id: userId },
+          withCredentials: true,
+        });
+        const firebaseArticles = response2.data.saved_articles || [];
+        console.log('Firebase에서 가져온 기사:', firebaseArticles);
+  
+        // Node.js에서 가져온 기사와 Firebase에서 가져온 기사를 결합하여 UI에 표시할 데이터 준비
+        const combinedArticles = savedArticles.map(article => {
+          const firebaseArticle = firebaseArticles.find(fa => fa.cr_art_id === article.cr_art_id);
+          return {
+            ...article,
+            cr_art_content: firebaseArticle ? firebaseArticle.cr_art_content : "Content not available",
+          };
+        });
+        console.log('결합된 기사 데이터:', combinedArticles);
+  
+        // 상태 업데이트
+        setSavedArticles(combinedArticles);
       } catch (error) {
         console.error('저장된 기사를 불러오지 못했습니다:', error);
         setSavedArticles([]);
       }
     };
+  
     fetchSavedArticles();
   }, []);
-
+  
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
   const currentArticles = savedArticles ? savedArticles.slice(indexOfFirstArticle, indexOfLastArticle) : [];
@@ -134,10 +169,12 @@ const MyNews = () => {
           if (!response.ok) {
             const errorMessage = await response.text();
             throw new Error(`서버 오류: ${response.status} - ${errorMessage}`);
+          }else{
+            window.location.href = 'http://localhost:3001/news';
+
           }
         })
       );
-  
       // 삭제된 기사들의 ID를 추출
       const deletedArticleIds = selectedArticles.map((article) => article.user_art_id);
   
@@ -154,6 +191,7 @@ const MyNews = () => {
     } catch (error) {
       console.error('데이터를 삭제하는 데 오류가 발생했습니다:', error);
     }
+
   };
   
   return (
@@ -181,11 +219,15 @@ const MyNews = () => {
                   <h3>{news.cr_art_title}</h3>
                   <p>{new Date(news.cr_art_date).toLocaleDateString()}</p>
                 </div>
-                <div className="article-body">
+                <div className="article-text">
                   <p>{news.cr_art_content && news.cr_art_content.length > 100 ? `${news.cr_art_content.slice(0, 100)}...` : news.cr_art_content}</p>
                 </div>
                 <div className="article-image">
-                  <img src={news.cr_art_img} alt={news.cr_art_title} />
+                <img 
+                    src={news.cr_art_img || placeholderImage} 
+                    alt={news.cr_art_title}
+                    onError={(e) => (e.target.src = placeholderImage)}
+                  />
                 </div>
               </div>
             </div>
@@ -217,6 +259,11 @@ const MyNews = () => {
           <button className="summarize-button" onClick={handleDelete}>삭제하기</button>
         </div>
       </div>
+      {isLoading && (
+        <div className="loading-overlay">
+          <ClimbingBoxLoader color="#51017F" size={50} />
+        </div>
+      )}
       {isModalOpen && <Modal summaryData={summaryData} onClose={() => setIsModalOpen(false)} />}
     </div>
   );
