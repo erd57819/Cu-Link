@@ -5,10 +5,11 @@
     max-height: 92%;
     font-family: Pretendard; /* 폰트를 상위 컨테이너에 설정 */
 }
-.create-report-container p {
+.report_p {
     position: absolute;
-    margin-left: 165px;
-    margin-top: 25px;
+    margin-left: 167px;
+    margin-top: 10px;
+    /* font-weight: bold; */
 }
 .report-grid {
     display: grid;
