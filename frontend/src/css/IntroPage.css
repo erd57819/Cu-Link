@@ -5,7 +5,7 @@
     justify-content: center;
     align-items: center;
     background-color: #fff;
-    height: 100vh; /* 화면 높이 전체를 사용하여 완전 중앙 정렬 */
+    height: 100%; /* 화면 높이 전체를 사용하여 완전 중앙 정렬 */
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
@@ -44,7 +44,7 @@
     padding: 0 60px; /* 화살표를 위한 여백 추가 */
     box-sizing: border-box;
     position: relative;
-    margin: 40px 0; /* 배너와 시작하기 버튼 사이에 공간 확보 */
+    margin: 110px 0; /* 배너와 시작하기 버튼 사이에 공간 확보 */
 }
 
 /* 슬라이드 콘텐츠 박스 */

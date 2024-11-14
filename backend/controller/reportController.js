@@ -23,16 +23,69 @@ exports.register = (req, res) => {
   );
 };
 
+// 레포트 가져오기
 exports.getReport = (req, res) => {
-  const sql =
-    "SELECT rep_title, rep_content, rep_img FROM Reports ORDER BY rep_id DESC LIMIT 1"; // 마지막으로 저장된 리포트 가져오기
-  conn.query(sql, (err, result) => {
+  const sql = "SELECT rep_id, rep_title, rep_content, rep_date, CONCAT('https://storage.googleapis.com/news-data01.appspot.com/images/', rep_id, '.png') AS rep_img_url FROM Reports WHERE user_id=?";
+  const user_id = req.session.userId
+
+  conn.query(sql, [user_id], (err, results) => {
     if (err) {
-      console.error("리포트 가져오기 오류:", err); // 서버 로그에서 에러 확인
-      return res
-        .status(500)
-        .json({ message: "리포트 데이터를 가져오는 데 실패했습니다" });
+      console.error("리포트 가져오기 오류:", err);
+      return res.status(500).json({ message: "리포트 데이터를 가져오는 데 실패했습니다" });
     }
-    res.json(result[0]); // 성공적으로 데이터를 가져온 경우 클라이언트에 반환
+    res.json(results); // 모든 레포트 반환
   });
 };
+
+// 기사 데이터를 조회하는 컨트롤러 함수
+exports.getReportArticles = (req, res) => {
+  const { rep_id } = req.params;
+  console.log(req.params);
+
+  const sql = `
+    SELECT CA.cr_art_id, CA.cr_art_title, CA.cr_art_img, CA.cr_art_url, 
+           CA.cr_art_company, CA.cr_art_date 
+    FROM Cr_Articles CA
+    JOIN ArticleReports AR ON CA.cr_art_id = AR.art_id
+    WHERE AR.rep_id = ?
+  `;
+
+  conn.query(sql, [rep_id], (err, results) => {
+    if (err) {
+      console.error("레포트의 기사 가져오기 오류:", err);
+      return res.status(500).json({ message: "레포트 기사를 가져오는 데 실패했습니다" });
+    }
+
+    res.json(results); // 결과 반환
+  });
+};
+
+
+// 리포트 삭제 함수
+exports.deleteReport = (req, res) => {
+  const { rep_id } = req.params;
+
+  // 삭제할 리포트와 관련된 기사를 먼저 삭제
+  const deleteArticlesSql = 'DELETE FROM ArticleReports WHERE rep_id = ?';
+
+  conn.query(deleteArticlesSql, [rep_id], (err) => {
+    if (err) {
+      console.error('리포트의 기사 삭제 오류:', err);
+      return res.status(500).json({ message: '리포트의 기사를 삭제하는 데 실패했습니다' });
+    }
+
+    // 리포트 자체 삭제
+    const deleteReportSql = 'DELETE FROM Reports WHERE rep_id = ?';
+
+    conn.query(deleteReportSql, [rep_id], (err) => {
+      if (err) {
+        console.error('리포트 삭제 오류:', err);
+        return res.status(500).json({ message: '리포트를 삭제하는 데 실패했습니다' });
+      }
+
+      res.json({ message: '리포트 삭제가 완료되었습니다' });
+    });
+  });
+};
+
+
