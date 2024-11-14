@@ -10,19 +10,20 @@ def createReport_text(report_contents):
     report_content = report_contents[0]
         # 프롬프트 설정: 보고서에서 핵심 문장 생성 요청
     summary_prompt = f"""
-    당신은 능숙한 시각적 설명 작성자로, 보고서에서 핵심 내용을 파악하고 이를 바탕으로 이미지 생성을 위한 구체적인 문장을 생성하는 역할을 맡고 있습니다.
+    You're a skilled visual descriptor, and you're tasked with identifying key takeaways from a report and using them to generate specific sentences for image creation.
 
-    다음의 보고서 내용을 참고하여, 이미지로 시각화할 수 있는 핵심 문장을 작성해 주세요. 작성 시 다음 사항을 유의해 주세요:
+    Using the following report as a guide, write key sentences that can be visualized as an image. As you write, keep in mind that you should
 
-    1. 이미지로 시각화하기에 적합하도록 구체적이고 명확한 표현을 사용합니다.
-    2. 보고서의 주제를 효과적으로 표현할 수 있는 시각적 요소(예: 인물, 장소, 주요 사물 또는 상징적 장면 등)를 포함하여, 해당 주제의 핵심 메시지를 시각화할 수 있도록 작성합니다.
-    3. 보고서의 주요 분위기나 배경을 드러내는 표현을 사용해, 독자가 주제를 쉽게 이해할 수 있는 이미지로 연결될 수 있게 합니다.
-    4. 핵심 문장은 완전한 문장으로 끝맺음하여 명확하게 표현되어야 합니다.
+    1. use specific and clear wording that is suitable for visualization in images.
+    2. include visual elements (e.g., people, places, key objects, or iconic scenes) that can effectively represent the topic of the report so that the key messages of that topic can be visualized.
+    3. Use language that reveals the main mood or setting of the report, and link to images that help readers understand the topic.
+    4. Key points should be clearly expressed, ending in complete sentences.
+    5. Please write key sentences in Korean.
 
-    보고서 내용:
+    Report Content:
     {report_content}
 
-    이미지 생성에 적합한 핵심 문장:
+    Key sentences for image generation : 
     """
 
     # OpenAI API 호출
@@ -53,30 +54,37 @@ def createReport_openAI(article_contents):
 
             Based on the following articles, you've identified important information, common issues, or noteworthy patterns that will provide new perspectives and analysis. The title of the report should be on the first line, and the body of the report should flow naturally with no line breaks.
 
-            Here are a few things to keep in mind when writing your report:
-            1. In the first line, write a concise, one-line title that captures the focus of the report. **The title must not exceed 20 words.** Ensure that the title is clear, impactful, and uses relevant keywords.
-            2. The body of the report should flow logically and smoothly in the order of introduction, main content, and conclusion, without separate subheadings.
-            3. If you have specific numbers or examples from your article, use them to flesh out your insights.
+            Here are a few things to keep in mind when creating a report:
+            1. **On the first line, write a concise title that is representative of the report. The title should be no longer than 15 words or 50 characters. **This is a very important requirement and must be adhered to as the entire report will be invalidated if the title exceeds 15 words. Write a clear and compelling title using keywords that are relevant to the content of the report.
+              **Use line breaks(\n) to separate the title from the body of the report.**
+            2. The body of the report should be logically and smoothly organized in the following order: introduction, body, conclusion, without subheadings.
+            3. If you have specific figures or examples in your writing, use them to substantiate your insights.
             4. Maintain an analytical, objective tone and include specific figures or data to lend credibility to your report.
-            5. At the end of your report, restate the most important takeaways from the topic to emphasize it.
-            6. Write the report in Korean.
+            5. At the end of your report, emphasize the most important points of your topic by restating them.
+            6. **Write your report in Korean.**
 
+            **Important** : Make sure to follow the above guidelines when writing your report, as failure to do so will invalidate your report.
             Article list:
+
             {article_contents}
 
             Report:
             """,
             f"""
-            As a professional analyst, your task is to provide an insightful report based on the following articles.
+            As an expert analyst, your job is to create insightful reports based on the following articles.
 
-            Articles contain information about key trends, patterns, or common issues. Your report should synthesize these insights into a comprehensive, engaging report. The title should appear on the first line, and the body should flow naturally without line breaks or subheadings.
+            The articles contain information about key trends, patterns, or common issues. Your report should synthesize these insights into a comprehensive and compelling report. The title should appear on the first line, and the body should flow naturally without line breaks or subheadings.
+
 
             Remember:
-            1. Write a concise, impactful one-line title as the first line of the report. **The title must be 20 words or less.** Focus on making the title clear and engaging, with keywords that summarize the report.
-            2. The body of the report should be organized logically and flow in the order of introduction, main content, and conclusion.
-            3. Maintain a professional tone, using specific examples, figures, or patterns observed in the articles.
-            4. At the conclusion of your report, summarize the most significant findings succinctly.
-            5. Write the report in Korean.
+            1. **Write a concise, impactful, one-line title as the first line of the report. The title should be 20 words or less. Reports with titles longer than 20 words will be invalidated. Focus on using keywords that summarize the report to make the title clear and compelling.
+              **Use line breaks(\n) to separate the title from the body of the report.**
+            2. The body of the report should be logically organized in the following order: introduction, main content, and conclusion.
+            3. Maintain a professional tone by using specific examples, figures, or patterns observed in the article.
+            4. Include a concise summary of the most important findings in the conclusion of your report.
+            5. Write your report in Korean.
+
+            **Warning: Please make sure your title complies with the word count limit, as failure to do so will invalidate your report.
 
             Article list:
             {article_contents}
@@ -84,21 +92,22 @@ def createReport_openAI(article_contents):
             Report:
             """,
             f"""
-            You are tasked with writing a professional report based on multiple articles. Your report should provide a detailed analysis, focusing on notable patterns, figures, and insights.
+            You need to create a professional report based on multiple articles. The report should provide a detailed analysis that focuses on noteworthy patterns, figures, and insights.
 
-            Key points to remember:
-            1. The first line should include a concise title summarizing the report in a single, impactful sentence. **Ensure that the title is no more than 20 words long.** The title should highlight the report's main focus and attract attention.
-            2. The body of the report should follow a logical structure, flowing smoothly from introduction to main content to conclusion.
-            3. Cite specific data or examples to support your analysis, where relevant.
-            4. End the report with a summary of key takeaways.
-            5. Write the report in Korean.
+            Key points to remember
+            1. **The report begins with a concise title that summarizes the report in one sentence. This title should be no longer than 15 words or 50 characters.** If the title is longer than 15 words, the report is considered invalid, so be sure to stick to the word limit. The title should emphasize the main content of the report and grab attention.
+              **Use line breaks(\n) to separate the title from the body of the report.**
+            2. The body of the report should follow a logical structure from introduction to main points to conclusion.
+            3. Cite specific data or examples to support your analysis where relevant.
+            4. 4. Conclude the report by summarizing the main points.
+            5. **Write the report in Korean.**
+
+             **IMPORTANT** : Reports that do not follow the above key points will not be valid. Please make sure to follow the above key points when writing your report.
 
             Article list:
-            {article_contents}
-
-            Report:
             """
         ]
+
 
 
 
