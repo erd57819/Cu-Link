@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Optional
 from fastapi.responses import StreamingResponse
 from io import BytesIO
-from services.search_service import search_articles
+from services.search_service import search_by_keyword_and_date
 
 # 라우터 설정
 router = APIRouter()
@@ -25,9 +25,7 @@ async def search_news(request : SearchRequest):
     try:
         keyword_list = request.keywords
         date_list = request.date
-        print("라우터쪽 전달 데이터", keyword_list,date_list)
-        data = await search_articles(keyword_list, date_list)
-        print('data', len(data))
+        data = search_by_keyword_and_date(keyword_list, date_list)
         binary_stream = BytesIO(data)
         return StreamingResponse(binary_stream, media_type="application/octet-stream")
     except Exception as e :
