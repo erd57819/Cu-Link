@@ -159,8 +159,8 @@
     justify-content: center;
     align-items: center; /* 수직 가운데 정렬 */
     gap: 1rem; /* 페이지네이션과 버튼 사이 간격 조정 */
-    margin-top: 1%;
-    margin-left: -3rem;
+    /* margin-top: 1%; */
+    margin-left: -2rem;
 }
 
 
@@ -254,7 +254,7 @@
     display: flex;
     gap: 10px;
     position: fixed;
-    bottom: 48px;
+    bottom: 20px;
     left: 75%;
     transform: translateX(-50%);
     z-index: 1000;
