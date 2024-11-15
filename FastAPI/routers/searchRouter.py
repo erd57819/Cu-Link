@@ -9,10 +9,10 @@ from services.search_service import search_by_keyword_and_date
 # 라우터 설정
 router = APIRouter()
 
-# Pydantic 요청 모델 정의
+
 class SearchRequest(BaseModel):
-    keywords: Optional[List[str]] = []  # 키워드 리스트, 기본값 빈 리스트
-    date: Optional[List[str]] = []  # 날짜 리스트, 기본값 빈 리스트
+    keywords: Optional[Dict[str, List[str]]] = []  
+    dateRange: Optional[List[str]] = []  
 
 # Pydantic 응답 모델 정의
 class ArticleResponse(BaseModel):
@@ -22,11 +22,13 @@ class ArticleResponse(BaseModel):
 
 @router.post("/keywords")
 async def search_news(request : SearchRequest):
+    print('서버로 넘어온 키워드 값들', request)
     try:
-        keyword_list = request.keywords
-        date_list = request.date
-        data = search_by_keyword_and_date(keyword_list, date_list)
+        Keyword_list = request.keywords
+        
+        date_list = request.dateRange
+        data = search_by_keyword_and_date(Keyword_list,  date_list)
         binary_stream = BytesIO(data)
-        return StreamingResponse(binary_stream, media_type="application/octet-stream")
+        return StreamingResponse(binary_stream, media_type="application/octet-stream", headers={"Content-Disposition": "attachment; filename=articles.gz"},)
     except Exception as e :
         print(f"searchRouter Error : {e}")

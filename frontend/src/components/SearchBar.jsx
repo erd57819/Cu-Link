@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import '../css/SearchBar.css';
 import Swal from 'sweetalert2';
+import pako from "pako";
 
 const SearchBar = ({ articles, setFilteredArticles }) => {
-  const [keyword, setKeyword] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [keyword, setKeyword] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const parseKeywords = (keyword) => {
     const andKeywords = [];
@@ -30,6 +31,10 @@ const SearchBar = ({ articles, setFilteredArticles }) => {
   };
 
   const filterArticles = () => {
+    if (!Array.isArray(articles)) {
+      console.error("Articles is not a valid array:", articles);
+      return; // 함수 종료
+    }
     let filtered = articles; // articles를 props로 받아서 사용
     const { andKeywords, orKeywords, notKeywords } = parseKeywords(keyword);
 
@@ -94,14 +99,23 @@ const SearchBar = ({ articles, setFilteredArticles }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          andKeywords,
-          orKeywords,
-          notKeywords,
+          "keywords" : {
+          "andKeywords" : andKeywords,
+          "orKeywords" : orKeywords,
+          "notKeywords" : notKeywords,
+          },
           dateRange: dateValues,
         }),
       });
-      const data = await response.json();
-      console.log('서버 응답:', data);
+      // 바이너리 데이터로 응답 받기
+      const arrayBuffer = await response.arrayBuffer();
+       // 압축 해제 (gzip -> JSON)
+    const decompressedData = pako.inflate(new Uint8Array(arrayBuffer), { to: "string" });
+
+    // JSON 파싱
+    const jsonData = JSON.parse(decompressedData);
+    console.log("받은 데이터:", jsonData);
+    
     } catch (error) {
       console.error('서버 요청 중 오류 발생:', error);
     }
