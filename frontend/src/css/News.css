@@ -238,7 +238,8 @@
 }
 
 .select-all button:hover {
-    background-color: #644377;
+    background-color: #51017F;
+    color: #fff;
 }
 
 .select-all span {

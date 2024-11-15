@@ -140,16 +140,8 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
             <option value="articles">내가 저장한 기사&nbsp;&nbsp;</option>
             <option value="reports">레포트</option>
           </select>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="25"
-            height="15"
-            viewBox="0 0 26 21"
-            fill="none"
-            style={{ cursor: 'pointer' }}
-            onClick={() => selectRef.current.focus()}
-          >
-            <path d="M13 21L0.875645 0L25.1244 0L13 21Z" fill="#51017F" />
+          <svg width="18" height="17" viewBox="0 0 22 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.7321 18C11.9623 19.3333 10.0377 19.3333 9.26795 18L0.607695 3C-0.162105 1.66667 0.800146 0 2.33975 0L19.6603 0C21.1999 0 22.1621 1.66667 21.3923 3L12.7321 18Z" fill="#51017F" />
           </svg>
         </div>
 

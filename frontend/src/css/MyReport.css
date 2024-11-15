@@ -10,7 +10,6 @@
 }
 
 .myreport-slider-section {
-  margin-bottom: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,21 +36,21 @@
 
 /* 모든 카드에 기본 축소 및 투명도 적용 */
 .myreport-swiper-slide .myreport-card {
-  transform: scale(0.8);
+  transform: scale(0.7);
   opacity: 0.6;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 /* 현재 슬라이드 확대 효과 */
 .swiper-slide-active .myreport-card {
-  transform: scale(1);
+  transform: scale(0.85);
   opacity: 1;
 }
 
 /* 이전 및 다음 슬라이드 확대 비율 조정 */
 .swiper-slide-prev .myreport-card,
 .swiper-slide-next .myreport-card {
-  transform: scale(0.9);
+  transform: scale(0.7);
   opacity: 0.8;
 }
 
@@ -67,17 +66,13 @@
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  margin: 0;
+  margin-top: 10px;
 }
 
-.myreport-card:hover {
-  transform: scale(0.9); /* hover 시 적당한 크기로 확대 */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
+
 
 .myreport-card.selected {
-  border: 3px solid #6200ee;
-  box-shadow: 0 8px 20px rgba(98, 0, 238, 0.3);
+  background-color: #D1C7D7;
 }
 
 .myreport-card-image {
@@ -104,14 +99,14 @@
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  margin-top: 40px;
+  
 }
 
 .myreport-articles-list {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-height: 400px;
+  max-height: 110px;
   overflow-y: auto;
   margin-bottom: 20px;
 }
@@ -153,17 +148,31 @@
 }
 
 .myreport-button3 {
-  background-color: #6200ee;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  border: 1.5px solid #51017F;
+  background-color: #fff;
+  color: #51017F;
+  border-radius: 20px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  text-align: center;
+  font-family: 'Pretendard-Regular';
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  display: flex;
+  width: 105px;
+  height: 30px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-right: 12px;
 }
 
 .myreport-button3:hover {
-  background-color: #4e00b3;
+  background-color: #51017F;
+  color: #fff;
 }
 
 .myreport-card-content h3 {
@@ -180,7 +189,7 @@
 /* 화살표 버튼 스타일 */
 .swiper-button-next,
 .swiper-button-prev {
-  color: #6200ee !important;
+  color: white !important;
   font-size: 24px;
   width: 40px;
   height: 40px;
@@ -191,9 +200,9 @@
 }
 
 .swiper-button-prev {
-  left: -20px;
+  left: -10px;
 }
 
 .swiper-button-next {
-  right: -20px;
+  right: -10px;
 }

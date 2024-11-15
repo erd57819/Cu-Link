@@ -125,7 +125,7 @@ const MyReport = () => {
                 onClick={() => handleReportClick(article.rep_id)}
               >
                 <div className="myreport-select-icon">
-                  <AiOutlineCheckCircle size={24} color={selectedReportIds.has(article.rep_id) ? '#6200ee' : '#ccc'} />
+                  <AiOutlineCheckCircle size={20} color={selectedReportIds.has(article.rep_id) ? '#6200ee' : '#ccc'} />
                 </div>
                 <img
                   src="/images/intro3.jpg"
@@ -146,7 +146,7 @@ const MyReport = () => {
           ))}
         </Swiper>
       </div>
-      <h2>이 레포트를 작성하는데 쓸 기사들이에요!</h2>
+      <h4>이 레포트를 작성하는데 쓰인 기사들이에요!</h4>
       <div className="myreport-scroll-section">
         <div className="myreport-articles-list">
           {Object.values(selectedReportArticles).flat().map((article) => (
