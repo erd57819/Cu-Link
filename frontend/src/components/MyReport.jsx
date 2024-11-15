@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../css/MyReport.css';
 import Swal from 'sweetalert2';
@@ -14,6 +14,8 @@ const MyReport = () => {
   const [articles, setArticles] = useState([]);
   const [selectedReportArticles, setSelectedReportArticles] = useState({});
   const [selectedReportIds, setSelectedReportIds] = useState(new Set());
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -105,18 +107,28 @@ const MyReport = () => {
   return (
     <div className="myreport-report-box">
       <div className="myreport-slider-section">
+        {/* Custom Navigation Buttons */}
+        <div ref={prevRef} className="myreport-prev-button">‹</div>
         <Swiper
-          navigation={true}
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          onSwiper={(swiper) => {
+            // navigation을 동적으로 설정하여 Swiper가 초기화된 후 업데이트
+            setTimeout(() => {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+              swiper.navigation.init();
+              swiper.navigation.update();
+            });
+          }}
           modules={[Navigation, Autoplay]}
           className="myreport-slider"
-          spaceBetween={0}
+          spaceBetween={10}
           slidesPerView={3}
           centeredSlides={true}
           loop={true}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-          }}
         >
           {articles.map((article) => (
             <SwiperSlide key={article.rep_id} className="myreport-swiper-slide">
@@ -129,7 +141,6 @@ const MyReport = () => {
                 </div>
                 <img
                   src="/images/intro3.jpg"
-                  // src={article.rep_img_url?.startsWith('https://') ? article.rep_img_url : `https://via.placeholder.com/300?text=${article.rep_title}`}
                   className="myreport-card-image"
                 />
                 <div className="myreport-card-content">
@@ -145,6 +156,7 @@ const MyReport = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+        <div ref={nextRef} className="myreport-next-button">›</div>
       </div>
       <h4>이 레포트를 작성하는데 쓰인 기사들이에요!</h4>
       <div className="myreport-scroll-section">
