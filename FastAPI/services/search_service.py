@@ -65,11 +65,12 @@ def search_by_keyword_and_date(user_keywords, date_list):
         id_list = [record['cr_art_id'] for record in article_metadata]
         article_contents = fetch_article_content(id_list,bucket)
 
-    elif user_keywords:
+    elif user_keywords and date_list or not date_list :
         # 키워드가 있을 때 (날짜가 있는 경우와 없는 경우를 포함)
         id_list = search_by_fireindex(user_keywords)
         article_metadata = all_query(id_list, date_list, connection)
-        article_contents = fetch_article_content(id_list,bucket)
+        id_list_m = [record['cr_art_id'] for record in article_metadata]
+        article_contents = fetch_article_content(id_list_m,bucket)
 
     articles_data = {
         "metadata": article_metadata,
