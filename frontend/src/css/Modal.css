@@ -53,12 +53,13 @@
 }
 
 .modal-body::-webkit-scrollbar {
-  width: 12px; /* 스크롤바의 너비를 더 굵게 설정 */
+  width: 10px; /* 스크롤바의 너비를 더 굵게 설정 */
 }
 
 .modal-body::-webkit-scrollbar-thumb {
-  background-color: #6200ee; /* 보라색 스크롤바 */
+  background-color: #E5E5E5; /* 보라색 스크롤바 */
   border-radius: 6px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .modal-body::-webkit-scrollbar-track {
@@ -69,7 +70,7 @@
 .modal-button {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #6200ee;
+  background-color: #51017F;
   color: white;
   border: none;
   border-radius: 5px;
