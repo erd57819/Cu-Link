@@ -1,5 +1,5 @@
 import firebase_admin
-from firebase_admin import credentials, storage
+from firebase_admin import credentials, storage, firestore
 from db.settings import firebase_key
 # 이미 초기화된 경우 에러 방지
 if not firebase_admin._apps:
@@ -9,3 +9,5 @@ if not firebase_admin._apps:
 
 # 버킷 할당
 bucket = storage.bucket()
+
+fire_db = firestore.client()
