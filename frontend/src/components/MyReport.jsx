@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../css/MyReport.css';
 import Swal from 'sweetalert2';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Link } from 'react-router-dom';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/autoplay';
@@ -23,6 +24,8 @@ const MyReport = () => {
         const response = await axios.get('http://localhost:3000/report/getreport', {
           withCredentials: true,
         });
+        console.log("이미지확인!!", response.data);
+
         setArticles(response.data);
       } catch (error) {
         console.error('데이터를 가져오는 데 오류가 발생했습니다:', error);
@@ -104,6 +107,11 @@ const MyReport = () => {
     });
   };
 
+  // 체크한 리포트가 이미지가 없을경우 이벤트
+  const getValidImage = (image) => {
+    return image && image !== "이미지 없음" ? image : "/images/cu_image.webp";
+  };
+
   return (
     <div className="myreport-report-box">
       <div className="myreport-slider-section">
@@ -140,7 +148,7 @@ const MyReport = () => {
                   <AiOutlineCheckCircle size={20} color={selectedReportIds.has(article.rep_id) ? '#6200ee' : '#ccc'} />
                 </div>
                 <img
-                  src="/images/intro3.jpg"
+                  src={article.rep_img}
                   className="myreport-card-image"
                 />
                 <div className="myreport-card-content">
@@ -162,22 +170,30 @@ const MyReport = () => {
       <div className="myreport-scroll-section">
         <div className="myreport-articles-list">
           {Object.values(selectedReportArticles).flat().map((article) => (
-            <div key={article.cr_art_id} className="myreport-article-card">
-              <img
-                src={article.cr_art_img || "/images/intro3.jpg"}
-                className="myreport-article-image1"
-              />
-
-              <div className="myreport-article-content">
-                <h3>{article.cr_art_title}</h3>
-                <p>{new Date(article.cr_art_date).toLocaleDateString()}</p>
-                <p>
-                  {article.cr_art_content?.length > 100
-                    ? `${article.cr_art_content.slice(0, 100)}...`
-                    : article.cr_art_content}
-                </p>
+            <a
+              key={article.cr_art_id}
+              href={article.cr_art_url} // 기사 URL
+              target="_blank" // 새 창으로 열기
+              rel="noopener noreferrer" // 보안상의 이유로 추가
+              className="link"
+            >
+              <div className="myreport-article-card">
+                <img
+                  src={getValidImage(article.cr_art_img)}
+                  className="myreport-article-image1"
+                  alt={article.cr_art_title}
+                />
+                <div className="myreport-article-content">
+                  <h3>{article.cr_art_title}</h3>
+                  <p>{new Date(article.cr_art_date).toLocaleDateString()}</p>
+                  <p>
+                    {article.cr_art_content?.length > 100
+                      ? `${article.cr_art_content.slice(0, 100)}...`
+                      : article.cr_art_content}
+                  </p>
+                </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
         <div className="myreport-buttons">

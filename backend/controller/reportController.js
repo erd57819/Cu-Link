@@ -25,7 +25,11 @@ exports.register = (req, res) => {
 
 // 레포트 가져오기
 exports.getReport = (req, res) => {
-  const sql = "SELECT rep_id, rep_title, rep_content, rep_date, CONCAT('https://storage.googleapis.com/news-data01.appspot.com/images/', rep_id, '.png') AS rep_img_url FROM Reports WHERE user_id=?";
+  const sql = `
+        SELECT rep_id, rep_title, rep_content, rep_img, rep_date
+        FROM Reports
+        WHERE user_id = ?
+    `;
   const user_id = req.session.userId
 
   conn.query(sql, [user_id], (err, results) => {
@@ -33,6 +37,8 @@ exports.getReport = (req, res) => {
       console.error("리포트 가져오기 오류:", err);
       return res.status(500).json({ message: "리포트 데이터를 가져오는 데 실패했습니다" });
     }
+    console.log('ㅈㅂ',results);
+    
     res.json(results); // 모든 레포트 반환
   });
 };
@@ -44,7 +50,7 @@ exports.getReportArticles = (req, res) => {
 
   const sql = `
     SELECT CA.cr_art_id, CA.cr_art_title, CA.cr_art_img, CA.cr_art_url, 
-           CA.cr_art_company, CA.cr_art_date 
+           CA.cr_art_company, CA.cr_art_url, CA.cr_art_date 
     FROM Cr_Articles CA
     JOIN ArticleReports AR ON CA.cr_art_id = AR.art_id
     WHERE AR.rep_id = ?
