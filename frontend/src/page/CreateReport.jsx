@@ -34,17 +34,20 @@ function CreateReport() {
     const imgSrc = `data:image/png;base64,${cleanedImageData}`;
     return imgSrc;
   }) || [];
-
   const contents = parsedData?.report_data || [];
+  
 
+  //리포트 요소 false로 초기화
   const [selectedTitles, setSelectedTitles] = useState(Array(title.length).fill(false));
   const [selectedImages, setSelectedImages] = useState(Array(image.length).fill(false));
   const [selectedContents, setSelectedContents] = useState(Array(contents.length).fill(false));
+
   const [previewContent, setPreviewContent] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
 
   const getSelectedIndex = (selectedArray) => selectedArray.findIndex(Boolean);
 
+  //리포트 생성시 선택되지 않은 값 예외처리.
   const handleCreateReport = async () => {
     const isTitleSelected = selectedTitles.includes(true);
     const isImageSelected = selectedImages.includes(true);
@@ -63,10 +66,12 @@ function CreateReport() {
       return;
     }
 
+    //선택된 값 변수 저장
     const selectedTitle = title[getSelectedIndex(selectedTitles)];
     const selectedImage = image[getSelectedIndex(selectedImages)];
     const selectedContent = contents[getSelectedIndex(selectedContents)];
 
+    //저장된 값 세션으로 report 페이지로 전송
     Swal.fire({
       title: "리포트 생성 성공 o(〃＾▽＾〃)o",
       icon: 'success'
@@ -82,6 +87,7 @@ function CreateReport() {
     });
   };
 
+  //더블 클릭시 미리보기 클릭
   const handleDoubleClick = (index) => {
     setPreviewContent(contents[index]);
     setShowPreview(true);
@@ -129,7 +135,7 @@ function CreateReport() {
         {contents.map((item, index) => (
           <div
             key={index}
-            className={`grid-item content1 ${selectedContents[index] ? 'selected' : ''}`}
+            className={`grid-item contents_reportcreate ${selectedContents[index] ? 'selected' : ''}`}
             onDoubleClick={() => handleDoubleClick(index)}
             onClick={() => handleSelect(index, setSelectedContents)}
           >

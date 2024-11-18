@@ -43,7 +43,7 @@
     flex-shrink: 0;
     ;
 }
-.content1 {
+.contents_reportcreate {
     width: 26.5rem;
     height: 17rem;
     overflow-y: auto;
@@ -56,17 +56,17 @@
     scrollbar-color: #E5E5E5 transparent; /* 스크롤바 색상 (앞: 스크롤바, 뒤: 배경) */
     
 }
-.content1::-webkit-scrollbar-button {
+.contents_reportcreate::-webkit-scrollbar-button {
     display: none; /* 스크롤바 화살표를 숨김 */
 }
 
-.content1::-webkit-scrollbar-track {
+.contents_reportcreate::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 10px; /* 트랙에 둥근 모서리 적용 */
 
 }
 
-.content1::-webkit-scrollbar-thumb {
+.contents_reportcreate::-webkit-scrollbar-thumb {
     background-color: #d1c7d7;
     border-radius: 10px; /* 썸에 둥근 모서리 적용 */
     border: 2px solid #f4f4f4; /* 트랙과 썸 사이의 여백 */

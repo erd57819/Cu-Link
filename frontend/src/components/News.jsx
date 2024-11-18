@@ -7,24 +7,27 @@ import Swal from 'sweetalert2';
 import pako from 'pako';
 import { ClimbingBoxLoader } from 'react-spinners';
 
+//대체할 이미지 가져오기.
 const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 
 const News = () => {
   const [articles, setArticles] = useState([]);
   const [selectedArticleIds, setSelectedArticleIds] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
-  const [articlesPerPage, setArticlesPerPage] = useState(6);
   const [summaryData, setSummaryData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
+  const articlesPerPage = 6;
 
+  //사용자가 선택한 페이지.
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     console.log("Selected Page:", pageNumber);
   };
 
+  //선택한 페이지를 요청하여 화면에 띄워주기.
   useEffect(() => {
     const fetchArticles = async () => {
       try {
@@ -40,20 +43,17 @@ const News = () => {
     fetchArticles();
   }, [currentPage, articlesPerPage]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setArticlesPerPage(window.innerWidth <= 768 ? 4 : 6);
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
+  //페이지 번호 표시할 개수.
   const pageRange = 5;
+  //전체 페이지 수 계산.
   const totalPages = Math.ceil(totalCount / articlesPerPage);
+  //시작페이지 계산.
   const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
+  //끝 페이지 계산.
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
+ 
 
+  //기사 체크박스.
   const handleCheckboxChange = (articleId) => {
     setSelectedArticleIds(prevSelected => {
       const newSelected = new Set(prevSelected);
@@ -66,12 +66,13 @@ const News = () => {
     });
   };
 
+  //기사 전체 체크박스.
   const handleSelectAll = () => {
-    const allArticlesOnPageSelected = articles.every(article => selectedArticleIds.has(article.cr_art_id));
+    const allArticles = articles.every(article => selectedArticleIds.has(article.cr_art_id));
 
     setSelectedArticleIds(prevSelected => {
       const newSelected = new Set(prevSelected);
-      if (allArticlesOnPageSelected) {
+      if (allArticles) {
         articles.forEach(article => newSelected.delete(article.cr_art_id));
       } else {
         articles.forEach(article => newSelected.add(article.cr_art_id));
@@ -80,6 +81,7 @@ const News = () => {
     });
   };
 
+  //기사 요약 예외처리
   const handleSummarize = async () => {
     if (selectedArticleIds.size === 0) {
       Swal.fire({
@@ -92,6 +94,7 @@ const News = () => {
 
     setIsLoading(true);
 
+    //기사 요약 모델에 요청
     try {
       const response = await fetch('http://localhost:8000/summarize/summarize-article', {
         method: 'POST',
@@ -184,7 +187,7 @@ const News = () => {
   
   
   
-
+  //선택한 기사 예외처리
   const handleCreateReport = async () => {
     if (selectedArticleIds.size === 0) {
       Swal.fire({
@@ -195,6 +198,7 @@ const News = () => {
       return;
     }
 
+    //리포트 생성시 최대 선택 기사 개수.
     if (selectedArticleIds.size > 6) {
       Swal.fire({
         title: "기사 선택 개수 초과",
@@ -206,6 +210,7 @@ const News = () => {
 
     setIsLoading(true);
 
+    //리포트 생성 요청
     try {
       sessionStorage.setItem('selectedArticleIds', JSON.stringify(Array.from(selectedArticleIds)));
       const response = await fetch('http://localhost:8000/report/createReport', {
