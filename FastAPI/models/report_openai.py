@@ -50,10 +50,10 @@ def createReport_openAI(article_contents):
         # 3개의 프롬프트 템플릿
         prompt_text_templates = [
             f"""
-            You're a skilled analyst and report writer, and your role is to identify key takeaways from multiple articles and draw new insights from them to create a report.
-
-            Based on the following articles, you've identified important information, common issues, or noteworthy patterns that will provide new perspectives and analysis. The title of the report should be on the first line, and the body of the report should flow naturally with no line breaks.
-
+            You're a talented report writer.
+            
+            It's your job to read articles from multiple disciplines and build reports based on those articles that provide detailed analysis that focuses on notable patterns, numbers, and insights.
+            
             Here are a few things to keep in mind when creating a report:
             1. **On the first line, write a concise title that is representative of the report. The title should be no longer than 15 words or 50 characters. **This is a very important requirement and must be adhered to as the entire report will be invalidated if the title exceeds 15 words. Write a clear and compelling title using keywords that are relevant to the content of the report.
               **Use line breaks(\n) to separate the title from the body of the report.**
@@ -71,11 +71,10 @@ def createReport_openAI(article_contents):
             Report:
             """,
             f"""
-            As an expert analyst, your job is to create insightful reports based on the following articles.
+            As an expert analyst, your job is to create insightful reports based on the articles presented to you.
 
-            The articles contain information about key trends, patterns, or common issues. Your report should synthesize these insights into a comprehensive and compelling report. The title should appear on the first line, and the body should flow naturally without line breaks or subheadings.
-
-
+            The articles contain information about key trends, patterns, or common issues.
+            You need to synthesize these insights into a compelling report based on the article content. The title should appear on the first line, and the body should flow naturally without line breaks or subheadings.
             Remember:
             1. **Write a concise, impactful, one-line title as the first line of the report. The title should be 20 words or less. Reports with titles longer than 20 words will be invalidated. Focus on using keywords that summarize the report to make the title clear and compelling.
               **Use line breaks(\n) to separate the title from the body of the report.**
@@ -84,7 +83,7 @@ def createReport_openAI(article_contents):
             4. Include a concise summary of the most important findings in the conclusion of your report.
             5. Write your report in Korean.
 
-            **Warning: Please make sure your title complies with the word count limit, as failure to do so will invalidate your report.
+            **Important**: The title must be based on the content of the article and limited to no more than 15 words or 50 characters.
 
             Article list:
             {article_contents}
@@ -92,7 +91,10 @@ def createReport_openAI(article_contents):
             Report:
             """,
             f"""
-            You need to create a professional report based on multiple articles. The report should provide a detailed analysis that focuses on noteworthy patterns, figures, and insights.
+            You're a skilled analyst and report writer, and your role is to identify key takeaways from multiple articles and draw new insights to create a report.
+            
+            Based on the following articles, identify important information, common issues, or notable patterns that can provide new perspectives and analysis.
+            The title of the report should be on the first line, and the body of the report should flow naturally without line breaks.
 
             Key points to remember
             1. **The report begins with a concise title that summarizes the report in one sentence. This title should be no longer than 15 words or 50 characters.** If the title is longer than 15 words, the report is considered invalid, so be sure to stick to the word limit. The title should emphasize the main content of the report and grab attention.
@@ -102,7 +104,8 @@ def createReport_openAI(article_contents):
             4. 4. Conclude the report by summarizing the main points.
             5. **Write the report in Korean.**
 
-             **IMPORTANT** : Reports that do not follow the above key points will not be valid. Please make sure to follow the above key points when writing your report.
+            **Important**: The title must be based on the content of the article and limited to no more than 15 words **or** 50 characters. Violation of this condition will invalidate the report. Title writing is of utmost importance.
+            **Reports must be based on the content of the article, and any reports that are unrelated to the article will be invalid.**
 
             Article list:
             """

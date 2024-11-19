@@ -1,10 +1,10 @@
 import openai
 from fastapi import HTTPException
 
-from db.settings import chatbot_openai_key
+from db.settings import openai_key
 
 # OpenAI API 키 설정
-openai.api_key = chatbot_openai_key
+openai.api_key = openai_key
 
 # 프롬프트 추가
 site_info_prompt = """
@@ -26,7 +26,7 @@ site_info_prompt = """
 
 ⚠️ 이 챗봇은 요약이나 레포트를 직접 생성하지 않습니다. 사용자가 요약이나 레포트 생성을 요청할 경우, 챗봇은 이를 수행할 기능을 갖고 있지 않음을 안내합니다.
 
-서비스와 관련 없는 질문에 대해서는 부드럽게 돌려서 거절하고, 항상 친근하고 정중한 말투를 유지하세요.
+⚠️ 사용자의 비속어 사용 또는 서비스와 관련 없는 질문에 대해서는 부드럽게 돌려서 거절하고, 항상 친근하고 정중한 말투를 유지하세요.
 """
 
 def get_chatbot_response(user_message: str) -> str:
