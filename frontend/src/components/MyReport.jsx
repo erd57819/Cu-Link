@@ -15,6 +15,8 @@ const MyReport = () => {
   const [articles, setArticles] = useState([]);
   const [selectedReportArticles, setSelectedReportArticles] = useState({});
   const [selectedReportIds, setSelectedReportIds] = useState(new Set());
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
+  const [currentReport, setCurrentReport] = useState(null); // 현재 선택된 리포트
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
@@ -24,8 +26,6 @@ const MyReport = () => {
         const response = await axios.get('http://localhost:3000/report/getreport', {
           withCredentials: true,
         });
-        console.log("이미지확인!!", response.data);
-
         setArticles(response.data);
       } catch (error) {
         console.error('데이터를 가져오는 데 오류가 발생했습니다:', error);
@@ -112,10 +112,19 @@ const MyReport = () => {
     return image && image !== "이미지 없음" ? image : "/images/cu_image.webp";
   };
 
+  const handleReportDoubleClick = (report) => {
+    setCurrentReport(report);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentReport(null);
+  };
+
   return (
     <div className="myreport-report-box">
       <div className="myreport-slider-section">
-        {/* Custom Navigation Buttons */}
         <div ref={prevRef} className="myreport-prev-button">‹</div>
         <Swiper
           navigation={{
@@ -123,7 +132,6 @@ const MyReport = () => {
             nextEl: nextRef.current,
           }}
           onSwiper={(swiper) => {
-            // navigation을 동적으로 설정하여 Swiper가 초기화된 후 업데이트
             setTimeout(() => {
               swiper.params.navigation.prevEl = prevRef.current;
               swiper.params.navigation.nextEl = nextRef.current;
@@ -143,6 +151,7 @@ const MyReport = () => {
               <div
                 className={`myreport-card ${selectedReportIds.has(article.rep_id) ? 'selected' : ''}`}
                 onClick={() => handleReportClick(article.rep_id)}
+                onDoubleClick={() => handleReportDoubleClick(article)}
               >
                 <div className="myreport-select-icon">
                   <AiOutlineCheckCircle size={20} color={selectedReportIds.has(article.rep_id) ? '#6200ee' : '#ccc'} />
@@ -172,13 +181,13 @@ const MyReport = () => {
           {Object.values(selectedReportArticles).flat().map((article) => (
             <a
               key={article.cr_art_id}
-              href={article.cr_art_url} // 기사 URL
-              target="_blank" // 새 창으로 열기
-              rel="noopener noreferrer" // 보안상의 이유로 추가
+              href={article.cr_art_url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="link"
             >
               <div className="myreport-article-card">
-                <img
+              <img
                   src={getValidImage(article.cr_art_img)}
                   className="myreport-article-image1"
                   alt={article.cr_art_title}
@@ -198,11 +207,29 @@ const MyReport = () => {
         </div>
         <div className="myreport-buttons">
           <button className="myreport-button3" onClick={handleSelectAll}>
-            {selectedReportIds.size === articles.length ? '전체선택 해제' : '전체선택'}
+            {selectedReportIds.size === articles.length ? '전체해제' : '전체선택'}
           </button>
           <button className="myreport-button3" onClick={handleDelete}>삭제하기</button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="myreport-modal-overlay" onClick={closeModal}>
+          <div className="myreport-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="myreport-modal-close" onClick={closeModal}>
+              &times;
+            </button>
+            <div className="myreport-modal-header">{currentReport.rep_title}</div>
+            <img
+              src={currentReport.rep_img || "/images/cu_image.webp"}
+              alt={currentReport.rep_title}
+              className="myreport-modal-image"
+            />
+            <div className="myreport-modal-content">{currentReport.rep_content}</div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
