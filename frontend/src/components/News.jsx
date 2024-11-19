@@ -323,7 +323,7 @@ const News = () => {
         <div className="fixed-buttons">
           <button className="save-button" onClick={handleSave}>저장하기</button>
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button>
-          <button className="create-report-button1" onClick={handleCreateReport}>레포트 생성</button>
+          <button className="create-report-button_news" onClick={handleCreateReport}>레포트 생성</button>
         </div>
       </div>
 

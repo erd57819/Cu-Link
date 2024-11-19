@@ -1,9 +1,11 @@
 // MyNews.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../css/News.css';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
+import pako from 'pako';
 import { ClimbingBoxLoader } from 'react-spinners';
 
 const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
@@ -17,6 +19,7 @@ const MyNews = () => {
   const [summaryData, setSummaryData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [articles, setArticles] = useState([]);
+  const navigate = useNavigate();
   const pageRange = 5;
 
   useEffect(() => {
@@ -193,14 +196,84 @@ const MyNews = () => {
     }
 
   };
+  // 리포트 생성
+  const handleCreateReport = async () => {
+    const articlesId = [];
+
+    for(const obj of selectedArticles){
+      if("cr_art_id" in obj) {
+        articlesId.push(obj.cr_art_id)
+      }
+    }
+    console.log(articlesId)
+    // 리포트 기사 예외처리
+    if (articlesId.size === 0) {
+      Swal.fire({
+        title:"기사를 선택해주세요",
+        text:"선택된 기사가 없습니다.",
+        icon:'warning'
+      })
+      return;
+    }
+    // 리포트 생성시 최대 선택 기사 개수.
+    if (articlesId.size > 6) {
+      Swal.fire({
+        title:"기사 선택 개수 초과",
+        text:"기사 최대 선택 개수는 6개 입니다.",
+        icon:'warning'
+      });
+      return;
+
+    }
+    setIsLoading(true);
+
+    //리포트 생성 요청
+    try{
+      sessionStorage.setItem('articlesId', JSON.stringify(Array.from(articlesId)));
+      const response = await fetch('http://localhost:8000/report/createReport', {
+        method:'POST',
+        headers: {
+          'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify({ ids: Array.from(articlesId) })
+      })
+      if (!response.ok) {
+        throw new Error(`Server error : ${response.status}`)
+      }
+      const compressedData = await response.arrayBuffer();
+      const decompressedData = pako.inflate(new Uint8Array(compressedData));
+      const textDecoder = new TextDecoder('utf-8');
+      const jsonString = textDecoder.decode(decompressedData);
+      const parsedData = JSON.parse(jsonString);
+
+      Swal.fire({
+        title: '레포트가 성공적으로 생성되었습니다',
+        icon:'success'
+      })
+
+      navigate('/createreport', {
+        state: { parsedData }
+      });
+    } catch(error){
+      console.error("Error fetching compressed data:", error);
+      Swal.fire({
+        title: '레포트 생성에 실패했습니다',
+        text: error.message,
+        icon: 'error',
+      });
+
+    } finally{
+      setIsLoading(false);
+    }
+  }
   
   return (
     <div className="news-container">
       <div className="select-all">
         {currentArticles.length > 0 && (
           <>
-            <button onClick={handleSelectAll}>전체선택</button>
             <span>{`선택된 기사 ${selectedArticles.length}개 / 총 ${savedArticles.length}개`}</span>
+            <button onClick={handleSelectAll}>전체선택</button>
           </>
         )}
       </div>
@@ -257,6 +330,7 @@ const MyNews = () => {
         <div className="fixed-buttons">
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button>
           <button className="summarize-button" onClick={handleDelete}>삭제하기</button>
+          <bttton className="create-report-button_mynews" onClick={handleCreateReport}>레포트 생성</bttton>
         </div>
       </div>
       {isLoading && (
