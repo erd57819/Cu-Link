@@ -3,10 +3,11 @@ import '../css/SearchBar.css';
 import Swal from 'sweetalert2';
 import pako from "pako";
 
-const SearchBar = ({ articles, setFilteredArticles }) => {
+const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
   const [keyword, setKeyword] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  
 
   const parseKeywords = (keyword) => {
     const andKeywords = [];
@@ -115,7 +116,7 @@ const SearchBar = ({ articles, setFilteredArticles }) => {
     // JSON 파싱
     const jsonData = JSON.parse(decompressedData);
     console.log("받은 데이터:", jsonData);
-    
+    setSearchResults(jsonData)
     } catch (error) {
       console.error('서버 요청 중 오류 발생:', error);
     }
