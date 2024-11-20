@@ -13,6 +13,7 @@ const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 const News = ({ searchResults }) => {
   console.log("Received searchResults:", searchResults || "No data received");
   const [articles, setArticles] = useState([]);
+  
   const [selectedArticleIds, setSelectedArticleIds] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [summaryData, setSummaryData] = useState([]);
@@ -33,8 +34,9 @@ const News = ({ searchResults }) => {
   useEffect(() => {
     console.log("넘어온 데이터입니다",searchResults)
     if (searchResults !== null) {
-      console.log('들어옴');
       setArticles(searchResults.metadata);
+      const count = searchResults.metadata.length
+      setTotalCount(count)
     }else{
       const fetchArticles = async () => {
         try {
@@ -42,7 +44,7 @@ const News = ({ searchResults }) => {
           const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&`);
           setArticles(response.data.articles);
           setTotalCount(response.data.total_count);
-          console.log(response.data);
+          
           
           console.log("Current Page:", currentPage);
           
@@ -266,6 +268,11 @@ const News = ({ searchResults }) => {
     }
   };
 
+  const displayedArticles = articles.slice(
+    (currentPage - 1) * articlesPerPage,
+    currentPage * articlesPerPage
+  );
+
   return (
     <div className="news-container">
       <div className="select-all">
@@ -274,7 +281,7 @@ const News = ({ searchResults }) => {
       </div>
       <div className="articles">
         {articles.length > 0 ? (
-          articles.map((article) => (
+          displayedArticles.map((article) => (
             <div key={article.cr_art_id} className="article">
               <div
                 className="article-checkbox-wrapper"
@@ -293,7 +300,9 @@ const News = ({ searchResults }) => {
                   <p>{new Date(article.cr_art_date).toLocaleDateString()}</p>
                 </div>
                 <div className="article-text">
-                  <p>{article.cr_art_content}</p>
+                <p>
+                    {article.cr_art_content}
+                </p>
                 </div>
                 <div className="article-image">
                   <img 
