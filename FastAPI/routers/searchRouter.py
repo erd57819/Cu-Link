@@ -2,7 +2,7 @@ import logging
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from typing import List, Dict, Optional
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse,StreamingResponse
 from io import BytesIO
 from services.search_service import search_by_keyword_and_date
 
@@ -28,7 +28,11 @@ async def search_news(request : SearchRequest):
         
         date_list = request.dateRange
         data = search_by_keyword_and_date(Keyword_list,  date_list)
+        # 검색 결과가 없을때 클라이언트로 404 코드 보내기
+        if isinstance(data, dict) and "message" in data:
+            return JSONResponse(content=data, status_code=404)
         binary_stream = BytesIO(data)
         return StreamingResponse(binary_stream, media_type="application/octet-stream", headers={"Content-Disposition": "attachment; filename=articles.gz"},)
     except Exception as e :
         print(f"searchRouter Error : {e}")
+        return JSONResponse(content={"error": "서버에서 오류가 발생했습니다.", "details": str(e)}, status_code=500)
