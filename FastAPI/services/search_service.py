@@ -91,44 +91,18 @@ def search_by_keyword_and_date(user_keywords: dict, date_list: list = None):
         id_list = search_by_fireindex(user_keywords)
         if not id_list:  # 검색 결과가 없는 경우
             return {"message": "검색된 기사가 없습니다."}
-        # 메타데이터 조회
         article_metadata = all_query(id_list, date_list, connection)
-        print("Metadata fetched:", article_metadata)
-        if not article_metadata:
-            return {"message": "메타데이터 조회 결과가 없습니다.", "status": 404}
-
-        
         id_list_m = [record['cr_art_id'] for record in article_metadata]
-        
-        # 콘텐츠 조회
         article_contents = fetch_article_content(id_list_m,bucket)
-        print("Contents fetched:", article_contents)
-        if not article_contents:
-            return {"message": "콘텐츠 조회 결과가 없습니다.", "status": 404}
-
-    
-    # ID 기반으로 metadata와 contents 매칭
-    metadata_dict = {str(item['cr_art_id']): item for item in article_metadata}  # ID를 문자열로 변환
-    combined_data = []
-
-    for content in article_contents:
-        for article_id, article_content in content.items():  # 콘텐츠 데이터 처리
-            article_id = str(article_id)  # 콘텐츠 ID를 문자열로 변환
-            if article_id in metadata_dict:  # 메타데이터와 매칭
-                combined_data.append({
-                    "id": article_id,
-                    "metadata": metadata_dict[article_id],
-                    "content": article_content
-                })
-
-    if not combined_data:
-        return {"message": "매칭된 데이터가 없습니다.", "status": 404}
 
     articles_data = {
-        "articles": combined_data
+        "metadata": article_metadata,
+        "contents": article_contents
     }
+    # 결과가 없으면 메시지 반환
+    if not articles_data["metadata"] and not articles_data["contents"]:
+        return {"message": "검색된 기사가 없습니다."}
 
-    print("최종 묶음 데이터",articles_data)
     json_text = json.dumps(articles_data, default=default_serializer).encode('utf-8')
     articles_data_gzip = gzip.compress(json_text)
     return articles_data_gzip
