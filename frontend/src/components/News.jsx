@@ -11,6 +11,7 @@ import { ClimbingBoxLoader } from 'react-spinners';
 const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 
 const News = ({ searchResults }) => {
+  console.log("Received searchResults:", searchResults || "No data received");
   const [articles, setArticles] = useState([]);
   const [selectedArticleIds, setSelectedArticleIds] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,18 +26,24 @@ const News = ({ searchResults }) => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     console.log("Selected Page:", pageNumber);
-  };
+    
+  };  
 
   //선택한 페이지를 요청하여 화면에 띄워주기.
   useEffect(() => {
-    if (searchResults && searchResults.length > 0) {
-      setArticles(searchResults);
+    console.log("넘어온 데이터입니다",searchResults)
+    if (searchResults !== null) {
+      console.log('들어옴');
+      setArticles(searchResults.metadata);
     }else{
       const fetchArticles = async () => {
         try {
+          
           const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&`);
           setArticles(response.data.articles);
           setTotalCount(response.data.total_count);
+          console.log(response.data);
+          
           console.log("Current Page:", currentPage);
           
         } catch (error) {
