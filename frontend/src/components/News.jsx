@@ -10,7 +10,7 @@ import { ClimbingBoxLoader } from 'react-spinners';
 //대체할 이미지 가져오기.
 const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 
-const News = () => {
+const News = ({ searchResults }) => {
   const [articles, setArticles] = useState([]);
   const [selectedArticleIds, setSelectedArticleIds] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,7 +18,6 @@ const News = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
-  const [selectedArticles, setSelectedArticles] = useState([]); // 선택된 기사 상태 추가
   const navigate = useNavigate();
   const articlesPerPage = 6;
 
@@ -30,19 +29,27 @@ const News = () => {
 
   //선택한 페이지를 요청하여 화면에 띄워주기.
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&`);
-        setArticles(response.data.articles);
-        setTotalCount(response.data.total_count);
-        console.log("Current Page:", currentPage);
-      } catch (error) {
-        console.error('Failed to fetch articles:', error);
-      }
-    };
+    if (searchResults && searchResults.length > 0) {
+      setArticles(searchResults);
+    }else{
+      const fetchArticles = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&`);
+          setArticles(response.data.articles);
+          setTotalCount(response.data.total_count);
+          console.log("Current Page:", currentPage);
+          
+        } catch (error) {
+          console.error('Failed to fetch articles:', error);
+        }
+      };
+      fetchArticles();
+    }
+    
+  }, [searchResults,currentPage, articlesPerPage]);
 
-    fetchArticles();
-  }, [currentPage, articlesPerPage]);
+ 
+
 
   //페이지 번호 표시할 개수.
   const pageRange = 5;
@@ -54,11 +61,9 @@ const News = () => {
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
  
 
+  //기사 체크박스.
   const handleCheckboxChange = (articleId) => {
-    const article = articles.find(a => a.cr_art_id === articleId);
-    if (!article) return;
-  
-    setSelectedArticleIds((prevSelected) => {
+    setSelectedArticleIds(prevSelected => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(articleId)) {
         newSelected.delete(articleId);
@@ -67,40 +72,26 @@ const News = () => {
       }
       return newSelected;
     });
-  
-    setSelectedArticles((prevSelected) => {
-      const newSelected = [...prevSelected];
-      const index = newSelected.findIndex((a) => a.cr_art_id === articleId);
-      if (index > -1) {
-        newSelected.splice(index, 1);
+  };
+
+  //기사 전체 체크박스.
+  const handleSelectAll = () => {
+    const allArticles = articles.every(article => selectedArticleIds.has(article.cr_art_id));
+
+    setSelectedArticleIds(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (allArticles) {
+        articles.forEach(article => newSelected.delete(article.cr_art_id));
       } else {
-        newSelected.push(article);
+        articles.forEach(article => newSelected.add(article.cr_art_id));
       }
       return newSelected;
     });
   };
-  
-
-  //기사 전체 체크박스.
-  const handleSelectAll = () => {
-    const allSelected = articles.every((article) =>
-      selectedArticleIds.has(article.cr_art_id)
-    );
-  
-    if (allSelected) {
-      setSelectedArticleIds(new Set());
-      setSelectedArticles([]);
-    } else {
-      const newSelectedIds = new Set(articles.map((article) => article.cr_art_id));
-      setSelectedArticleIds(newSelectedIds);
-      setSelectedArticles(articles);
-    }
-  };
-  
 
   //기사 요약 예외처리
   const handleSummarize = async () => {
-    if (selectedArticles.length === 0) {
+    if (selectedArticleIds.size === 0) {
       Swal.fire({
         title: "기사를 선택해주세요",
         text: "선택된 기사가 없습니다. 요약할 기사를 선택해 주세요.",
@@ -108,28 +99,31 @@ const News = () => {
       });
       return;
     }
-  
+
     setIsLoading(true);
-  
+
+    //기사 요약 모델에 요청
     try {
-      console.log("요약하기 요청 시작");
       const response = await fetch('http://localhost:8000/summarize/summarize-article', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          articles: selectedArticles.map((article) => ({
-            cr_art_id: article.cr_art_id,
-            cr_art_title: article.cr_art_title,
-            cr_art_url: article.cr_art_url,
-          })),
+          articles: Array.from(selectedArticleIds).map(id => {
+            const article = articles.find(a => a.cr_art_id === id);
+            return {
+              cr_art_id: article.cr_art_id,
+              cr_art_title: article.cr_art_title,
+              cr_art_url: article.cr_art_url
+            };
+          })
         }),
       });
       if (!response.ok) {
-        throw new Error(`서버 응답 오류: ${response.status}`);
+        throw new Error(`Server error: ${response.status}`);
       }
-  
+
       const data = await response.json();
       setSummaryData(data.summarized_contents);
       setIsModalOpen(true);
@@ -144,7 +138,6 @@ const News = () => {
       setIsLoading(false);
     }
   };
-  
 
   const handleSave = async () => {
     if (selectedArticleIds.size === 0) {
