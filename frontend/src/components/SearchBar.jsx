@@ -94,7 +94,7 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
 
     // FastAPI 엔드포인트로 데이터 전송
     try {
-      const response = await fetch('http://localhost:8000/search/keywords', {
+      const response = await fetch('http://15.164.148.20:8000/search/keywords', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

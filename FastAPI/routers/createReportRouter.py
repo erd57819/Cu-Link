@@ -39,7 +39,7 @@ import pako from 'pako';
 
 async function fetchCompressedData() {
     try {
-        const response = await axios.post("http://localhost:8000/report/createReport", {
+        const response = await axios.post("http://15.164.148.20:8000/report/createReport", {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',

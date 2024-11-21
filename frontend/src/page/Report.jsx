@@ -45,7 +45,7 @@ function Report() {
     }
 
     try {
-      const res = await fetch('http://localhost:8000/savereport', {
+      const res = await fetch('http://15.164.148.20:8000/savereport', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

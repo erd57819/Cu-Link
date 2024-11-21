@@ -28,7 +28,7 @@ const Join = () => {
     };
 
     try {
-      let res = await axios.post('http://localhost:3000/auth/join', joinData);
+      let res = await axios.post('http://culink.site/auth/join', joinData);
       console.log(res.data);
 
       if (res.data.result === "success") {

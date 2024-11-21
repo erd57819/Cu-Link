@@ -14,7 +14,7 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/news/saved', { withCredentials: true });
+        const response = await axios.get('http://culink.site/news/saved', { withCredentials: true });
         setArticles(response.data || []);
         setFilteredArticles(response.data || []);
       } catch (error) {
@@ -100,7 +100,7 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
 
     // FastAPI 엔드포인트로 데이터 전송
     try {
-      const response = await fetch('http://localhost:8000/search/keywords', {
+      const response = await fetch('http://15.164.148.20:8000/search/keywords', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

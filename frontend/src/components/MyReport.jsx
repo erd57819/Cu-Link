@@ -23,7 +23,7 @@ const MyReport = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/report/getreport', {
+        const response = await axios.get('http://culink.site/report/getreport', {
           withCredentials: true,
         });
         setArticles(response.data);
@@ -44,7 +44,7 @@ const MyReport = () => {
     } else {
       updatedReportIds.add(rep_id);
       try {
-        const response = await axios.get(`http://localhost:3000/report/${rep_id}/articles`);
+        const response = await axios.get(`http://culink.site/report/${rep_id}/articles`);
         setSelectedReportArticles((prevArticles) => ({
           ...prevArticles,
           [rep_id]: response.data,
@@ -67,7 +67,7 @@ const MyReport = () => {
       try {
         const allArticles = await Promise.all(
           Array.from(allReportIds).map(async (rep_id) => {
-            const response = await axios.get(`http://localhost:3000/report/${rep_id}/articles`);
+            const response = await axios.get(`http://culink.site/report/${rep_id}/articles`);
             return { [rep_id]: response.data };
           })
         );
@@ -92,7 +92,7 @@ const MyReport = () => {
         try {
           await Promise.all(
             Array.from(selectedReportIds).map((id) =>
-              axios.delete(`http://localhost:3000/report/${id}/delete`)
+              axios.delete(`http://culink.site/report/${id}/delete`)
             )
           );
           setArticles(articles.filter((article) => !selectedReportIds.has(article.rep_id)));

@@ -20,7 +20,7 @@ function App() {
   // FastAPI와 통신하여 응답을 가져오는 함수
   const handleUserMessage = async (message) => {
     try {
-      const response = await fetch("http://localhost:8000/chat", {
+      const response = await fetch("http://15.164.148.20:8000/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -21,7 +21,7 @@ const ResetPassword = () => {
     };
 
     try {
-      let res = await axios.post('http://localhost:3000/auth/resetPW', resetData);
+      let res = await axios.post('http://culink.site/auth/resetPW', resetData);
       console.log(res.data);
 
       if (res.data.result === "성공") {
