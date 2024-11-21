@@ -39,10 +39,11 @@ app.use(
 // CORS 설정 (React에서 Express로 요청을 허용)
 app.use(
   cors({
-    origin: ["http://culink.site"], // React 도메인 허용
+    origin: ["http://culink.site", "http://culink.site:3000"], // React와 Node.js 주소 모두 허용
     credentials: true,
   })
 );
+
 
 // 미들웨어 설정
 app.use(express.urlencoded({ extended: false }));

@@ -21,7 +21,8 @@ const Login = () => {
     };
 
     try {
-      let res = await axios.post('http://culink.site:3000/auth/login', logMember,{withCredentials:true});
+      let res = await axios.post('http://culink.site/auth/login', logMember, { withCredentials: true });
+
 
       if (res.data.result === 'success') {
         Swal.fire({
