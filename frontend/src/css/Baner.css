@@ -12,9 +12,8 @@
 }
 
 .left-item img {
-  width: 140px; /* 원하는 너비 */
-  height: auto; 
-  max-height: 90px; /* 최대 높이를 제한하고 싶을 때 */
+  padding-top: 5px;
+  width: 150px; /* 원하는 너비 */
   object-fit: contain; /* 이미지가 박스를 넘지 않도록 */
 }
 
