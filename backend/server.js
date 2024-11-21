@@ -60,6 +60,9 @@ app.use("/api/sum", sumRouter);
 const buildPath = path.join(__dirname, "..", "frontend", "build");
 app.use(express.static(buildPath));
 
+// Public 폴더 내 정적 파일 서빙 (이미지 등)
+app.use("/images", express.static(path.join(__dirname, "..", "frontend", "public", "images")));
+
 // React 라우트 처리 (Catch-all)
 app.get("*", (req, res) => {
   res.sendFile(path.join(buildPath, "index.html"));
