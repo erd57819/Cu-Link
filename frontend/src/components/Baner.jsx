@@ -3,6 +3,8 @@ import '../css/Baner.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
+const Image = `${process.env.PUBLIC_URL}/images/cu-link-logo.png`;
+
 function Baner() {
   const navigate = useNavigate();
   const userId = sessionStorage.getItem('userId'); // 세션에서 userId 가져오기
@@ -48,7 +50,8 @@ function Baner() {
   return (
     <div className='banner'>
       <div className='left-item'>
-        <h2><Link to={'/'} className='link'>Cu-Link</Link></h2>
+        <img src={Image} alt="cu-Link 로고"></img>
+        {/* <h2><Link to={'/'} className='link'>Cu-Link</Link></h2> */}
         <h5><Link to={'/'} className='link'>레포트가 쉬워지다</Link></h5>
       </div>
       <div className='mid-item'>

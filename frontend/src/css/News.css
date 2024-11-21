@@ -128,8 +128,9 @@
     height: 20px;
     cursor: pointer;
     appearance: none;
-    border: 2px solid #51017F;
-    border-radius: 50%;
+    border: 1.5px solid #51017F;
+    /* border-radius: 50%; */
+    border-radius: 5px;
     background-color: transparent;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
@@ -139,6 +140,18 @@
     padding: 3px; /* 클릭 가능한 영역 확장 */
     cursor: pointer;
   }
+
+  .article-checkbox-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: 225px;
+    bottom: -40px;
+    background: transparent;
+    /* background-color: black; */
+    z-index: 1;
+}
 
 .article-checkbox:checked {
     background-color: #51017F;
