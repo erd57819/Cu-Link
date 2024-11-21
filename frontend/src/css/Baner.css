@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   width: 71%; /* 왼쪽과 오른쪽 공백을 합산하여 계산 */
-  height: 7%;
+  height: 83px;
   margin: 0 auto; /* 배너를 화면 중앙에 배치 */
   padding-left: 14.5%; /* 양쪽에 추가 패딩 */
   padding-right: 14.5%;
@@ -11,6 +11,12 @@
   border-bottom: 1px solid #787878;
 }
 
+.left-item img {
+  width: 140px; /* 원하는 너비 */
+  height: auto; 
+  max-height: 90px; /* 최대 높이를 제한하고 싶을 때 */
+  object-fit: contain; /* 이미지가 박스를 넘지 않도록 */
+}
 
 
 
@@ -47,8 +53,12 @@
 
 .left-item h2 {
   margin-bottom: 0; /* Cu-Link와 레포트가 쉬워지다 사이의 간격을 없앰 */
+  font-size: 26px;
+  
 }
 
 .left-item h5 {
   margin-top: 0; /* p 태그의 상단 여백을 없앰 */
+  font-size: 16px;
+  
 }
