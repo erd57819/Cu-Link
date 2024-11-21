@@ -77,32 +77,63 @@ def default_serializer(obj):
 # ============== 검색 함수 ==================
 def search_by_keyword_and_date(user_keywords: dict, date_list: list = None):
     connection = get_db_connection(database_config)
-    article_contents = []
     article_metadata = []
+
+    # Firebase에서 기사 본문 가져오기 함수를 검색 함수 내부에 정의
+    def fetch_article_content(article_ids, bucket):
+        """Firebase 스토리지에서 기사 원문 가져오기"""
+        contents = []
+        try:
+            for article_id in article_ids:
+                article_id = int(article_id)
+                # Firebase 버킷 접근
+                blob = bucket.blob(f"articles/{article_id}.json")
+
+                # JSON 파싱
+                raw_content = blob.download_as_text()
+                parsed_content = json.loads(raw_content)
+                # 기사 본문만 추가
+                content = parsed_content.get("content", "Content not available.")
+                contents.append(content)
+
+        except json.JSONDecodeError as e:
+            print(f"JSON decoding error for article {article_id}: {str(e)}")
+            contents.append("Invalid content format.")
+            
+        except Exception as e:
+            print(f"Storage 조회 오류 {article_id}: {str(e)}")
+            contents.append("Content not available.")
+            
+        return contents
 
     if not user_keywords and date_list:
         id_list = []
         article_metadata = all_query(id_list, date_list, connection)
         id_list = [record['cr_art_id'] for record in article_metadata]
-        article_contents = fetch_article_content(id_list,bucket)
+        contents = fetch_article_content(id_list, bucket)
 
-    elif user_keywords and date_list or not date_list :
+        # metadata에 기사 본문 병합
+        for idx, metadata in enumerate(article_metadata):
+            metadata['cr_art_content'] = contents[idx] if idx < len(contents) else None
+
+    elif user_keywords and date_list or not date_list:
         # 키워드가 있을 때 (날짜가 있는 경우와 없는 경우를 포함)
         id_list = search_by_fireindex(user_keywords)
         if not id_list:  # 검색 결과가 없는 경우
             return {"message": "검색된 기사가 없습니다."}
         article_metadata = all_query(id_list, date_list, connection)
         id_list_m = [record['cr_art_id'] for record in article_metadata]
-        article_contents = fetch_article_content(id_list_m,bucket)
+        contents = fetch_article_content(id_list_m, bucket)
 
-    articles_data = {
-        "metadata": article_metadata,
-        "contents": article_contents
-    }
+        # metadata에 기사 본문 병합
+        for idx, metadata in enumerate(article_metadata):
+            metadata['cr_art_content'] = contents[idx] if idx < len(contents) else None
+
     # 결과가 없으면 메시지 반환
-    if not articles_data["metadata"] and not articles_data["contents"]:
+    if not article_metadata:
         return {"message": "검색된 기사가 없습니다."}
 
-    json_text = json.dumps(articles_data, default=default_serializer).encode('utf-8')
+    # JSON 직렬화 후 압축
+    json_text = json.dumps(article_metadata, default=default_serializer).encode('utf-8')
     articles_data_gzip = gzip.compress(json_text)
     return articles_data_gzip

@@ -30,20 +30,23 @@ const News = ({ searchResults }) => {
     
   };  
 
-  //선택한 페이지를 요청하여 화면에 띄워주기.
+  //뉴스 기사 뿌려주기.
   useEffect(() => {
+    //키워드 검색으로 넘어온 뉴스기사 
     console.log("넘어온 데이터입니다",searchResults)
     if (searchResults !== null) {
-      setArticles(searchResults.metadata);
-      const count = searchResults.metadata.length
-      setTotalCount(count)
+      setArticles(searchResults);
+      // const count = searchResults.metadata.length
+      // setTotalCount(count)
     }else{
+      //기본 페이지 뉴스기사
       const fetchArticles = async () => {
         try {
           
           const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&`);
           setArticles(response.data.articles);
           setTotalCount(response.data.total_count);
+          console.log(response.data.articles)
           
           
           console.log("Current Page:", currentPage);
@@ -268,10 +271,7 @@ const News = ({ searchResults }) => {
     }
   };
 
-  const displayedArticles = articles.slice(
-    (currentPage - 1) * articlesPerPage,
-    currentPage * articlesPerPage
-  );
+  
 
   return (
     <div className="news-container">
@@ -281,7 +281,7 @@ const News = ({ searchResults }) => {
       </div>
       <div className="articles">
         {articles.length > 0 ? (
-          displayedArticles.map((article) => (
+          articles.map((article) => (
             <div key={article.cr_art_id} className="article">
               <div
                 className="article-checkbox-wrapper"
