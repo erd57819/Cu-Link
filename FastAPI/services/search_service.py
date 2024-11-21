@@ -109,11 +109,12 @@ def search_by_keyword_and_date(user_keywords: dict, date_list: list = None):
     if not user_keywords and date_list:
         id_list = []
         article_metadata = all_query(id_list, date_list, connection)
-        id_list = [record['cr_art_id'] for record in article_metadata]
+        id_list = [str(record['cr_art_id']) for record in article_metadata]  # ID를 문자열로 변환
         contents = fetch_article_content(id_list, bucket)
 
         # metadata에 기사 본문 병합
         for idx, metadata in enumerate(article_metadata):
+            metadata['cr_art_id'] = str(metadata['cr_art_id'])  # ID를 문자열로 변환
             metadata['cr_art_content'] = contents[idx] if idx < len(contents) else None
 
     elif user_keywords and date_list or not date_list:
@@ -122,11 +123,12 @@ def search_by_keyword_and_date(user_keywords: dict, date_list: list = None):
         if not id_list:  # 검색 결과가 없는 경우
             return {"message": "검색된 기사가 없습니다."}
         article_metadata = all_query(id_list, date_list, connection)
-        id_list_m = [record['cr_art_id'] for record in article_metadata]
+        id_list_m = [str(record['cr_art_id']) for record in article_metadata]  # ID를 문자열로 변환
         contents = fetch_article_content(id_list_m, bucket)
 
         # metadata에 기사 본문 병합
         for idx, metadata in enumerate(article_metadata):
+            metadata['cr_art_id'] = str(metadata['cr_art_id'])  # ID를 문자열로 변환
             metadata['cr_art_content'] = contents[idx] if idx < len(contents) else None
 
     # 결과가 없으면 메시지 반환
