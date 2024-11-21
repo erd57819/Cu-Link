@@ -17,7 +17,7 @@ __pycache__/
 *.pyc
 model/
 
-news-data01-firebase-adminsdk-g4sha-678e568cfd.json
+news-data01-firebase-adminsdk-g4sha-ac12e342a2.json
 
 faiss_index_new.bin
 
