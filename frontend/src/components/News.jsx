@@ -268,10 +268,7 @@ const News = ({ searchResults }) => {
     }
   };
 
-  const displayedArticles = articles.slice(
-    (currentPage - 1) * articlesPerPage,
-    currentPage * articlesPerPage
-  );
+  
 
   return (
     <div className="news-container">
@@ -281,7 +278,7 @@ const News = ({ searchResults }) => {
       </div>
       <div className="articles">
         {articles.length > 0 ? (
-          displayedArticles.map((article) => (
+          articles.map((article) => (
             <div key={article.cr_art_id} className="article">
               <div
                 className="article-checkbox-wrapper"
