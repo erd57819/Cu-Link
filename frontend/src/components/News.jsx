@@ -13,7 +13,6 @@ const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 const News = ({ searchResults }) => {
   console.log("Received searchResults:", searchResults || "No data received");
   const [articles, setArticles] = useState([]);
-  
   const [selectedArticleIds, setSelectedArticleIds] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [summaryData, setSummaryData] = useState([]);
@@ -30,22 +29,32 @@ const News = ({ searchResults }) => {
     
   };  
 
-  //선택한 페이지를 요청하여 화면에 띄워주기.
+  //뉴스 기사 보여주기.
   useEffect(() => {
+    //키워드 검색으로 넘어온 뉴스기사 
     console.log("넘어온 데이터입니다",searchResults)
     if (searchResults !== null) {
-      setArticles(searchResults.metadata);
-      const count = searchResults.metadata.length
-      setTotalCount(count)
+      setArticles(searchResults);
+      setTotalCount(searchResults.length);
+
+    // 현재 페이지에 맞는 데이터 슬라이싱
+    const displayedArticles = searchResults.slice(
+      (currentPage - 1) * articlesPerPage,
+      currentPage * articlesPerPage
+    );
+
+  setArticles(displayedArticles);
     }else{
+      
       const fetchArticles = async () => {
         try {
-          
+          //기본 페이지 뉴스기사
           const response = await axios.get(`http://localhost:8000/articles?page=${currentPage}&`);
+          //뉴스기사 변수 선언
           setArticles(response.data.articles);
+          //전체 페이지 카운트
           setTotalCount(response.data.total_count);
-          
-          
+          console.log(response.data.articles)
           console.log("Current Page:", currentPage);
           
         } catch (error) {
@@ -229,6 +238,7 @@ const News = ({ searchResults }) => {
 
     //리포트 생성 요청
     try {
+      
       sessionStorage.setItem('selectedArticleIds', JSON.stringify(Array.from(selectedArticleIds)));
       const response = await fetch('http://localhost:8000/report/createReport', {
         method: 'POST',
@@ -268,10 +278,7 @@ const News = ({ searchResults }) => {
     }
   };
 
-  const displayedArticles = articles.slice(
-    (currentPage - 1) * articlesPerPage,
-    currentPage * articlesPerPage
-  );
+  
 
   return (
     <div className="news-container">
@@ -281,7 +288,7 @@ const News = ({ searchResults }) => {
       </div>
       <div className="articles">
         {articles.length > 0 ? (
-          displayedArticles.map((article) => (
+          articles.map((article) => (
             <div key={article.cr_art_id} className="article">
               <div
                 className="article-checkbox-wrapper"

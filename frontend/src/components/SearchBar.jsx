@@ -118,6 +118,10 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
     console.log("받은 데이터:", jsonData);
     setSearchResults(jsonData)
     } catch (error) {
+      Swal.fire({
+        title: "일치하는 키워드가 없습니다.",
+        icon: 'warning'
+      });
       console.error('서버 요청 중 오류 발생:', error);
     }
   };
@@ -138,6 +142,11 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
               placeholder="키워드를 입력해주세요"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
               className="search-input"
             />
             <button className="tooltip-button">?</button>
@@ -183,7 +192,8 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
   
         {/* 하단에 고정된 검색 버튼 섹션 */}
         <div className="section search-button-section">
-          <button className="search-submit" onClick={handleSearch}>
+        <button className="search-submit"
+          onClick={handleSearch}>
             기사 찾기 ➨
           </button>
         </div>
