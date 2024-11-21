@@ -50,9 +50,7 @@ function Baner() {
   return (
     <div className='banner'>
       <div className='left-item'>
-        <img src={Image} alt="cu-Link 로고"></img>
-        {/* <h2><Link to={'/'} className='link'>Cu-Link</Link></h2> */}
-        <h5><Link to={'/'} className='link'>레포트가 쉬워지다</Link></h5>
+      <Link to={'/'} className='link'><img src={Image} alt="cu-Link 로고"></img></Link>
       </div>
       <div className='mid-item'>
         <span><Link to={'/intro'} className='link'>사용법</Link></span>
