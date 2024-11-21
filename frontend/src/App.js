@@ -63,7 +63,7 @@ function App() {
 
       {/* 라우트 설정 */}
       <Routes>
-        <Route path="/start" element={<Main />} />
+        <Route path="/" element={<Main />} />
         <Route path="/intro" element={<IntroPage />} />
         <Route path="/createreport" element={<CreateReport />} />
         <Route path="/login" element={<Login />} />
@@ -71,7 +71,7 @@ function App() {
         <Route path="/news" element={<MyPage />} />
         <Route path="/resetPW" element={<FindPW />} />
         <Route path="/report" element={<Report />} />
-        <Route path="/" element={<StartPage />} />
+        <Route path="/start" element={<StartPage />} />
       </Routes>
     </div>
   );
