@@ -11,7 +11,7 @@ const StartPage = () => {
     const swiperRef = useRef(null);
 
     const handleStartClick = () => {
-        navigate('/'); // '시작하기' 버튼 클릭 시 메인 페이지로 이동
+        navigate('/start'); // '시작하기' 버튼 클릭 시 메인 페이지로 이동
     };
 
     const handlePrevSlide = () => {
