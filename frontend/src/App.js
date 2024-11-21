@@ -50,8 +50,8 @@ function App() {
 
   return (
     <div className="App">
-      {/* 현재 경로가 '/'가 아닌 경우에만 Baner를 렌더링 */}
-      {location.pathname !== "/" && <Baner />}
+      {/* 현재 경로가 '/start'가 아닌 경우에만 Baner를 렌더링 */}
+      {location.pathname !== "/start" && <Baner />}
 
       {/* Draggable로 감싸고 내부에 div 추가 */}
 
