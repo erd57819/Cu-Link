@@ -13,7 +13,7 @@ const Login = () => {
   
   const handleLogin = async (e) => {
     e.preventDefault();
-    const redirectTo = location.state?.from ||'/';
+    const redirectTo = location.state?.from ||"/main";
 
     let logMember = {
       id: id_Ref.current.value,

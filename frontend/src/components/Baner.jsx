@@ -22,7 +22,7 @@ function Baner() {
         // Yes를 클릭하면 로그아웃 수행
         sessionStorage.removeItem('userId'); // 세션에서 userId 삭제
         Swal.fire('로그아웃 되었습니다', '', 'success').then(() => {
-          navigate('/'); // 로그아웃 후 메인 페이지로 이동
+          navigate("/main"); // 로그아웃 후 메인 페이지로 이동
         });
       }
       // No를 클릭하면 아무 작업도 하지 않음
@@ -50,7 +50,7 @@ function Baner() {
   return (
     <div className='banner'>
       <div className='left-item'>
-      <Link to={'/'} className='link'><img src={Image} alt="cu-Link 로고"></img></Link>
+      <Link to={"/main"} className='link'><img src={Image} alt="cu-Link 로고"></img></Link>
       </div>
       <div className='mid-item'>
         <span><Link to={'/intro'} className='link'>사용법</Link></span>
