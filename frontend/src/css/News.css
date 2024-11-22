@@ -330,6 +330,30 @@
     gap: 10px;
     flex-shrink: 0;
 }
+.fixed-buttons_Mynews>.save-button,
+.fixed-buttons_Mynews>.summarize-button {
+    /* padding: 0.3rem 0.7rem; */
+    /* font-size: 0.8rem; */
+    border: 2px solid #51017F;
+    background-color: #fff;
+    color: #51017F;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    font-family: 'Pretendard-Regular';
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    display: flex;
+    width: 105px;
+    height: 30px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
 
 .fixed-buttons>.save-button:hover,
 .fixed-buttons>.summarize-button:hover {
@@ -337,6 +361,11 @@
     color: #fff;
 }
 
+.fixed-buttons_Mynews>.save-button:hover,
+.fixed-buttons_Mynews>.summarize-button:hover {
+    background-color: #51017F;
+    color: #fff;
+}
 /* .create-report-button1을 독립적으로 스타일링 */
 .create-report-button_news {
     border: 2px solid #51017F;
