@@ -62,7 +62,7 @@ function App() {
       {/* 라우트 설정 */}
       <Routes>
         {/* 초기 접속 시 '/start'로 리다이렉트 */}
-        <Route path="/" element={<Navigate to="/start" replace />} />
+        <Route path="/main" element={<Navigate to="/start" replace />} />
         <Route path="/start" element={<StartPage />} />
         <Route path="/main" element={<Main />} />
         <Route path="/intro" element={<IntroPage />} />
