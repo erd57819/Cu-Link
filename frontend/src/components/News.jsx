@@ -122,22 +122,24 @@ const News = ({ searchResults }) => {
 
     //기사 요약 모델에 요청
     try {
+      const selectedArticles = Array.from(selectedArticleIds).map(id => {
+        const article = articles.find(a => a.cr_art_id === id);
+        return {
+          cr_art_id: article.cr_art_id,
+          cr_art_title: article.cr_art_title,
+          cr_art_url: article.cr_art_url
+        };
+      });
+      sessionStorage.setItem('selectedArticleIds', JSON.stringify(Array.from(selectedArticles)));
       const response = await fetch('http://15.164.148.20:8000/summarize/summarize-article', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          articles: Array.from(selectedArticleIds).map(id => {
-            const article = articles.find(a => a.cr_art_id === id);
-            return {
-              cr_art_id: article.cr_art_id,
-              cr_art_title: article.cr_art_title,
-              cr_art_url: article.cr_art_url
-            };
-          })
-        }),
-      });
+          articles: selectedArticles
+          }),
+        })
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);
       }
