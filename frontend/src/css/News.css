@@ -207,7 +207,8 @@
     margin-top: 36.5%;
     position: absolute;
     z-index: 1;
-    padding-left: 20rem
+    padding-left: 20rem;
+    display: flex;
 }
 
 .pagination {
@@ -302,6 +303,7 @@
     position: fixed;
     transform: translateX(81%);
     z-index: 1000;
+    left: 46.5%;
     
 }
 
