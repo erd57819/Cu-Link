@@ -51,7 +51,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // API 경로 설정
-app.use("/", mainRouter);
+// app.use("/", mainRouter);
 app.use("/auth", loginRouter);
 app.use("/news", newsRouter);
 app.use("/report", reportRouter);
