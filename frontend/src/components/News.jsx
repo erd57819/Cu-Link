@@ -14,6 +14,7 @@ const News = ({ searchResults }) => {
   console.log("Received searchResults:", searchResults || "No data received");
   const [articles, setArticles] = useState([]);
   const [selectedArticleIds, setSelectedArticleIds] = useState(new Set());
+  const [globalSelectedArticles, setGlobalSelectedArticles] = useState(new Map());
   const [currentPage, setCurrentPage] = useState(1);
   const [summaryData, setSummaryData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,17 +82,18 @@ const News = ({ searchResults }) => {
 
   //기사 체크박스.
   const handleCheckboxChange = (articleId) => {
-    setSelectedArticleIds(prevSelected => {
-      const newSelected = new Set(prevSelected);
+    setGlobalSelectedArticles((prev) => {
+      const newSelected = new Map(prev);
+      const article = articles.find(a => a.cr_art_id === articleId); // 기사 찾기
       if (newSelected.has(articleId)) {
-        newSelected.delete(articleId);
+        newSelected.delete(articleId); // 선택 해제
       } else {
-        newSelected.add(articleId);
+        newSelected.set(articleId, article); // 선택 추가
       }
       return newSelected;
     });
   };
-
+  
   //기사 전체 체크박스.
   const handleSelectAll = () => {
     const allArticles = articles.every(article => selectedArticleIds.has(article.cr_art_id));
@@ -109,7 +111,7 @@ const News = ({ searchResults }) => {
 
   //기사 요약 예외처리
   const handleSummarize = async () => {
-    if (selectedArticleIds.size === 0) {
+    if (globalSelectedArticles.size === 0) {
       Swal.fire({
         title: "기사를 선택해주세요",
         text: "선택된 기사가 없습니다. 요약할 기사를 선택해 주세요.",
@@ -117,38 +119,26 @@ const News = ({ searchResults }) => {
       });
       return;
     }
-
+  
     setIsLoading(true);
-
-    //기사 요약 모델에 요청
-    
+  
     try {
-      const selectedArticles= Array.from(selectedArticleIds).map(id => {
-        const article = articles.find(a => a.cr_art_id === id);
-        return {
-          cr_art_id: article.cr_art_id,
-          cr_art_title: article.cr_art_title,
-          cr_art_url: article.cr_art_url
-        };
-      })
-      sessionStorage.setItem('selectedArticleIds', JSON.stringify(selectedArticles));
-
-
+      const selectedArticles = Array.from(globalSelectedArticles.values()); // 모든 데이터 가져오기
+  
       const response = await fetch('http://15.164.148.20:8000/summarize/summarize-article', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          articles: selectedArticles
-        }),
+        body: JSON.stringify({ articles: selectedArticles }),
       });
+  
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);
       }
-
+  
       const data = await response.json();
-      setSummaryData(data.summarized_contents);
+      setSummaryData(data.summarized_contents); // 요약 데이터 저장
       setIsModalOpen(true);
     } catch (error) {
       console.error('Error sending data:', error);
@@ -161,6 +151,7 @@ const News = ({ searchResults }) => {
       setIsLoading(false);
     }
   };
+  
 
   const handleSave = async () => {
     if (selectedArticleIds.size === 0) {
@@ -215,12 +206,8 @@ const News = ({ searchResults }) => {
       });
     }
   };
-  
-  
-  
-  //선택한 기사 예외처리
   const handleCreateReport = async () => {
-    if (selectedArticleIds.size === 0) {
+    if (globalSelectedArticles.size === 0) {
       Swal.fire({
         title: "기사를 선택해주세요",
         text: "선택된 기사가 없습니다.",
@@ -228,53 +215,40 @@ const News = ({ searchResults }) => {
       });
       return;
     }
-
-    //리포트 생성시 최대 선택 기사 개수.
-    if (selectedArticleIds.size > 6) {
-      Swal.fire({
-        title: "기사 선택 개수 초과",
-        text: "기사 최대 선택 개수는 6개 입니다",
-        icon: 'warning',
-      });
-      return;
-    }
-
+  
     setIsLoading(true);
-
-    //리포트 생성 요청
+  
     try {
-      
-      sessionStorage.setItem('selectedArticleIds', JSON.stringify(Array.from(selectedArticleIds)));
+      const selectedArticleIds = Array.from(globalSelectedArticles.keys()); // ID만 추출
+  
       const response = await fetch('http://15.164.148.20:8000/report/createReport', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ids: Array.from(selectedArticleIds) }),
+        body: JSON.stringify({ ids: selectedArticleIds }),
       });
-
+  
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);
       }
-
+  
       const compressedData = await response.arrayBuffer();
       const decompressedData = pako.inflate(new Uint8Array(compressedData));
       const textDecoder = new TextDecoder('utf-8');
       const jsonString = textDecoder.decode(decompressedData);
       const parsedData = JSON.parse(jsonString);
-
+  
       Swal.fire({
         title: '레포트가 성공적으로 생성되었습니다',
         icon: 'success',
       });
-
-      navigate('/createreport', {
-        state: { parsedData }
-      });
+  
+      navigate('/createreport', { state: { parsedData } });
     } catch (error) {
       console.error("Error fetching compressed data:", error);
       Swal.fire({
-        title: '레포트 생성에 실패했습니다',
+        title: '레포트 생성에 실패했습니다.',
         text: error.message,
         icon: 'error',
       });
@@ -282,8 +256,7 @@ const News = ({ searchResults }) => {
       setIsLoading(false);
     }
   };
-
-  
+    
 
   return (
     <div className="news-container">
