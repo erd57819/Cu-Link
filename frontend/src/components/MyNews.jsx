@@ -309,7 +309,7 @@ const MyNews = () => {
           <p>저장된 기사가 없습니다.</p>
         )}
       </div>
-      <div className="pagination-buttons-container">
+      <div className="pagination-buttons-container_Mynews">
         <div className="pagination">
           {startPage > 1 && (
             <button onClick={() => handlePageChange(startPage - 1)}>&laquo;</button>
@@ -327,7 +327,7 @@ const MyNews = () => {
             <button onClick={() => handlePageChange(endPage + 1)}>&raquo;</button>
           )}
         </div>
-        <div className="fixed-buttons">
+        <div className="fixed-buttons_Mynews">
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button>
           <button className="summarize-button" onClick={handleDelete}>삭제하기</button>
           <bttton className="create-report-button_mynews" onClick={handleCreateReport}>레포트 생성</bttton>

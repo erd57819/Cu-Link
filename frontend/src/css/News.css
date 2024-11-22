@@ -4,10 +4,11 @@
     src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
-  }
+}
 
 /* 텍스트 스타일 */
-.article-text { /* 수정: 텍스트 영역을 이미지 아래로 조정 */
+.article-text {
+    /* 수정: 텍스트 영역을 이미지 아래로 조정 */
     margin-right: 10px;
     margin-left: 37px;
     margin-top: -2rem;
@@ -36,7 +37,8 @@
 /* 기사 리스트 레이아웃 */
 .articles {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 기본 3열 레이아웃 */
+    grid-template-columns: repeat(3, 1fr);
+    /* 기본 3열 레이아웃 */
     grid-auto-rows: minmax(10rem, 1fr);
 }
 
@@ -56,11 +58,13 @@
 }
 
 .article:hover {
-    transform: scale(1.02); /* 마우스 올렸을 때 확대 */
+    transform: scale(1.02);
+    /* 마우스 올렸을 때 확대 */
 }
 
 /* 기사 제목과 날짜 */
-.article-header { /* 수정: 제목과 텍스트 간격 조정 */
+.article-header {
+    /* 수정: 제목과 텍스트 간격 조정 */
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     color: #a6a6a6;
@@ -74,9 +78,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* 2줄로 제한 */
+    -webkit-line-clamp: 2;
+    /* 2줄로 제한 */
     -webkit-box-orient: vertical;
-    min-height: 2.5em; /* 일관성을 위한 최소 높이 설정 */
+    min-height: 2.5em;
+    /* 일관성을 위한 최소 높이 설정 */
 }
 
 .article-header p {
@@ -95,7 +101,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 1; /* 본문 줄 수 제한 */
+    -webkit-line-clamp: 1;
+    /* 본문 줄 수 제한 */
     -webkit-box-orient: vertical;
     line-height: 1.2;
 }
@@ -103,17 +110,21 @@
 /* 기사 이미지 */
 .article-image {
     width: 100%;
-    height: 130px; /* 이미지 높이 고정 */
+    height: 130px;
+    /* 이미지 높이 고정 */
     overflow: hidden;
 }
 
 .article-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 이미지가 박스를 넘지 않도록 설정 */
+    object-fit: cover;
+    /* 이미지가 박스를 넘지 않도록 설정 */
 }
-.article-content { /* 추가: 텍스트와 이미지 사이 간격 조절 */
-     /* 텍스트와 이미지 사이 간격 */
+
+.article-content {
+    /* 추가: 텍스트와 이미지 사이 간격 조절 */
+    /* 텍스트와 이미지 사이 간격 */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -134,14 +145,16 @@
     background-color: transparent;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
+
 .article-checkbox-wrapper {
     position: relative;
     display: inline-block;
-    padding: 3px; /* 클릭 가능한 영역 확장 */
+    padding: 3px;
+    /* 클릭 가능한 영역 확장 */
     cursor: pointer;
-  }
+}
 
-  .article-checkbox-wrapper::before {
+.article-checkbox-wrapper::before {
     content: '';
     position: absolute;
     top: -10px;
@@ -170,8 +183,10 @@
 .pagination-container {
     display: flex;
     justify-content: center;
-    align-items: center; /* 수직 가운데 정렬 */
-    gap: 1rem; /* 페이지네이션과 버튼 사이 간격 조정 */
+    align-items: center;
+    /* 수직 가운데 정렬 */
+    gap: 1rem;
+    /* 페이지네이션과 버튼 사이 간격 조정 */
     /* margin-top: 1%; */
     margin-left: -2rem;
 }
@@ -187,6 +202,14 @@
     z-index: 1;
     margin-right: 15px
 }
+
+.pagination-buttons-container_Mynews {
+    margin-top: 36.5%;
+    position: absolute;
+    z-index: 1;
+    padding-left: 20rem
+}
+
 .pagination {
     display: flex;
 }
@@ -272,9 +295,19 @@
     margin-top: 35px;
     z-index: 1000;
 }
+/* 고정된 버튼 컨테이너 */
+.fixed-buttons_Mynews {
+    display: flex;
+    gap: 10px;
+    position: fixed;
+    transform: translateX(81%);
+    z-index: 1000;
+    
+}
+
 /* .fixed-buttons 내 모든 버튼 스타일 */
-.fixed-buttons > .save-button,
-.fixed-buttons > .summarize-button {
+.fixed-buttons>.save-button,
+.fixed-buttons>.summarize-button {
     /* padding: 0.3rem 0.7rem; */
     /* font-size: 0.8rem; */
     border: 2px solid #51017F;
@@ -298,8 +331,8 @@
     flex-shrink: 0;
 }
 
-.fixed-buttons > .save-button:hover,
-.fixed-buttons > .summarize-button:hover {
+.fixed-buttons>.save-button:hover,
+.fixed-buttons>.summarize-button:hover {
     background-color: #51017F;
     color: #fff;
 }
@@ -341,15 +374,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000; /* 모달 및 콘텐츠 위에 오버레이 */
-  }
+    z-index: 1000;
+    /* 모달 및 콘텐츠 위에 오버레이 */
+}
+
 .loading-overlay h1 {
-    margin-right: 110px; /* 텍스트와 아이콘 사이의 간격 조절 */
+    margin-right: 110px;
+    /* 텍스트와 아이콘 사이의 간격 조절 */
     font-size: 3em;
     color: #333;
-  }
+}
 
-  .create-report-button_mynews{
+.create-report-button_mynews {
     border: 2px solid #51017F;
     background-color: #51017F;
     color: #fff;
