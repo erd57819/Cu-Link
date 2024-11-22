@@ -88,6 +88,15 @@ const News = ({ searchResults }) => {
       } else {
         newSelected.add(articleId);
       }
+      const selectedArticles= Array.from(selectedArticleIds).map(id => {
+        const article = articles.find(a => a.cr_art_id === id);
+        return {
+          cr_art_id: article.cr_art_id,
+          cr_art_title: article.cr_art_title,
+          cr_art_url: article.cr_art_url
+        };
+      })
+      sessionStorage.setItem('selectedArticleIds', JSON.stringify(selectedArticles));
       return newSelected;
     });
   };
@@ -108,7 +117,7 @@ const News = ({ searchResults }) => {
   };
 
   //기사 요약 예외처리
-  const handleSummarize = async () => {
+  const handleSummarize = async () => { 
     if (selectedArticleIds.size === 0) {
       Swal.fire({
         title: "기사를 선택해주세요",
@@ -123,16 +132,7 @@ const News = ({ searchResults }) => {
     //기사 요약 모델에 요청
     
     try {
-      const selectedArticles= Array.from(selectedArticleIds).map(id => {
-        const article = articles.find(a => a.cr_art_id === id);
-        return {
-          cr_art_id: article.cr_art_id,
-          cr_art_title: article.cr_art_title,
-          cr_art_url: article.cr_art_url
-        };
-      })
-      sessionStorage.setItem('selectedArticleIds', JSON.stringify(selectedArticles));
-
+      const selectedArticles = JSON.parse(sessionStorage.getItem('selectedArticles')) || [];
 
       const response = await fetch('http://15.164.148.20:8000/summarize/summarize-article', {
         method: 'POST',
