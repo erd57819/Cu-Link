@@ -43,6 +43,6 @@ app.include_router(saveReport_router)
 # 챗봇 라우터
 app.include_router(chatbot_router)
 
-@app.get("/main") # fastapi주소로 진입시 
+@app.get("/") # fastapi주소로 진입시 
 async def root():
     return {"message": "Hello, FastAPI!"}

@@ -33,7 +33,7 @@ const Join = () => {
 
       if (res.data.result === "success") {
         alert('회원가입 성공');
-        navigate("/main");
+        navigate('/');
       } else {
         alert('회원가입 실패');
       }

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes, useLocation, Navigate, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Widget, addResponseMessage } from "react-chat-widget";
 import "react-chat-widget/lib/styles.css";
 import "./App.css";
@@ -53,6 +53,8 @@ function App() {
       {/* 현재 경로가 '/start'가 아닌 경우에만 Baner를 렌더링 */}
       {location.pathname !== "/start" && <Baner />}
 
+      {/* Draggable로 감싸고 내부에 div 추가 */}
+
       <Widget
         handleNewUserMessage={handleNewUserMessage} // 새로운 사용자 메시지를 처리
         title="Chat with Cu-link!"
@@ -61,10 +63,7 @@ function App() {
 
       {/* 라우트 설정 */}
       <Routes>
-        {/* 초기 접속 시 '/start'로 리다이렉트 */}
-        <Route path="/main" element={<Navigate to="/start" replace />} />
-        <Route path="/start" element={<StartPage />} />
-        <Route path="/main" element={<Main />} />
+        <Route path="/" element={<Main />} />
         <Route path="/intro" element={<IntroPage />} />
         <Route path="/createreport" element={<CreateReport />} />
         <Route path="/login" element={<Login />} />
@@ -72,6 +71,7 @@ function App() {
         <Route path="/news" element={<MyPage />} />
         <Route path="/resetPW" element={<FindPW />} />
         <Route path="/report" element={<Report />} />
+        <Route path="/start" element={<StartPage />} />
       </Routes>
     </div>
   );
