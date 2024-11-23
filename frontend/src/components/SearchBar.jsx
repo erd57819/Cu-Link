@@ -127,7 +127,7 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
   };
 
   const currentDate = new Date().toISOString().split('T')[0];
-  const minDate = "2024-11-01"; // 최소 선택 가능한 날짜 설정
+  const minDate = "2024-02-01"; // 최소 선택 가능한 날짜 설정
 
   return (
     <div className="layout">

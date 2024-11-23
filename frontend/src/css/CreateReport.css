@@ -7,8 +7,8 @@
 }
 .report_p {
     position: absolute;
-    margin-left: 167px;
-    margin-top: 10px;
+    padding-left: 125px;
+    margin-top: -10px;
     /* font-weight: bold; */
 }
 .report-grid {
@@ -16,9 +16,9 @@
     padding-top: 0.5rem;
     grid-template-columns: 0.2fr 2fr 2fr 2fr; /* 첫 번째 열은 label, 나머지는 데이터 */
     gap: 0.5rem; /* 박스 간격을 1px로 설정 */  
-    padding-left: 80px;
+    padding-left: 40px;
     padding-right: 80px;
-    padding-top: 60px;  
+    padding-top: 30px;  
 }
 .grid-label {
     font-weight: bold;
