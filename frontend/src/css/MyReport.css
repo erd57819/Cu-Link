@@ -20,7 +20,7 @@
   padding: 20px 0;
   position: relative;
   margin: 0 auto;
-  overflow: visible; /* 오버플로우를 보여주도록 설정 */
+  overflow: hidden; 
 }
 
 .myreport-swiper-slide {
