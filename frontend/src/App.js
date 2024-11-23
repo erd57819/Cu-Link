@@ -31,32 +31,6 @@ function App() {
     navigate("/", { replace: true }); // 메인 페이지로 이동
   };
 
-  // FastAPI와 통신하여 응답을 가져오는 함수
-  const handleUserMessage = async (message) => {
-    try {
-      const response = await fetch("http://localhost:8000/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message }),
-      });
-
-      const data = await response.json();
-      console.log("FastAPI 응답 데이터:", data);
-      addResponseMessage(data.reply); // FastAPI의 응답을 채팅창에 추가
-    } catch (error) {
-      console.error("Error fetching response:", error);
-      addResponseMessage("서버와 연결할 수 없습니다."); // 오류 시 메시지
-    }
-  };
-
-  // 사용자가 메시지를 전송했을 때 호출되는 함수
-  const handleNewUserMessage = (newMessage) => {
-    console.log(`사용자 입력: ${newMessage}`);
-    handleUserMessage(newMessage); // FastAPI로 메시지 전송 및 응답 처리
-  };
-
   useEffect(() => {
     addResponseMessage("안녕하세요! 무엇을 도와드릴까요?");
   }, []);
@@ -65,7 +39,9 @@ function App() {
     <div className="App">
       {location.pathname !== "/start" && <Baner />}
       <Widget
-        handleNewUserMessage={handleNewUserMessage} // 새로운 사용자 메시지를 처리
+        handleNewUserMessage={(newMessage) => {
+          console.log(`사용자 입력: ${newMessage}`);
+        }}
         title="Chat with Cu-link!"
         subtitle="궁금한게 있으면 물어봐주세요!"
       />
