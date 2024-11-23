@@ -3,13 +3,18 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Widget, addResponseMessage } from "react-chat-widget";
 import "react-chat-widget/lib/styles.css";
 import "./App.css";
+
+// 중복된 import 정리
 import StartPage from "./page/StartPage";
 import Main from "./page/Main";
+import Baner from "./components/Baner";
+import CreateReport from "./page/CreateReport";
+import Login from "./page/Login";
+import Join from "./page/Join";
 import IntroPage from "./page/IntroPage";
 import MyPage from "./page/MyPage";
 import FindPW from "./page/FindPW";
 import Report from "./page/Report";
-import Baner from "./components/Baner";
 
 function App() {
   const location = useLocation();
@@ -63,18 +68,19 @@ function App() {
     <div className="App">
       {/* 현재 경로가 '/start'가 아닌 경우에만 Baner를 렌더링 */}
       {location.pathname !== "/start" && <Baner />}
-
-      {/* Draggable로 감싸고 내부에 div 추가 */}
+      
       <Widget
         handleNewUserMessage={handleNewUserMessage} // 새로운 사용자 메시지를 처리
         title="Chat with Cu-link!"
         subtitle="궁금한게 있으면 물어봐주세요!"
       />
-
-      {/* 라우트 설정 */}
+      
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/intro" element={<IntroPage />} />
+        <Route path="/createreport" element={<CreateReport />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/join" element={<Join />} />
         <Route path="/news" element={<MyPage />} />
         <Route path="/resetPW" element={<FindPW />} />
         <Route path="/report" element={<Report />} />
