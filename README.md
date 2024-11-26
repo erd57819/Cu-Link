@@ -13,6 +13,10 @@
 ### 레포트 저장 및 pdf
 ![image](https://github.com/user-attachments/assets/d53b91d4-dff1-4a55-ae12-4c7cc24cc3b8)
 
+## 시연영상
+![image](https://github.com/user-attachments/assets/69c44800-c32d-4cff-983f-ab357bc894d2)
+
+
 
 
 
