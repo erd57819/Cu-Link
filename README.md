@@ -21,11 +21,3 @@
 ![image](https://github.com/user-attachments/assets/a1118ff8-c14a-4b25-a85d-e8afedf2db4c)
 
 
-
-
-
-
-
-
-
-
