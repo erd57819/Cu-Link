@@ -139,23 +139,6 @@ articles/
 - MySQL 8.0 이상
 - Firebase 프로젝트 설정
 
-### 환경 변수 설정
-
-#### Backend (Node.js) - `.env`
-```env
-DB_HOST=your_mysql_host
-DB_PORT=3306
-DB_USER=your_mysql_user
-DB_PASSWORD=your_mysql_password
-DB_DATABASE=your_database_name
-```
-
-#### FastAPI - `.env`
-```env
-OPEN_API_KEY=your_openai_api_key
-FIREBASE_CREDENTIALS_PATH=path/to/firebase-credentials.json
-```
-
 ### 설치 및 실행
 
 #### 1. Frontend 실행
