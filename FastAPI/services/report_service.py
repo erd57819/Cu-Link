@@ -38,7 +38,8 @@ def createReport_services(id_list: list):
     try:
         metadata = query_metadata_from_db(id_list, connection)
     finally:
-        connection.close()
+        if connection.open:
+            connection.close()
     conv_metadata = convert_datetime_in_metadata(metadata)
     article_contents = fetch_article_content(id_list, bucket)
     report_data = createReport_openAI(article_contents)
