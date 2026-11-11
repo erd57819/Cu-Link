@@ -51,13 +51,26 @@ class GeminiTests(unittest.TestCase):
     @patch("services.text_ai.requests.request")
     def test_three_reports_all_include_articles_and_keep_response_shape(self, request):
         request.side_effect = [response("제목 1\n본문 1"), response("제목 2\n본문 2"),
-                               response("제목 3\n본문 3"), response("이미지 생성용 문장")]
+                               response("제목 3\n본문 3"), response("Researchers in a modern AI laboratory.")]
         result = createReport_openAI("검증용 기사 본문")
         self.assertEqual(result, {"reports": ["제목 1\n본문 1", "제목 2\n본문 2", "제목 3\n본문 3"],
-                                  "titles": ["제목 1", "제목 2", "제목 3"], "img_txt": "이미지 생성용 문장"})
+                                  "titles": ["제목 1", "제목 2", "제목 3"], "img_txt": "Researchers in a modern AI laboratory."})
         self.assertEqual(request.call_count, 4)
         for call in request.call_args_list[:3]:
             self.assertIn("검증용 기사 본문", call.kwargs["json"]["messages"][1]["content"])
+        image_prompt = request.call_args_list[3].kwargs["json"]["messages"][1]["content"]
+        self.assertIn("English only", image_prompt)
+        self.assertIn("본문 1", image_prompt)
+
+    @patch("services.text_ai.requests.request")
+    def test_invalid_scene_stops_after_four_text_calls(self, request):
+        for scene in ("한국어 이미지 문장", "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS", "x" * 601):
+            request.reset_mock()
+            request.side_effect = [response("제목 1\n본문 1"), response("제목 2\n본문 2"),
+                                   response("제목 3\n본문 3"), response(scene)]
+            with self.subTest(scene=scene), self.assertRaisesRegex(TextAIError, "English scene"):
+                createReport_openAI("검증용 기사 본문")
+            self.assertEqual(request.call_count, 4)
 
     @patch("services.text_ai.requests.request")
     def test_chatbot_keeps_site_instructions_and_returns_string(self, request):

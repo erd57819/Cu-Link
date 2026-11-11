@@ -2,18 +2,7 @@
 from datetime import datetime
 
 from services.hf_images import HfImageError, ZeroGpuImages
-
-
-def translate_kr_to_en(keyword_ko):
-    # Keep the existing Korean -> English translation flow. No login at import.
-    from translate import Translator
-    try:
-        translated = Translator(from_lang="ko", to_lang="en").translate(keyword_ko)
-    except Exception:
-        raise HfImageError("Korean-to-English translation failed.") from None
-    if not isinstance(translated, str) or not translated.strip():
-        raise HfImageError("Translation returned no text.")
-    return translated
+from services.image_prompt import validate_image_prompt
 
 
 def query(payload):
@@ -27,9 +16,14 @@ def generate_images(keyword, styles):
     return [(style, query({"inputs": f"{keyword} in {style} style"})) for style in styles]
 
 
-def generate_images_and_send(translated_text):
+def generate_images_and_send(image_prompt):
     styles = ["watercolor", "comic", "photorealistic"]
-    keyword = translate_kr_to_en(translated_text)
+    # Gemini already supplies English. Never send translation-service warnings
+    # to FLUX, and reject malformed descriptions before submitting any GPU job.
+    try:
+        keyword = validate_image_prompt(image_prompt)
+    except ValueError:
+        raise HfImageError("Invalid English image description; no image job was submitted.") from None
     versions = generate_images(keyword, styles)
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     # Keep the existing service/React contract: file_name, style, image_data bytes.

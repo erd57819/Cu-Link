@@ -106,13 +106,29 @@ class ImageTests(unittest.TestCase):
 
     def test_existing_three_style_response_shape(self):
         from models import textToImage
-        with patch.object(textToImage, "translate_kr_to_en", return_value="Blue cube"), \
-                patch.object(textToImage, "query", return_value=b"png-bytes") as query:
-            images = textToImage.generate_images_and_send("파란 큐브")
+        with patch.object(textToImage, "query", return_value=b"png-bytes") as query, \
+                patch("requests.get") as external_get:
+            images = textToImage.generate_images_and_send("Blue cube")
+        external_get.assert_not_called()
         self.assertEqual([x["style"] for x in images], ["watercolor", "comic", "photorealistic"])
         self.assertTrue(all(set(x) == {"file_name", "style", "image_data"} for x in images))
         self.assertTrue(all(x["image_data"] == b"png-bytes" for x in images))
         self.assertEqual(query.call_count, 3)
+        self.assertEqual([call.args[0]["inputs"] for call in query.call_args_list], [
+            "Blue cube in watercolor style", "Blue cube in comic style", "Blue cube in photorealistic style"])
+
+    def test_bad_translation_or_prompt_cannot_consume_gpu_quota(self):
+        from models import textToImage
+        prompts = [None, "", "한국의 인공지능 경쟁력", "x" * 601,
+                   "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY.",
+                   "QUERY LENGTH LIMIT EXCEEDED. MAX ALLOWED QUERY: 500 CHARS",
+                   "<html>Service unavailable</html>"]
+        with patch.object(textToImage, "query") as query, patch("requests.get") as external_get:
+            for prompt in prompts:
+                with self.subTest(prompt=prompt), self.assertRaises(HfImageError):
+                    textToImage.generate_images_and_send(prompt)
+        query.assert_not_called()
+        external_get.assert_not_called()
 
     def test_missing_token_does_not_block_module_import_or_prompt_login(self):
         import importlib

@@ -1,4 +1,5 @@
 from services.text_ai import TextAIError, chat_completion
+from services.image_prompt import validate_image_prompt
 
 def createReport_text(report_contents):
     report_content = report_contents[0]
@@ -12,7 +13,10 @@ def createReport_text(report_contents):
     2. include visual elements (e.g., people, places, key objects, or iconic scenes) that can effectively represent the topic of the report so that the key messages of that topic can be visualized.
     3. Use language that reveals the main mood or setting of the report, and link to images that help readers understand the topic.
     4. Key points should be clearly expressed, ending in complete sentences.
-    5. Please write key sentences in Korean.
+    5. Write one short visual scene in English only, at most 350 characters.
+    6. Return only the image prompt: no headings, Markdown, captions, labels, or quotations.
+    7. Describe physical subjects, objects, and surroundings connected to the report.
+       Do not include written text, letters, numbers, logos, or watermarks in the image.
 
     Report Content:
     {report_content}
@@ -23,10 +27,10 @@ def createReport_text(report_contents):
     # Gemini API 호출
     summary_response = chat_completion(
         messages=[
-            {"role": "system", "content": "You are a helpful assistant for analyzing and summarizing documents."},
+            {"role": "system", "content": "Describe a report as one concrete image scene in English. Output only that scene, without text or labels in the image."},
             {"role": "user", "content": summary_prompt}
         ],
-        max_tokens=90,
+        max_tokens=200,
         temperature=0.5
     )
 
@@ -34,7 +38,10 @@ def createReport_text(report_contents):
     response_content = summary_response['choices'][0].get('message', {}).get('content', '').strip()
     if not response_content:
         raise ValueError("OpenAI 응답에서 유효한 내용을 찾을 수 없습니다.")
-    return response_content
+    try:
+        return validate_image_prompt(response_content)
+    except ValueError:
+        raise TextAIError("Image description must be a short English scene; image generation was not started.") from None
 
 
 def createReport_openAI(article_contents):
