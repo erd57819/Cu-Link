@@ -65,9 +65,12 @@ app.use(express.static(buildPath));
 // Public 폴더 내 정적 파일 서빙 (이미지 등)
 app.use("/images", express.static(path.join(__dirname, "..", "frontend", "public", "images")));
 
-// React 라우트 처리 (Catch-all)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(buildPath, "index.html"));
+// API 상태 확인
+app.get(["/", "/health"], (req, res) => {
+  res.status(200).json({
+    service: "culink-backend",
+    status: "ok",
+  });
 });
 
 // 서버 시작
