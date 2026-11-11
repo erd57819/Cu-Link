@@ -12,6 +12,8 @@ const createSessionStore = require("./config/session-store");
 const path = require("path");
 
 const app = express();
+const isProduction = process.env.NODE_ENV === "production";
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 80; // 환경변수 PORT가 없으면 80 사용
 
 // Express 조회와 로그인 세션이 동일한 TLS 연결 풀을 사용합니다.
@@ -23,11 +25,15 @@ sessionStore.onReady().catch((error) => {
 app.use(
   session({
     key: "session_cookie_name",
-    secret: "your-secret-key",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
-    cookie: { secure: false }, // HTTPS 사용 시 true로 변경
+    cookie: {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    },
   })
 );
 
