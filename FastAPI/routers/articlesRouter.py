@@ -7,7 +7,6 @@ from db.db_config import get_db_connection, database_config
 import json
 from datetime import datetime
 import traceback
-from firebase_admin import storage
 
 router = APIRouter()
 

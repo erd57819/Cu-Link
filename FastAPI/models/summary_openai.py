@@ -1,16 +1,4 @@
-# 임시 모델 파일
-import os
-from dotenv import load_dotenv
-import openai
-from langchain_community.llms import OpenAI
-from db.settings import openai_key
-# 환경 변수 로드
-load_dotenv()
-
-openai_key = os.getenv("OPEN_API_KEY")
-
-# API 키 설정
-openai.api_key = openai_key
+from services.text_ai import chat_completion
 
 # 뉴스 요약 함수 article_content : 넘겨준 기사 원문 데이터
 def summarize_article(article_content: str) -> str:
@@ -36,9 +24,8 @@ def summarize_article(article_content: str) -> str:
     """
 
 
-    # OpenAI ChatCompletion API 호출
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+    # Gemini 텍스트 생성 호출
+    response = chat_completion(
         messages=[
             {"role": "system", "content": "You are a helpful assistant for summarizing news articles."},
             {"role": "user", "content": prompt_text}

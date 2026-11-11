@@ -1,0 +1,8 @@
+# Active Python server routes after the TiDB, Supabase, HF, and Gemini patches.
+# The original requirements.txt is a Windows/development environment snapshot.
+-r requirements.hf.txt
+fastapi>=0.115.2,<1
+uvicorn>=0.32.0,<1
+firebase-admin>=6.5.0,<8
+PyMySQL>=1.1.1,<2
+certifi>=2024.8.30

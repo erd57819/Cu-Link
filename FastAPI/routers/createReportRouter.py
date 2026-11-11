@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response
+from services.text_ai import TextAIError
 from pydantic import BaseModel
 from typing import List,Optional,Any, Union
 # 서비스 폴더의 레포트 생성 함수
@@ -27,6 +28,8 @@ def createReport(request: ArticleIdList):
         print("레포트 전송 완료")
         return Response(content=comprs_data,  media_type="application/octet-stream")
     
+    except TextAIError as error:
+        raise HTTPException(status_code=error.status_code, detail=str(error)) from None
     except Exception as e:
         print(f"Error during ID reception: {str(e)}")
         raise HTTPException(status_code=400, detail=f"기사 ID 처리 중 오류 발생: {str(e)}")

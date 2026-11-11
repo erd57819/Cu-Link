@@ -1,11 +1,12 @@
 from fastapi import HTTPException, APIRouter
+from services.text_ai import TextAIError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
 from models.summary_openai import summarize_article  # 요약 함수 임포트
 from utils.firebase_utils import fetch_article_content
 
-from firebase_admin import storage  # Firebase 스토리지 사용
+from db.firebase_config import bucket  # 설정한 저장소에서 기사 본문 조회
 
 router = APIRouter()
 
@@ -29,7 +30,6 @@ async def receive_article_contents(articles: Articles):
         print(f"받은 기사 ID들: {article_ids}")
 
         # Firebase에서 기사 원문을 가져오기
-        bucket = storage.bucket()  # Firebase 버킷 객체 생성
         contents = fetch_article_content(article_ids, bucket)
         print(f"가져온 기사 원문: {contents}")
 
@@ -50,6 +50,8 @@ async def receive_article_contents(articles: Articles):
         # 요약된 결과를 반환
         return JSONResponse(content={"summarized_contents": summarized_contents, "message": "기사 내용이 성공적으로 요약되었습니다."})
 
+    except TextAIError as error:
+        raise HTTPException(status_code=error.status_code, detail=str(error)) from None
     except Exception as e:
         print(f"Error during content summarization: {str(e)}")
         raise HTTPException(status_code=400, detail=f"기사 요약 처리 중 오류 발생: {str(e)}")

@@ -1,17 +1,5 @@
-import os
-# 4. Firebase 관련 라이브러리
-import firebase_admin
-from firebase_admin import credentials, storage
-# 3. 환경 변수 로드 관련
-from dotenv import load_dotenv
 import json
-
-# 환경 변수 로드
-load_dotenv()
-
-# Firebase 초기화
-cred = credentials.Certificate(os.getenv('FIREBASE_SERVICE_ACCOUNT_PATH'))
-firebase_admin.initialize_app(cred, {'storageBucket': 'news-data01.appspot.com'})
+from db.firebase_config import bucket
 
 # Firebase에서 기사 원문 가져오기 함수
 def fetch_article_content(article_ids):
@@ -24,7 +12,6 @@ def fetch_article_content(article_ids):
         for article_id in article_ids:
             article_id = int(article_id)
             # 버킷 접근
-            bucket = storage.bucket()
             blob = bucket.blob(f"articles/{article_id}.json")
 
             # JSON 파싱

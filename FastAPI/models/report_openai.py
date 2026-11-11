@@ -1,10 +1,4 @@
-import openai
-from langchain_community.llms import OpenAI
-from models.textToImage import generate_images_and_send
-from db.settings import openai_key
-
-# API 키 설정
-openai.api_key = openai_key  # OpenAI API 키
+from services.text_ai import TextAIError, chat_completion
 
 def createReport_text(report_contents):
     report_content = report_contents[0]
@@ -26,16 +20,14 @@ def createReport_text(report_contents):
     Key sentences for image generation : 
     """
 
-    # OpenAI API 호출
-    summary_response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+    # Gemini API 호출
+    summary_response = chat_completion(
         messages=[
             {"role": "system", "content": "You are a helpful assistant for analyzing and summarizing documents."},
             {"role": "user", "content": summary_prompt}
         ],
         max_tokens=90,
-        temperature=0.5,
-        request_timeout=10
+        temperature=0.5
     )
 
     # 응답 유효성 확인
@@ -108,6 +100,7 @@ def createReport_openAI(article_contents):
             **Reports must be based on the content of the article, and any reports that are unrelated to the article will be invalid.**
 
             Article list:
+            {article_contents}
             """
         ]
 
@@ -121,9 +114,8 @@ def createReport_openAI(article_contents):
 
         # 각 프롬프트로 보고서 생성
         for i, prompt_text in enumerate(prompt_text_templates):
-            # OpenAI API 호출
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+            # Gemini API 호출
+            response = chat_completion(
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant for analyzing and summarizing news articles."},
                     {"role": "user", "content": prompt_text}
@@ -142,6 +134,8 @@ def createReport_openAI(article_contents):
 
             # 제목과 본문 분리
             title_end_idx = response_content.find("\n")
+            if title_end_idx <= 0 or not response_content[title_end_idx:].strip():
+                raise TextAIError("Report response must include a title and body on separate lines.")
             report_title = response_content[:title_end_idx].strip()
             report_content = response_content[title_end_idx:].strip()
 
@@ -161,6 +155,7 @@ def createReport_openAI(article_contents):
             "img_txt": img_txt
         }
 
-    except Exception as e:
-        print(f"보고서 생성 중 에러 발생: {e}")
-        return {"error": str(e)}
+    except TextAIError:
+        raise
+    except Exception:
+        raise TextAIError("Report generation failed.") from None

@@ -1,10 +1,5 @@
-import openai
 from fastapi import HTTPException
-
-from db.settings import openai_key
-
-# OpenAI API 키 설정
-openai.api_key = openai_key
+from services.text_ai import TextAIError, chat_completion
 
 # 프롬프트 추가
 site_info_prompt = """
@@ -34,12 +29,10 @@ def get_chatbot_response(user_message: str) -> str:
         # 사용자 메시지와 사이트 정보 프롬프트 결합
         full_prompt = site_info_prompt + f"\n\n사용자 질문: {user_message}\n챗봇 답변:"
         
-        # OpenAI API 호출
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        # Gemini API 호출
+        response = chat_completion(
             messages=[{"role": "user", "content": full_prompt}],
         )
-        return response.choices[0].message["content"]
-    except Exception as e:
-        print(f"OpenAI API 호출 오류: {e}")
-        raise HTTPException(status_code=500, detail="OpenAI API 호출 실패")
+        return response["choices"][0]["message"]["content"]
+    except TextAIError as error:
+        raise HTTPException(status_code=error.status_code, detail=str(error)) from None
