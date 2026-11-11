@@ -1,14 +1,17 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 # 환경 변수 로드
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[1] / '.env')
 #================= mySQL ========================
 database_config = {
-    "DB_PORT" : int(os.getenv("DB_PORT")),
+    "DB_PORT" : int(os.getenv("DB_PORT", "3306")),
     "DB_HOST" : os.getenv("DB_HOST"),
     "DB_USER" : os.getenv("DB_USER"),
     "DB_PASSWORD" : os.getenv("DB_PASSWORD"),
-    "DB_DATABASE" : os.getenv("DB_DATABASE"),}
+    "DB_DATABASE" : os.getenv("DB_DATABASE"),
+    "DB_SSL" : os.getenv("DB_SSL", "false"),
+    "DB_SSL_CA" : os.getenv("DB_SSL_CA"),}
 
 #================== FAISS =======================
 faiss_path = os.getenv('FAISS_INDEX_PATH')

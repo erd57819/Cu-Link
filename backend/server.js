@@ -7,23 +7,18 @@ const sumRouter = require("./routes/sumRouter");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require("express-session");
-const MySQLStore = require("express-mysql-session")(session);
+const db = require("./config/db");
+const createSessionStore = require("./config/session-store");
 const path = require("path");
 
 const app = express();
-const PORT = 80; // 기본 HTTP 포트
+const PORT = process.env.PORT || 80; // 환경변수 PORT가 없으면 80 사용
 
-// MySQL 세션 저장소 옵션 설정
-const options = {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-};
-
-// MySQL 세션 저장소 생성
-const sessionStore = new MySQLStore(options);
+// Express 조회와 로그인 세션이 동일한 TLS 연결 풀을 사용합니다.
+const sessionStore = createSessionStore(db);
+sessionStore.onReady().catch((error) => {
+  console.error("Session store initialization failed:", error.code || error.name);
+});
 
 app.use(
   session({
@@ -70,6 +65,6 @@ app.get("*", (req, res) => {
 });
 
 // 서버 시작
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on http://culink.site`);
 });
