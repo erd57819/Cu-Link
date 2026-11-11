@@ -1,3 +1,4 @@
+import { BACKEND_URL } from "../config/api";
 import React, { useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +22,7 @@ const ResetPassword = () => {
     };
 
     try {
-      let res = await axios.post('http://culink.site/auth/resetPW', resetData);
+      let res = await axios.post(`${BACKEND_URL}/auth/resetPW`, resetData);
       console.log(res.data);
 
       if (res.data.result === "성공") {

@@ -1,3 +1,4 @@
+import { BACKEND_URL } from "../config/api";
 // src/components/Login.jsx
 import React, { useRef } from 'react';
 import axios from 'axios';
@@ -21,7 +22,7 @@ const Login = () => {
     };
 
     try {
-      let res = await axios.post('http://culink.site/auth/login', logMember, { withCredentials: true });
+      let res = await axios.post(`${BACKEND_URL}/auth/login`, logMember, { withCredentials: true });
 
 
       if (res.data.result === 'success') {

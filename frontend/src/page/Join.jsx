@@ -1,3 +1,4 @@
+import { BACKEND_URL } from "../config/api";
 import React, { useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +29,7 @@ const Join = () => {
     };
 
     try {
-      let res = await axios.post('http://culink.site/auth/join', joinData);
+      let res = await axios.post(`${BACKEND_URL}/auth/join`, joinData);
       console.log(res.data);
 
       if (res.data.result === "success") {

@@ -1,3 +1,4 @@
+import { FASTAPI_URL } from "../config/api";
 import React, { useState } from 'react';
 import '../css/SearchBar.css';
 import Swal from 'sweetalert2';
@@ -94,7 +95,7 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
 
     // FastAPI 엔드포인트로 데이터 전송
     try {
-      const response = await fetch('http://15.164.148.20:8000/search/keywords', {
+      const response = await fetch(`${FASTAPI_URL}/search/keywords`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

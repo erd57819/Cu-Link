@@ -1,9 +1,9 @@
+import { BACKEND_URL } from "../config/api";
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../css/MyReport.css';
 import Swal from 'sweetalert2';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Link } from 'react-router-dom';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/autoplay';
@@ -11,7 +11,6 @@ import { Navigation, Autoplay } from 'swiper/modules';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 
 const MyReport = () => {
-  const [selectedArticles, setSelectedArticles] = useState([]);
   const [articles, setArticles] = useState([]);
   const [selectedReportArticles, setSelectedReportArticles] = useState({});
   const [selectedReportIds, setSelectedReportIds] = useState(new Set());
@@ -23,7 +22,7 @@ const MyReport = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await axios.get('http://culink.site/report/getreport', {
+        const response = await axios.get(`${BACKEND_URL}/report/getreport`, {
           withCredentials: true,
         });
         setArticles(response.data);
@@ -44,7 +43,7 @@ const MyReport = () => {
     } else {
       updatedReportIds.add(rep_id);
       try {
-        const response = await axios.get(`http://culink.site/report/${rep_id}/articles`);
+        const response = await axios.get(`${BACKEND_URL}/report/${rep_id}/articles`, { withCredentials: true });
         setSelectedReportArticles((prevArticles) => ({
           ...prevArticles,
           [rep_id]: response.data,
@@ -67,7 +66,7 @@ const MyReport = () => {
       try {
         const allArticles = await Promise.all(
           Array.from(allReportIds).map(async (rep_id) => {
-            const response = await axios.get(`http://culink.site/report/${rep_id}/articles`);
+            const response = await axios.get(`${BACKEND_URL}/report/${rep_id}/articles`, { withCredentials: true });
             return { [rep_id]: response.data };
           })
         );
@@ -92,7 +91,7 @@ const MyReport = () => {
         try {
           await Promise.all(
             Array.from(selectedReportIds).map((id) =>
-              axios.delete(`http://culink.site/report/${id}/delete`)
+              axios.delete(`${BACKEND_URL}/report/${id}/delete`, { withCredentials: true })
             )
           );
           setArticles(articles.filter((article) => !selectedReportIds.has(article.rep_id)));
@@ -158,6 +157,7 @@ const MyReport = () => {
                 </div>
                 <img
                   src={article.rep_img}
+                  alt={article.rep_title || "리포트 이미지"}
                   className="myreport-card-image"
                 />
                 <div className="myreport-card-content">

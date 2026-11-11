@@ -1,3 +1,4 @@
+import { FASTAPI_URL, BACKEND_URL } from "../config/api";
 // MyNews.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -46,13 +47,13 @@ const MyNews = () => {
     const fetchSavedArticles = async () => {
       try {
         // 첫 번째 요청: Node.js 서버에서 기사 기본 정보 가져오기
-        const response1 = await axios.get('http://culink.site/news/saved', {
+        const response1 = await axios.get(`${BACKEND_URL}/news/saved`, {
           withCredentials: true,
         });
         const savedArticles = response1.data || [];
   
         // 두 번째 요청: FastAPI 서버에서 Firebase 관련 기사 내용 가져오기
-        const response2 = await axios.get(`http://15.164.148.20:8000/articles/saved`, {
+        const response2 = await axios.get(`${FASTAPI_URL}/articles/saved`, {
           params: { user_id: userId },
           withCredentials: true,
         });
@@ -120,7 +121,7 @@ const MyNews = () => {
 
     try {
       console.log("요약하기 요청 시작");
-      const response = await fetch('http://15.164.148.20:8000/summarize/summarize-article', {
+      const response = await fetch(`${FASTAPI_URL}/summarize/summarize-article`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +157,7 @@ const MyNews = () => {
       // 모든 선택된 기사에 대해 삭제 요청 보내기
       await Promise.all(
         selectedArticles.map(async (article) => {
-          const url = `http://culink.site/news/delete`;
+          const url = `${BACKEND_URL}/news/delete`;
           console.log('삭제 요청 URL:', url); // 요청 URL 확인을 위한 로그
   
           const response = await fetch(url, {
@@ -173,7 +174,7 @@ const MyNews = () => {
             const errorMessage = await response.text();
             throw new Error(`서버 오류: ${response.status} - ${errorMessage}`);
           }else{
-            window.location.href = 'http://localhost:3001/news';
+            window.location.href = '/news';
 
           }
         })
@@ -230,7 +231,7 @@ const MyNews = () => {
     //리포트 생성 요청
     try{
       sessionStorage.setItem('articlesId', JSON.stringify(Array.from(articlesId)));
-      const response = await fetch('http://15.164.148.20:8000/report/createReport', {
+      const response = await fetch(`${FASTAPI_URL}/report/createReport`, {
         method:'POST',
         headers: {
           'Content-Type' : 'application/json',

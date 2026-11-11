@@ -1,3 +1,4 @@
+import { FASTAPI_URL, BACKEND_URL } from "../config/api";
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -49,7 +50,7 @@ const News = ({ searchResults }) => {
       const fetchArticles = async () => {
         try {
           //기본 페이지 뉴스기사
-          const response = await axios.get(`http://15.164.148.20:8000/articles?page=${currentPage}&`);
+          const response = await axios.get(`${FASTAPI_URL}/articles?page=${currentPage}&`);
           //뉴스기사 변수 선언
           setArticles(response.data.articles);
           //전체 페이지 카운트
@@ -134,7 +135,7 @@ const News = ({ searchResults }) => {
       sessionStorage.setItem('selectedArticleIds', JSON.stringify(selectedArticles));
 
 
-      const response = await fetch('http://15.164.148.20:8000/summarize/summarize-article', {
+      const response = await fetch(`${FASTAPI_URL}/summarize/summarize-article`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +185,7 @@ const News = ({ searchResults }) => {
     }
   
     try {
-      const response = await fetch(`http://culink.site/news/saved`, {
+      const response = await fetch(`${BACKEND_URL}/news/saved`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -245,7 +246,7 @@ const News = ({ searchResults }) => {
     try {
       
       sessionStorage.setItem('selectedArticleIds', JSON.stringify(Array.from(selectedArticleIds)));
-      const response = await fetch('http://15.164.148.20:8000/report/createReport', {
+      const response = await fetch(`${FASTAPI_URL}/report/createReport`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

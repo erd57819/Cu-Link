@@ -37,10 +37,14 @@ app.use(
   })
 );
 
+// Allowed React origins, configured separately from public API addresses.
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:3001")
+  .split(",").map((origin) => origin.trim()).filter(Boolean);
+
 // CORS 설정 (React에서 Express로 요청을 허용)
 app.use(
   cors({
-    origin: ["http://culink.site", "http://culink.site:3000"], // React와 Node.js 주소 모두 허용
+    origin: allowedOrigins,
     credentials: true,
   })
 );

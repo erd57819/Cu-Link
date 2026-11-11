@@ -1,3 +1,4 @@
+import { FASTAPI_URL } from "./config/api";
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Widget, addResponseMessage } from "react-chat-widget";
@@ -24,7 +25,7 @@ function App() {
   // FastAPI와 통신하여 응답을 가져오는 함수
   const handleUserMessage = async (message) => {
     try {
-      const response = await fetch("http://15.164.148.20:8000/chat", {
+      const response = await fetch(`${FASTAPI_URL}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
