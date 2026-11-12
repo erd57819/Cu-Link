@@ -14,6 +14,8 @@ function Report() {
     image: '',
     content: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [selectedArticleIds, setSelectedArticleIds] = useState([]); // 선택한 기사 ID 리스트
 
   useEffect(() => {
@@ -30,6 +32,7 @@ function Report() {
   const pdfButtonRef = useRef();
 
   const handleSave = async () => {
+    if (isSaving || isSaved) return;
     if (!userId) {
       Swal.fire({
         title: "로그인이 필요합니다",
@@ -46,6 +49,7 @@ function Report() {
       return;
     }
 
+    setIsSaving(true);
     try {
       const res = await fetch(`${FASTAPI_URL}/savereport`, {
         method: 'POST',
@@ -62,9 +66,16 @@ function Report() {
       });
 
       if (res.ok) {
+        setIsSaved(true);
         Swal.fire({
-          title: "리포트 저장 성공 o(〃＾▽＾〃)o",
-          icon: 'success'
+          title: '레포트를 저장했습니다',
+          text: '상단의 내 레포트 메뉴에서 다시 볼 수 있습니다.',
+          icon: 'success',
+          showCancelButton: true,
+          confirmButtonText: '저장한 레포트 보기',
+          cancelButtonText: '계속 보기',
+        }).then(result => {
+          if (result.isConfirmed) navigate('/reports');
         });
         sessionStorage.removeItem("selectedArticleIds");
       } else {
@@ -79,6 +90,8 @@ function Report() {
         text: error.message,
         icon: 'error'
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -113,8 +126,11 @@ function Report() {
           <div className="content-scroll">{reportData.content}</div>
         </div>
         <div className="buttons-box" ref={pdfButtonRef}>
-          <button className='button_save' onClick={handleSave}>
-            저장하기
+          <button className='button_save' onClick={handleSave} disabled={isSaving || isSaved}>
+            {isSaved ? '저장 완료' : isSaving ? '저장 중...' : '저장하기'}
+          </button>
+          <button className='button_saved_reports' onClick={() => navigate('/reports')}>
+            저장한 레포트 보기
           </button>
           <button className="button_save_pdf" onClick={handleSaveAsPDF}>
             PDF 파일로 저장하기

@@ -15,6 +15,7 @@ import Login from "./page/Login";
 import Join from "./page/Join";
 import IntroPage from "./page/IntroPage";
 import MyPage from "./page/MyPage";
+import SavedReports from "./page/SavedReports";
 import FindPW from "./page/FindPW";
 import Report from "./page/Report";
 
@@ -88,6 +89,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/join" element={<Join />} />
         <Route path="/news" element={<MyPage />} />
+        <Route path="/reports" element={<SavedReports />} />
         <Route path="/resetPW" element={<FindPW />} />
         <Route path="/report" element={<Report />} />
         <Route path="/start" element={<StartPage onStart={handleStart} />} />

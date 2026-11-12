@@ -1,13 +1,9 @@
 import { BACKEND_URL } from "../config/api";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import '../css/MyReport.css';
 import Swal from 'sweetalert2';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/autoplay';
-import { Navigation, Autoplay } from 'swiper/modules';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 
 const MyReport = () => {
@@ -16,22 +12,31 @@ const MyReport = () => {
   const [selectedReportIds, setSelectedReportIds] = useState(new Set());
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [currentReport, setCurrentReport] = useState(null); // 현재 선택된 리포트
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setIsLoading(true);
+    setLoadError(null);
     const fetchReports = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/report/getreport`, {
-          withCredentials: true,
+          withCredentials: true, signal: controller.signal, timeout: 90000,
         });
-        setArticles(response.data);
+        if (!Array.isArray(response.data)) throw new Error('Invalid report list');
+        if (active) setArticles(response.data);
       } catch (error) {
-        console.error('데이터를 가져오는 데 오류가 발생했습니다:', error);
+        if (active) setLoadError(error.response?.status === 401 ? 'login' : 'request');
+      } finally {
+        if (active) setIsLoading(false);
       }
     };
     fetchReports();
-  }, []);
+    return () => { active = false; controller.abort(); };
+  }, [reload]);
 
   const handleReportClick = async (rep_id) => {
     const updatedReportIds = new Set(selectedReportIds);
@@ -121,40 +126,39 @@ const MyReport = () => {
     setCurrentReport(null);
   };
 
+  if (isLoading) return <p role="status">저장한 레포트를 불러오는 중입니다...</p>;
+  if (loadError) return (
+    <div className="saved-reports-notice" role="alert">
+      <p>{loadError === 'login' ? '로그인 상태를 확인할 수 없습니다. 다시 로그인해 주세요.' : '저장한 레포트를 불러오지 못했습니다.'}</p>
+      {loadError === 'login'
+        ? <Link to="/login" state={{ from: '/reports' }}>다시 로그인하기</Link>
+        : <button onClick={() => setReload(value => value + 1)}>다시 시도</button>}
+    </div>
+  );
+  if (articles.length === 0) return (
+    <div className="saved-reports-notice">
+      <p>아직 저장한 레포트가 없습니다. 레포트를 생성한 뒤 ‘저장하기’를 눌러 주세요.</p>
+      <Link to="/">기사 검색하고 레포트 만들기</Link>
+    </div>
+  );
+
   return (
     <div className="myreport-report-box">
-      <div className="myreport-slider-section">
-        <div ref={prevRef} className="myreport-prev-button">‹</div>
-        <Swiper
-          navigation={{
-            prevEl: prevRef.current,
-            nextEl: nextRef.current,
-          }}
-          onSwiper={(swiper) => {
-            setTimeout(() => {
-              swiper.params.navigation.prevEl = prevRef.current;
-              swiper.params.navigation.nextEl = nextRef.current;
-              swiper.navigation.init();
-              swiper.navigation.update();
-            });
-          }}
-          modules={[Navigation, Autoplay]}
-          className="myreport-slider"
-          spaceBetween={10}
-          slidesPerView={3}
-          centeredSlides={true}
-          loop={true}
-        >
+      <p className="myreport-list-hint">저장한 레포트 {articles.length}개 · 카드를 선택하면 사용한 기사를 확인할 수 있습니다.</p>
+      <div className="myreport-grid">
           {articles.map((article) => (
-            <SwiperSlide key={article.rep_id} className="myreport-swiper-slide">
               <div
+                key={article.rep_id}
                 className={`myreport-card ${selectedReportIds.has(article.rep_id) ? 'selected' : ''}`}
                 onClick={() => handleReportClick(article.rep_id)}
                 onDoubleClick={() => handleReportDoubleClick(article)}
               >
-                <div className="myreport-select-icon">
+                <button type="button" className="myreport-select-icon"
+                  aria-label={`${article.rep_title} 선택`}
+                  aria-pressed={selectedReportIds.has(article.rep_id)}
+                  onClick={event => { event.stopPropagation(); handleReportClick(article.rep_id); }}>
                   <AiOutlineCheckCircle size={20} color={selectedReportIds.has(article.rep_id) ? '#6200ee' : '#ccc'} />
-                </div>
+                </button>
                 {article.rep_img && (
                   <img
                     src={article.rep_img}
@@ -170,12 +174,13 @@ const MyReport = () => {
                       ? `${article.rep_content.slice(0, 100)}...`
                       : article.rep_content}
                   </p>
+                  <button type="button" className="myreport-view-button"
+                    onClick={event => { event.stopPropagation(); handleReportDoubleClick(article); }}>
+                    본문 보기
+                  </button>
                 </div>
               </div>
-            </SwiperSlide>
           ))}
-        </Swiper>
-        <div ref={nextRef} className="myreport-next-button">›</div>
       </div>
       <h4>이 레포트를 작성하는데 쓰인 기사들이에요!</h4>
       <div className="myreport-scroll-section">
@@ -217,8 +222,8 @@ const MyReport = () => {
 
       {isModalOpen && (
         <div className="myreport-modal-overlay" onClick={closeModal}>
-          <div className="myreport-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="myreport-modal-close" onClick={closeModal}>
+          <div className="myreport-modal" role="dialog" aria-modal="true" aria-label="저장한 레포트 본문" onClick={(e) => e.stopPropagation()}>
+            <button className="myreport-modal-close" aria-label="레포트 닫기" onClick={closeModal}>
               &times;
             </button>
             <div className="myreport-modal-header">{currentReport.rep_title}</div>

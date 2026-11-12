@@ -56,6 +56,8 @@ function Baner() {
         <span><Link to={'/intro'} className='link'>사용법</Link></span>
         <span>|</span>
         <span onClick={handleMynews} style={{ cursor: 'pointer' }}>내 기사</span>
+        <span>|</span>
+        <Link to='/reports' className='link'>내 레포트</Link>
       </div>
       <div className='right-item'>
         {userId ? (

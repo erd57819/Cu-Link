@@ -1,0 +1,12 @@
+.saved-reports-page {
+  max-width: 1120px;
+  margin: 32px auto;
+  padding: 0 24px 40px;
+  box-sizing: border-box;
+  text-align: left;
+}
+.saved-reports-page h1 { color: #51017f; margin-bottom: 10px; }
+.saved-reports-page > p { color: #555; line-height: 1.6; margin-bottom: 28px; }
+.saved-reports-page .myreport-report-box { width: 100%; }
+.saved-reports-notice { padding: 24px; background: #f4f2f7; border-radius: 12px; }
+.saved-reports-notice a { color: #51017f; font-weight: 600; }

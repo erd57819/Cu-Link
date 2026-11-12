@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import '../css/SearchBar.css';
 import Swal from 'sweetalert2';
 import pako from "pako";
+import SearchHelp from './SearchHelp';
 
 const SearchBar = ({ setSearchResults }) => {
   const [keyword, setKeyword] = useState('');
@@ -109,7 +110,9 @@ const SearchBar = ({ setSearchResults }) => {
           <div className="search-input-container">
             <input
               type="text"
-              placeholder="키워드를 입력해주세요"
+              placeholder="예: 교육+AI"
+              aria-label="기사 검색어"
+              aria-describedby="article-search-help"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={(event) => {
@@ -119,17 +122,9 @@ const SearchBar = ({ setSearchResults }) => {
               }}
               className="search-input"
             />
-            <button className="tooltip-button">?</button>
-            <div className="tooltip">
-              <p>검색 방법 안내:</p>
-              <ul>
-                <li><strong>+단어</strong>: 반드시 포함 (AND 조건)</li>
-                <li><strong>-단어</strong>: 반드시 제외</li>
-                <li><strong>,단어</strong>: 포함 가능 (OR 조건)</li>
-              </ul>
-              <p><em>참고:</em> +, - 뒤에 공백 없이 단어를 입력해주세요.</p>
-            </div>
+
           </div>
+          <SearchHelp onUseExample={setKeyword} />
         </div>
   
         <div className="separator"></div>

@@ -25,19 +25,21 @@ exports.register = (req, res) => {
 
 // 레포트 가져오기
 exports.getReport = (req, res) => {
+  const user_id = req.session && req.session.userId;
+  if (!user_id) return res.status(401).json({ message: '로그인이 필요합니다.' });
   const sql = `
         SELECT rep_id, rep_title, rep_content, rep_img, rep_date
         FROM Reports
         WHERE user_id = ?
+        ORDER BY rep_date DESC, rep_id DESC
     `;
-  const user_id = req.session.userId
 
   conn.query(sql, [user_id], (err, results) => {
     if (err) {
       console.error("리포트 가져오기 오류:", err);
       return res.status(500).json({ message: "리포트 데이터를 가져오는 데 실패했습니다" });
     }
-    console.log('ㅈㅂ',results);
+    // Return only the signed-in user's reports.
     
     res.json(results); // 모든 레포트 반환
   });

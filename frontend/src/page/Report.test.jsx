@@ -43,3 +43,14 @@ test('a failed PDF export restores the controls', async () => {
   await waitFor(() => expect(Swal.fire).toHaveBeenCalledWith(expect.objectContaining({ title: 'PDF 저장 실패' })));
   expect(screen.getByRole('button', { name: '저장하기' })).toBeVisible();
 });
+
+test('saving offers a direct route to the saved report list and prevents duplicate saves', async () => {
+  Swal.fire.mockResolvedValueOnce({ isConfirmed: true });
+  render(<Report />);
+  fireEvent.click(screen.getByRole('button', { name: '저장하기' }));
+  await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/reports'));
+  expect(screen.getByRole('button', { name: '저장 완료' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: '저장 완료' }));
+  expect(global.fetch).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole('button', { name: '저장한 레포트 보기' })).toBeVisible();
+});
