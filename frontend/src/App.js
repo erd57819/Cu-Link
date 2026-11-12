@@ -1,4 +1,5 @@
 import { FASTAPI_URL } from "./config/api";
+import { warmServers } from "./config/warmServers";
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Widget, addResponseMessage } from "react-chat-widget";
@@ -21,6 +22,10 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isStartPageVisited, setIsStartPageVisited] = useState(false);
+
+  useEffect(() => {
+    warmServers();
+  }, []);
 
   // FastAPI와 통신하여 응답을 가져오는 함수
   const handleUserMessage = async (message) => {

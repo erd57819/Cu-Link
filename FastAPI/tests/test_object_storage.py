@@ -176,7 +176,7 @@ class StorageTests(unittest.TestCase):
             execute=lambda sql, values: statements.append((sql, values)),
             executemany=lambda sql, values: statements.append((sql, values)), close=lambda: None)
         committed = []
-        connection = types.SimpleNamespace(cursor=lambda: cursor, commit=lambda: committed.append(True), close=lambda: None)
+        connection = types.SimpleNamespace(open=True, cursor=lambda: cursor, commit=lambda: committed.append(True), close=lambda: None)
         fake_db = types.ModuleType("db.db_config")
         fake_db.database_config = {}
         fake_db.get_db_connection = lambda config: connection

@@ -6,6 +6,7 @@ from db.settings import database_config
 from db.db_config import get_db_connection
 from db.firebase_config import bucket, fire_db
 from utils.mysql_querys import all_query
+from services.article_bodies import article_body_reader
 
 
 def _keyword_ids(keyword):
@@ -50,16 +51,9 @@ def default_serializer(obj):
 
 
 def _article_contents(article_ids):
-    contents = []
-    for article_id in article_ids:
-        try:
-            blob = bucket.blob(f"articles/{int(article_id)}.json")
-            value = json.loads(blob.download_as_text()).get("content")
-            contents.append(value if isinstance(value, str) else "Content not available.")
-        except Exception:
-            # Keep one result per ID even if a single object is unavailable.
-            contents.append("Content not available.")
-    return contents
+    ids = [int(value) for value in article_ids]
+    contents = article_body_reader.get_many(bucket, ids)
+    return [contents[article_id] for article_id in ids]
 
 
 def search_by_keyword_and_date(user_keywords: dict, date_list: list = None):

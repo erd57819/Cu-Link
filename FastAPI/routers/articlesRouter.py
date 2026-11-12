@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Union
 from db.firebase_config import bucket
 from db.db_config import get_db_connection, database_config
+from services.article_bodies import article_body_reader
 import json
 from datetime import datetime
 import traceback
@@ -21,22 +22,7 @@ class Articles(BaseModel):
 
 # Firebase에서 문자열 ID로 필요한 데이터 조회 함수
 def fetch_selected_data_from_storage(ids):
-    string_ids = {str(id_) for id_ in ids}
-    selected_data = {}
-
-    for id_ in string_ids:
-        blob_name = f"articles/{id_}.json"
-        blob = bucket.blob(blob_name)
-        try:
-            # Blob 데이터 다운로드 시도
-            binary_data = blob.download_as_bytes()
-            json_data = json.loads(binary_data.decode("utf-8"))
-            selected_data[int(id_)] = json_data.get("content", "Content not available.")
-        except Exception as e:
-            # 파일이 없을 때 예외 처리
-            print(f"Storage 조회 오류 {id_}: {e}")
-            selected_data[int(id_)] = "Content not available."
-    return selected_data
+    return article_body_reader.get_many(bucket, ids)
 
 # MySQL에서 페이지네이션된 기사 데이터를 조회하고 전체 데이터 개수를 반환하는 함수
 def fetch_data_from_mysql(page: int, page_size: int = 6):
@@ -85,7 +71,7 @@ def combine_data(firebase_data, mysql_data):
 
 # 페이지네이션이 적용된 엔드포인트 정의
 @router.get("/articles")
-def get_articles(page: int = Query(1, ge=1), page_size: int = 6):
+def get_articles(page: int = Query(1, ge=1), page_size: int = Query(6, ge=1, le=60)):
     try:
         # MySQL에서 페이지네이션된 데이터와 전체 데이터 개수를 가져옴
         mysql_data, total_count = fetch_data_from_mysql(page, page_size)

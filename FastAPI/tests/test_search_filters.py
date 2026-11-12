@@ -71,7 +71,7 @@ class SearchTests(unittest.TestCase):
         missing.download_as_text.side_effect = FileNotFoundError()
         found = Mock()
         found.download_as_text.return_value = json.dumps({"content": "second article body"})
-        self.service.bucket.blob.side_effect = [missing, found]
+        self.service.bucket.blob.side_effect = lambda path: missing if path == "articles/1.json" else found
         response = self.service.search_by_keyword_and_date({"orKeywords": ["ai"]})
         rows = json.loads(gzip.decompress(response))
         self.assertEqual(rows[0]["cr_art_content"], "Content not available.")

@@ -20,6 +20,10 @@ const News = ({ searchResults }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+  const [isFetchingArticles, setIsFetchingArticles] = useState(false);
+  const [articleError, setArticleError] = useState('');
+  const [isWaitingForArticles, setIsWaitingForArticles] = useState(false);
+  const [reloadArticles, setReloadArticles] = useState(0);
   const navigate = useNavigate();
   const articlesPerPage = 6;
 
@@ -32,9 +36,15 @@ const News = ({ searchResults }) => {
 
   //뉴스 기사 보여주기.
   useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setArticleError('');
+    setIsWaitingForArticles(false);
+    let waitingTimer;
     //키워드 검색으로 넘어온 뉴스기사 
     console.log("넘어온 데이터입니다",searchResults)
     if (searchResults !== null) {
+      setIsFetchingArticles(false);
       setArticles(searchResults);
       setTotalCount(searchResults.length);
 
@@ -46,11 +56,18 @@ const News = ({ searchResults }) => {
 
   setArticles(displayedArticles);
     }else{
+      setIsFetchingArticles(true);
+      waitingTimer = setTimeout(() => {
+        if (active) setIsWaitingForArticles(true);
+      }, 8000);
       
       const fetchArticles = async () => {
         try {
           //기본 페이지 뉴스기사
-          const response = await axios.get(`${FASTAPI_URL}/articles?page=${currentPage}&`);
+          const response = await axios.get(`${FASTAPI_URL}/articles?page=${currentPage}&`, {
+            signal: controller.signal, timeout: 90000,
+          });
+          if (!active) return;
           //뉴스기사 변수 선언
           setArticles(response.data.articles);
           //전체 페이지 카운트
@@ -59,13 +76,26 @@ const News = ({ searchResults }) => {
           console.log("Current Page:", currentPage);
           
         } catch (error) {
+          if (!active) return;
+          setArticleError('기사를 불러오지 못했습니다. 다시 시도해 주세요.');
           console.error('Failed to fetch articles:', error);
+        } finally {
+          clearTimeout(waitingTimer);
+          if (active) setIsFetchingArticles(false);
         }
       };
       fetchArticles();
     }
-    
-  }, [searchResults,currentPage, articlesPerPage]);
+    return () => {
+      active = false;
+      controller.abort();
+      clearTimeout(waitingTimer);
+    };
+  }, [searchResults,currentPage, articlesPerPage, reloadArticles]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchResults]);
 
  
 
@@ -293,6 +323,12 @@ const News = ({ searchResults }) => {
         <button onClick={handleSelectAll}>전체선택</button>
       </div>
       <div className="articles">
+        {isFetchingArticles && <p role="status">{isWaitingForArticles
+          ? '기사를 준비하고 있습니다. 첫 접속은 약 1분 걸릴 수 있습니다.'
+          : '기사를 불러오는 중입니다...'}</p>}
+        {articleError && <div role="alert">{articleError}
+          <button onClick={() => setReloadArticles(value => value + 1)}>다시 시도</button>
+        </div>}
         {articles.length > 0 ? (
           articles.map((article) => (
             <div key={article.cr_art_id} className="article">
@@ -328,7 +364,7 @@ const News = ({ searchResults }) => {
             </div>
           ))
         ) : (
-          <p>기사를 불러오는 중입니다...</p>
+          !isFetchingArticles && !articleError && <p>표시할 기사가 없습니다.</p>
         )}
       </div>
       <div className="pagination-container">

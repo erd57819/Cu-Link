@@ -1,6 +1,6 @@
 import { BACKEND_URL } from "../config/api";
 // src/components/Login.jsx
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate,useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -11,9 +11,21 @@ const Login = () => {
   const pw_Ref = useRef();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggingIn) {
+      setIsWaiting(false);
+      return;
+    }
+    const timer = setTimeout(() => setIsWaiting(true), 8000);
+    return () => clearTimeout(timer);
+  }, [isLoggingIn]);
   
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (isLoggingIn) return;
     const redirectTo = location.state?.from ||'/';
 
     let logMember = {
@@ -21,8 +33,9 @@ const Login = () => {
       pw: pw_Ref.current.value
     };
 
+    setIsLoggingIn(true);
     try {
-      let res = await axios.post(`${BACKEND_URL}/auth/login`, logMember, { withCredentials: true });
+      let res = await axios.post(`${BACKEND_URL}/auth/login`, logMember, { withCredentials: true, timeout: 90000 });
 
 
       if (res.data.result === 'success') {
@@ -48,6 +61,8 @@ const Login = () => {
         text: '서버와의 연결에 실패했습니다.',
         icon: 'error'
       });
+    } finally {
+      setIsLoggingIn(false);
     }
   };
     
@@ -56,7 +71,7 @@ const Login = () => {
       <div className='content'>
         <div className='login-container'>
           <h2 className='login-title'>로그인</h2>
-          <form onSubmit={handleLogin} className='login-form'>
+          <form onSubmit={handleLogin} className='login-form' aria-busy={isLoggingIn}>
             <div className='input-container'>
               <input type='text' ref={id_Ref} placeholder='아이디' className='login-input' />
             </div>
@@ -64,8 +79,11 @@ const Login = () => {
               <input type='password' ref={pw_Ref} placeholder='비밀번호' className='login-input' />
             </div>
             <div className='button-container'>
-              <input type='submit' value='로그인' className='login-button' />
+              <input type='submit' value={isLoggingIn ? '로그인 중...' : '로그인'} disabled={isLoggingIn} className='login-button' />
             </div>
+            {isLoggingIn && <p role="status">{isWaiting
+              ? '서버 응답을 기다리는 중입니다. 무료 서버의 첫 접속은 약 1분 걸릴 수 있습니다.'
+              : '로그인 정보를 확인하고 있습니다.'}</p>}
           </form>
           <div className='login-links'>
             <p>

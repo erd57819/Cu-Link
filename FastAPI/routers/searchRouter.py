@@ -21,7 +21,7 @@ class ArticleResponse(BaseModel):
     metadata: Dict[str, Optional[str]]  # 메타데이터에 Optional 필드 허용
 
 @router.post("/keywords")
-async def search_news(request : SearchRequest):
+def search_news(request : SearchRequest):
     print('서버로 넘어온 키워드 값들', request)
     try:
         Keyword_list = request.keywords

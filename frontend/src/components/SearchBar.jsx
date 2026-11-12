@@ -4,10 +4,11 @@ import '../css/SearchBar.css';
 import Swal from 'sweetalert2';
 import pako from "pako";
 
-const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
-  const [keyword, setKeyword] = useState(null);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+const SearchBar = ({ setSearchResults }) => {
+  const [keyword, setKeyword] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   
 
   const parseKeywords = (keyword) => {
@@ -32,55 +33,16 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
     return { andKeywords, orKeywords, notKeywords };
   };
 
-  const filterArticles = () => {
-    if (!Array.isArray(articles)) {
-      console.error("Articles is not a valid array:", articles);
-      return; // 함수 종료
-    }
-    let filtered = articles; // articles를 props로 받아서 사용
-    const { andKeywords, orKeywords, notKeywords } = parseKeywords(keyword);
-
-    // AND 조건 필터링
-    andKeywords.forEach(andWord => {
-      filtered = filtered.filter(article =>
-        (article.art_content || '').toLowerCase().includes(andWord)
-      );
-    });
-
-    // OR 조건 필터링
-    if (orKeywords.length > 0) {
-      filtered = filtered.filter(article =>
-        orKeywords.some(orWord =>
-          (article.art_content || '').toLowerCase().includes(orWord)
-        )
-      );
-    };
-
-    // NOT 조건 필터링
-    notKeywords.forEach(notWord => {
-      filtered = filtered.filter(article =>
-        !(article.art_content || '').toLowerCase().includes(notWord)
-      );
-    });
-
-    // 날짜 필터링
-    if (startDate && endDate) {
-      if (new Date(startDate) > new Date(endDate)) {
-        Swal.fire({
-          title: "시작 날짜는 종료 날짜보다 앞서야 합니다.",
-          icon: 'warning'
-        });
-        return;
-      }
-      filtered = filtered.filter(article => {
-        const articleDate = new Date(article.art_date);
-        return articleDate >= new Date(startDate) && articleDate <= new Date(endDate);
-      });
-    }
-    setFilteredArticles(filtered);
-  };
-
   const handleSearch = async () => {
+    if (isSearching) return;
+    if (Boolean(startDate) !== Boolean(endDate) || (startDate && startDate > endDate)) {
+      Swal.fire({ title: '올바른 시작일과 종료일을 모두 선택해 주세요.', icon: 'warning' });
+      return;
+    }
+    if (!keyword.trim() && !startDate) {
+      setSearchResults(null);
+      return;
+    }
     const { andKeywords, orKeywords, notKeywords } = parseKeywords(keyword);
     const dateValues = [startDate, endDate].filter(Boolean);
 
@@ -90,8 +52,7 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
     console.log("NOT 조건:", notKeywords);
     console.log("날짜 범위:", dateValues);
 
-    // 검색 필터링 함수 호출
-    filterArticles();
+    setIsSearching(true);
 
     // FastAPI 엔드포인트로 데이터 전송
     try {
@@ -109,6 +70,12 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
           dateRange: dateValues,
         }),
       });
+      if (response.status === 404) {
+        setSearchResults([]);
+        Swal.fire({ title: '검색된 기사가 없습니다.', icon: 'info' });
+        return;
+      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       // 바이너리 데이터로 응답 받기
       const arrayBuffer = await response.arrayBuffer();
        // 압축 해제 (gzip -> JSON)
@@ -120,10 +87,12 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
     setSearchResults(jsonData)
     } catch (error) {
       Swal.fire({
-        title: "일치하는 키워드가 없습니다.",
+        title: "기사 검색 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.",
         icon: 'warning'
       });
       console.error('서버 요청 중 오류 발생:', error);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -193,9 +162,9 @@ const SearchBar = ({ articles, setFilteredArticles,setSearchResults  }) => {
   
         {/* 하단에 고정된 검색 버튼 섹션 */}
         <div className="section search-button-section">
-        <button className="search-submit"
+        <button className="search-submit" disabled={isSearching}
           onClick={handleSearch}>
-            기사 찾기 ➨
+            {isSearching ? '기사를 검색하는 중...' : '기사 찾기 ➨'}
           </button>
         </div>
       </div>
