@@ -53,6 +53,7 @@ class TextOnlyReports(unittest.TestCase):
                 body = {"user_id": "test-user", "title": "제목", "content": "본문", "art_ids": ["4000148975484"], **image}
                 response = self.client.post("/savereport", json=body)
                 self.assertEqual(response.status_code, 200)
+                self.assertIsInstance(response.json()['rep_id'], str)
                 self.assertIsNone(response.json()["image_url"])
                 self.assertIsNone(self.cursor.execute.call_args.args[1][-1])
                 self.assertEqual(self.cursor.executemany.call_args.args[1][0][1], 4000148975484)

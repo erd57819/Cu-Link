@@ -68,7 +68,7 @@ def save_report(report_data: ReportData, user_id: str = Depends(require_user)):
         # 변경 사항을 커밋
         db_connection.commit()
         
-        return {"message": "Report saved successfully", "rep_id": rep_id, "image_url": image_url}
+        return {"message": "Report saved successfully", "rep_id": str(rep_id), "image_url": image_url}
     except HTTPException:
         raise
     except Exception as e:
