@@ -32,3 +32,5 @@
   .mid-item { order: 3; width: 100%; justify-content: center; gap: 12px; }
   .mid-item .link, .nav-button, .right-item { font-size: 14px; }
 }
+
+.signed-in-user { display: inline-block; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; margin-right: 10px; }

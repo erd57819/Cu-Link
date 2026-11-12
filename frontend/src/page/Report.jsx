@@ -1,10 +1,11 @@
-import { FASTAPI_URL } from "../config/api";
+import { BACKEND_URL } from "../config/api";
 import React, { useRef, useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { addReportPages } from '../utils/reportPdf';
 import '../css/Report.css';
 import Swal from 'sweetalert2';
+import { askForLogin, useUserId } from '../config/auth';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Report() {
@@ -20,39 +21,36 @@ function Report() {
 
   useEffect(() => {
     // `reportData`와 `selectedArticleIds`를 세션에서 불러오기
-    const data = location.state || JSON.parse(sessionStorage.getItem('reportData'));
-    const articleIds = JSON.parse(sessionStorage.getItem('selectedArticleIds'));
+    let storedData, articleIds;
+    try {
+      storedData = JSON.parse(sessionStorage.getItem('reportData'));
+      articleIds = JSON.parse(sessionStorage.getItem('selectedArticleIds'));
+    } catch { /* An invalid saved draft is shown as an empty report. */ }
+    const data = location.state || storedData;
 
-    if (data) setReportData(data);
+    if (data) { setReportData(data); sessionStorage.setItem('reportData', JSON.stringify(data)); }
     if (articleIds) setSelectedArticleIds(articleIds);
   }, [location.state]);
 
   const navigate = useNavigate();
-  const userId = sessionStorage.getItem('userId');
+  const userId = useUserId();
   const pdfButtonRef = useRef();
 
   const handleSave = async () => {
     if (isSaving || isSaved) return;
     if (!userId) {
-      Swal.fire({
-        title: "로그인이 필요합니다",
-        text: "저장 기능을 사용하려면 로그인 해주세요.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '확인',
-        cancelButtonText: '로그인 하러가기'
-      }).then((result) => {
-        if (result.isDismissed) {
-          navigate('/login', { state: { from: location.pathname } });
-        }
-      });
+      askForLogin(navigate, '/report');
       return;
     }
 
+    if (!reportData.title?.trim() || !reportData.content?.trim()) {
+      Swal.fire({ title: '저장할 레포트가 없습니다', text: '기사를 선택하고 레포트를 먼저 생성해 주세요.', icon: 'info' });
+      return;
+    }
     setIsSaving(true);
     try {
-      const res = await fetch(`${FASTAPI_URL}/savereport`, {
-        method: 'POST',
+      const res = await fetch(`${BACKEND_URL}/report/save`, {
+        method: 'POST', credentials: 'include', signal: AbortSignal.timeout(90000),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -65,6 +63,7 @@ function Report() {
         }),
       });
 
+      if (res.status === 401) { await askForLogin(navigate, '/report', true); return; }
       if (res.ok) {
         setIsSaved(true);
         Swal.fire({
@@ -80,7 +79,8 @@ function Report() {
         sessionStorage.removeItem("selectedArticleIds");
       } else {
         Swal.fire({
-          title: "리포트 저장 실패",
+          title: "레포트 저장 실패",
+          text: "저장하지 못했습니다. 작성 중인 내용은 유지됩니다. 다시 시도해 주세요.",
           icon: 'error'
         });
       }
@@ -127,7 +127,7 @@ function Report() {
         </div>
         <div className="buttons-box" ref={pdfButtonRef}>
           <button className='button_save' onClick={handleSave} disabled={isSaving || isSaved}>
-            {isSaved ? '저장 완료' : isSaving ? '저장 중...' : '저장하기'}
+            {isSaved ? '저장 완료' : isSaving ? '저장 중...' : userId ? '저장하기' : '로그인 후 저장'}
           </button>
           <button className='button_saved_reports' onClick={() => navigate('/reports')}>
             저장한 레포트 보기

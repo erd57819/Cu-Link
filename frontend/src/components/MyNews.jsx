@@ -6,12 +6,14 @@ import axios from 'axios';
 import '../css/News.css';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
+import { askForLogin, isSessionError } from '../config/auth';
+import { Link } from 'react-router-dom';
 import pako from 'pako';
 import { ClimbingBoxLoader } from 'react-spinners';
 
 const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 
-const MyNews = () => {
+const MyNews = ({ filteredArticles = null, onLoaded }) => {
   const [selectedArticles, setSelectedArticles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage, setArticlesPerPage] = useState(6);
@@ -19,7 +21,9 @@ const MyNews = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [summaryData, setSummaryData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [articles, setArticles] = useState([]);
+  const [isFetching, setIsFetching] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [reload, setReload] = useState(0);
   const navigate = useNavigate();
   const pageRange = 5;
 
@@ -33,57 +37,35 @@ const MyNews = () => {
   }, []);
 
   useEffect(() => {
-    const userId = sessionStorage.getItem("userId");
-  
-    if (!userId) {
-      Swal.fire({
-        title: "로그인이 필요합니다",
-        text: "저장된 기사를 조회하려면 로그인이 필요합니다.",
-        icon: 'warning',
-      });
-      return;
-    }
-  
+    let active = true;
+    const controller = new AbortController();
+    setIsFetching(true); setLoadError('');
+    const options = { withCredentials: true, signal: controller.signal, timeout: 90000 };
     const fetchSavedArticles = async () => {
       try {
-        // 첫 번째 요청: Node.js 서버에서 기사 기본 정보 가져오기
-        const response1 = await axios.get(`${BACKEND_URL}/news/saved`, {
-          withCredentials: true,
-        });
-        const savedArticles = response1.data || [];
-  
-        // 두 번째 요청: FastAPI 서버에서 Firebase 관련 기사 내용 가져오기
-        const response2 = await axios.get(`${FASTAPI_URL}/articles/saved`, {
-          params: { user_id: userId },
-          withCredentials: true,
-        });
-        const firebaseArticles = response2.data.saved_articles || [];
-        console.log('Firebase에서 가져온 기사:', firebaseArticles);
-  
-        // Node.js에서 가져온 기사와 Firebase에서 가져온 기사를 결합하여 UI에 표시할 데이터 준비
-        const combinedArticles = savedArticles.map(article => {
-          const firebaseArticle = firebaseArticles.find(fa => fa.cr_art_id === article.cr_art_id);
-          return {
-            ...article,
-            cr_art_content: firebaseArticle ? firebaseArticle.cr_art_content : "Content not available",
-          };
-        });
-        console.log('결합된 기사 데이터:', combinedArticles);
-  
-        // 상태 업데이트
-        setSavedArticles(combinedArticles);
+        const metadata = await axios.get(`${BACKEND_URL}/news/saved`, options);
+        const bodies = metadata.data.length ? await axios.get(`${BACKEND_URL}/news/bodies`, options) : { data: { saved_articles: [] } };
+        const combined = metadata.data.map(article => ({ ...article,
+          cr_art_content: bodies.data.saved_articles.find(body => String(body.cr_art_id) === String(article.cr_art_id))?.cr_art_content || '',
+        }));
+        if (!active) return;
+        setSavedArticles(combined);
+        onLoaded?.(combined);
       } catch (error) {
-        console.error('저장된 기사를 불러오지 못했습니다:', error);
-        setSavedArticles([]);
-      }
+        if (!active) return;
+        if (isSessionError(error)) { askForLogin(navigate, '/news', true); return; }
+        setLoadError('저장한 기사를 불러오지 못했습니다.');
+      } finally { if (active) setIsFetching(false); }
     };
-  
     fetchSavedArticles();
-  }, []);
-  
+    return () => { active = false; controller.abort(); };
+  }, [reload, navigate, onLoaded]);
+  useEffect(() => { setCurrentPage(1); setSelectedArticles([]); }, [filteredArticles]);
+  const visibleArticles = filteredArticles === null ? savedArticles : savedArticles.filter(article =>
+    filteredArticles.some(item => String(item.cr_art_id) === String(article.cr_art_id)));
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = savedArticles ? savedArticles.slice(indexOfFirstArticle, indexOfLastArticle) : [];
+  const currentArticles = visibleArticles.slice(indexOfFirstArticle, indexOfLastArticle);
 
   const handleCheckboxChange = (article) => {
     if (selectedArticles.includes(article)) {
@@ -103,8 +85,8 @@ const MyNews = () => {
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-  const totalPages = Math.ceil(savedArticles.length / articlesPerPage);
-  const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
+  const totalPages = Math.ceil(visibleArticles.length / articlesPerPage);
+  const startPage = Math.max(1, Math.min(Math.floor((currentPage - 1) / pageRange) * pageRange + 1, totalPages));
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
 
   const handleSummarize = async () => {
@@ -153,49 +135,27 @@ const MyNews = () => {
     }
   };
   const handleDelete = async () => {
+    if (isLoading) return;
+    if (!selectedArticles.length) { Swal.fire({ title: '삭제할 기사를 선택해 주세요', icon: 'info' }); return; }
+    const answer = await Swal.fire({ title: '선택한 기사를 삭제할까요?', text: '저장 목록에서 삭제됩니다.', icon: 'warning', showCancelButton: true, confirmButtonText: '삭제하기', cancelButtonText: '취소' });
+    if (!answer.isConfirmed) return;
+    setIsLoading(true);
     try {
-      // 모든 선택된 기사에 대해 삭제 요청 보내기
-      await Promise.all(
-        selectedArticles.map(async (article) => {
-          const url = `${BACKEND_URL}/news/delete`;
-          console.log('삭제 요청 URL:', url); // 요청 URL 확인을 위한 로그
-  
-          const response = await fetch(url, {
-            method: 'DELETE',
-            credentials: 'include', // 세션 쿠키 포함
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_art_id: article.user_art_id }),
-          });
-  
-          // 서버 응답 확인
-          if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`서버 오류: ${response.status} - ${errorMessage}`);
-          }else{
-            window.location.href = '/news';
-
-          }
-        })
-      );
-      // 삭제된 기사들의 ID를 추출
-      const deletedArticleIds = selectedArticles.map((article) => article.user_art_id);
-  
-      // 삭제되지 않은 기사들만 남기기 위해 상태 업데이트
-      setArticles((prevArticles) =>
-        prevArticles.filter((article) => !deletedArticleIds.includes(article.user_art_id))
-      );
-  
-      // 선택된 기사 목록 초기화
-      setSelectedArticles([]);
-  
-      // UI 업데이트 확인 로그
-      console.log('삭제 후 업데이트된 기사 목록:', articles);
+      await Promise.all(selectedArticles.map(async article => {
+        const response = await fetch(`${BACKEND_URL}/news/delete`, {
+          method: 'DELETE', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_art_id: article.user_art_id }), signal: AbortSignal.timeout(90000),
+        });
+        if (!response.ok) throw Object.assign(new Error('삭제 실패'), { status: response.status });
+      }));
+      const remaining = savedArticles.filter(article => !selectedArticles.includes(article));
+      setSavedArticles(remaining); onLoaded?.(remaining); setSelectedArticles([]);
+      setCurrentPage(page => Math.min(page, Math.max(1, Math.ceil(remaining.length / articlesPerPage))));
+      Swal.fire('삭제되었습니다', '', 'success');
     } catch (error) {
-      console.error('데이터를 삭제하는 데 오류가 발생했습니다:', error);
-    }
-
+      if (isSessionError(error)) await askForLogin(navigate, '/news', true);
+      else { setReload(value => value + 1); Swal.fire('삭제하지 못했습니다', '목록을 다시 불러옵니다. 결과를 확인한 뒤 다시 시도해 주세요.', 'error'); }
+    } finally { setIsLoading(false); }
   };
   // 리포트 생성
   const handleCreateReport = async () => {
@@ -208,7 +168,7 @@ const MyNews = () => {
     }
     console.log(articlesId)
     // 리포트 기사 예외처리
-    if (articlesId.size === 0) {
+    if (articlesId.length === 0) {
       Swal.fire({
         title:"기사를 선택해주세요",
         text:"선택된 기사가 없습니다.",
@@ -217,7 +177,7 @@ const MyNews = () => {
       return;
     }
     // 리포트 생성시 최대 선택 기사 개수.
-    if (articlesId.size > 6) {
+    if (articlesId.length > 6) {
       Swal.fire({
         title:"기사 선택 개수 초과",
         text:"기사 최대 선택 개수는 6개 입니다.",
@@ -268,12 +228,14 @@ const MyNews = () => {
     }
   }
   
+  if (isFetching) return <p role="status">저장한 기사를 불러오는 중입니다...</p>;
+  if (loadError) return <div role="alert"><p>{loadError}</p><button onClick={() => setReload(value => value + 1)}>다시 시도</button></div>;
   return (
     <div className="news-container">
       <div className="select-all">
         {currentArticles.length > 0 && (
           <>
-            <span>{`선택된 기사 ${selectedArticles.length}개 / 총 ${savedArticles.length}개`}</span>
+            <span>{`선택된 기사 ${selectedArticles.length}개 / 총 ${visibleArticles.length}개`}</span>
             <button onClick={handleSelectAll}>전체선택</button>
           </>
         )}
@@ -306,10 +268,12 @@ const MyNews = () => {
               </div>
             </div>
           ))
-        ) : (
-          <p>저장된 기사가 없습니다.</p>
-        )}
+        ) : null}
       </div>
+      {visibleArticles.length === 0 && <div className="saved-reports-notice">
+        <p>{savedArticles.length ? '검색 조건에 맞는 저장 기사가 없습니다.' : '아직 저장한 기사가 없습니다. 기사 검색 화면에서 기사를 선택하고 저장해 주세요.'}</p>
+        <Link to="/">기사 검색하기</Link>
+      </div>}
       <div className="pagination-buttons-container_Mynews">
         <div className="pagination">
           {startPage > 1 && (
@@ -331,7 +295,7 @@ const MyNews = () => {
         <div className="fixed-buttons_Mynews">
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button>
           <button className="summarize-button" onClick={handleDelete}>삭제하기</button>
-          <bttton className="create-report-button_mynews" onClick={handleCreateReport}>레포트 생성</bttton>
+          <button type="button" className="create-report-button_mynews" onClick={handleCreateReport}>레포트 생성</button>
         </div>
       </div>
       {isLoading && (

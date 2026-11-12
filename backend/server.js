@@ -54,6 +54,14 @@ app.use(
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(bodyParser.json());
+// CORS alone does not reject a cross-origin form submission.
+app.use((req, res, next) => {
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && req.headers.origin &&
+      !allowedOrigins.includes(req.headers.origin)) {
+    return res.status(403).json({ message: '허용되지 않은 요청입니다.' });
+  }
+  next();
+});
 
 // API 경로 설정
 // app.use("/", mainRouter);

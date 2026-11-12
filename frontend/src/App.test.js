@@ -2,6 +2,9 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import App from './App';
+import { refreshSession } from './config/auth';
+
+jest.mock('./config/auth', () => ({ ...jest.requireActual('./config/auth'), refreshSession: jest.fn(() => Promise.resolve(null)) }));
 
 jest.mock('./page/StartPage', () => ({ onStart }) => <button onClick={onStart}>시작하기</button>);
 jest.mock('./page/IntroPage', () => () => <h1>사용법 안내 화면</h1>);
@@ -11,7 +14,7 @@ jest.mock('./page/Report', () => () => null);
 jest.mock('react-chat-widget', () => ({ Widget: () => null, addResponseMessage: jest.fn() }));
 
 function CurrentPath() { return <output aria-label="현재 경로">{useLocation().pathname}</output>; }
-beforeEach(() => { global.fetch = jest.fn().mockResolvedValue({ ok: true }); });
+beforeEach(() => { refreshSession.mockResolvedValue(null); global.fetch = jest.fn().mockResolvedValue({ ok: true }); });
 afterEach(() => { delete global.fetch; sessionStorage.clear(); });
 
 test('keeps the welcome-to-search flow and exposes saved reports beside saved articles in the top menu', async () => {

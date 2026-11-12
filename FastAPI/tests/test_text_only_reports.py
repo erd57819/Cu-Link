@@ -44,6 +44,7 @@ class TextOnlyReports(unittest.TestCase):
         })
         app = FastAPI()
         app.include_router(self.save.router)
+        app.dependency_overrides[self.save.require_user] = lambda: 'test-user'
         self.client = TestClient(app)
 
     def test_null_empty_and_omitted_image_save_without_storage(self):
@@ -62,6 +63,18 @@ class TextOnlyReports(unittest.TestCase):
         response = self.client.post("/savereport", json={"user_id": "test-user", "title": "old", "content": "body", "image": "old-base64"})
         self.assertEqual(response.status_code, 200)
         self.upload.assert_called_once()
+
+    def test_saving_under_another_account_is_rejected_before_database_access(self):
+        response = self.client.post('/savereport', json={'user_id': 'other-user', 'title': 'title', 'content': 'body'})
+        self.assertEqual(response.status_code, 403)
+        self.db.get_db_connection.assert_not_called()
+
+    def test_a_direct_unauthenticated_save_is_rejected(self):
+        app = FastAPI()
+        app.include_router(self.save.router)
+        response = TestClient(app).post('/savereport', json={'user_id': 'test-user', 'title': 'title', 'content': 'body'})
+        self.assertEqual(response.status_code, 401)
+        self.db.get_db_connection.assert_not_called()
 
     def test_database_failure_rolls_back_and_closes(self):
         self.cursor.execute.side_effect = RuntimeError("private DB error")

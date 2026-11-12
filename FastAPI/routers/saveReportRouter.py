@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from services.session_auth import require_user
 from pydantic import BaseModel
 from typing import List, Optional, Union, Any
 from services.object_storage import upload_report_image, StorageError
@@ -26,7 +27,13 @@ def upload_image_to_firebase_with_fixed_url(image_data: str, rep_id: int):
 
 # 보고서 저장 엔드포인트
 @router.post("/savereport")
-async def save_report(report_data: ReportData):
+def save_report(report_data: ReportData, user_id: str = Depends(require_user)):
+    if report_data.user_id != user_id:
+        raise HTTPException(status_code=403, detail='다른 계정으로 저장할 수 없습니다.')
+    if not report_data.title.strip() or not report_data.content.strip():
+        raise HTTPException(status_code=422, detail='레포트 제목과 본문이 필요합니다.')
+    if len(report_data.art_ids or []) > 6 or any(not str(item).isdigit() for item in report_data.art_ids or []):
+        raise HTTPException(status_code=422, detail='기사 ID를 확인해 주세요. 최대 6개까지 저장할 수 있습니다.')
     db_connection = None
     cursor = None
     try:
@@ -49,7 +56,7 @@ async def save_report(report_data: ReportData):
             INSERT INTO Reports (rep_id, rep_title, rep_content, rep_date, user_id, rep_img)
             VALUES (%s, %s, %s, %s, %s, %s)
         """
-        values = (rep_id, report_data.title, report_data.content, rep_date, report_data.user_id, image_url)
+        values = (rep_id, report_data.title, report_data.content, rep_date, user_id, image_url)
         cursor.execute(sql, values)
 
         # ArticleReports 테이블에 art_id와 rep_id 연결 데이터 삽입

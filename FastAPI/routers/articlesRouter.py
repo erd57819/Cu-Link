@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query, Body
+from fastapi import APIRouter, HTTPException, Query, Body, Depends
+from services.session_auth import require_user
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Union
@@ -93,7 +94,9 @@ def get_articles(page: int = Query(1, ge=1), page_size: int = Query(6, ge=1, le=
         raise HTTPException(status_code=500, detail="Failed to retrieve articles")
 
 @router.get("/articles/saved")
-def get_saved_articles(user_id: str = Query(...)):
+def get_saved_articles(user_id: str = Query(...), session_user: str = Depends(require_user)):
+    if user_id != session_user:
+        raise HTTPException(status_code=403, detail='다른 계정의 저장 기사를 조회할 수 없습니다.')
     db = get_db_connection(database_config)
     try:
         cursor = db.cursor()

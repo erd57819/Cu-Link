@@ -1,12 +1,15 @@
 import { BACKEND_URL } from "../config/api";
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { askForLogin, isSessionError } from '../config/auth';
 import axios from 'axios';
 import '../css/MyReport.css';
 import Swal from 'sweetalert2';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 
 const MyReport = () => {
+  const navigate = useNavigate();
+  const [isDeleting, setIsDeleting] = useState(false);
   const [articles, setArticles] = useState([]);
   const [selectedReportArticles, setSelectedReportArticles] = useState({});
   const [selectedReportIds, setSelectedReportIds] = useState(new Set());
@@ -29,14 +32,17 @@ const MyReport = () => {
         if (!Array.isArray(response.data)) throw new Error('Invalid report list');
         if (active) setArticles(response.data);
       } catch (error) {
-        if (active) setLoadError(error.response?.status === 401 ? 'login' : 'request');
+        if (active) {
+          setLoadError(isSessionError(error) ? 'login' : 'request');
+          if (isSessionError(error)) askForLogin(navigate, '/reports', true);
+        }
       } finally {
         if (active) setIsLoading(false);
       }
     };
     fetchReports();
     return () => { active = false; controller.abort(); };
-  }, [reload]);
+  }, [reload, navigate]);
 
   const handleReportClick = async (rep_id) => {
     const updatedReportIds = new Set(selectedReportIds);
@@ -54,7 +60,9 @@ const MyReport = () => {
           [rep_id]: response.data,
         }));
       } catch (error) {
-        console.error('레포트에 사용된 기사를 가져오는 데 오류가 발생했습니다:', error);
+        if (isSessionError(error)) askForLogin(navigate, '/reports', true);
+        else Swal.fire('기사를 불러오지 못했습니다', '다시 선택해 주세요.', 'error');
+        return;
       }
     }
     setSelectedReportIds(updatedReportIds);
@@ -78,12 +86,16 @@ const MyReport = () => {
         const mergedArticles = allArticles.reduce((acc, curr) => ({ ...acc, ...curr }), {});
         setSelectedReportArticles(mergedArticles);
       } catch (error) {
-        console.error('모든 레포트 기사를 가져오는 데 오류가 발생했습니다:', error);
+        setSelectedReportIds(new Set()); setSelectedReportArticles({});
+        if (isSessionError(error)) askForLogin(navigate, '/reports', true);
+        else Swal.fire('기사를 불러오지 못했습니다', '다시 시도해 주세요.', 'error');
       }
     }
   };
 
   const handleDelete = async () => {
+    if (isDeleting) return;
+    if (!selectedReportIds.size) { Swal.fire({ title: '삭제할 레포트를 선택해 주세요', icon: 'info' }); return; }
     Swal.fire({
       title: '삭제하시겠습니까?',
       text: '이 작업은 되돌릴 수 없습니다.',
@@ -93,6 +105,7 @@ const MyReport = () => {
       cancelButtonText: '아니오',
     }).then(async (result) => {
       if (result.isConfirmed) {
+        setIsDeleting(true);
         try {
           await Promise.all(
             Array.from(selectedReportIds).map((id) =>
@@ -105,7 +118,9 @@ const MyReport = () => {
           Swal.fire('삭제되었습니다', '선택한 리포트가 삭제되었습니다.', 'success');
         } catch (error) {
           console.error('데이터를 삭제하는 데 오류가 발생했습니다:', error);
-          Swal.fire('삭제 실패', '삭제 중 오류가 발생했습니다. 다시 시도해 주세요.', 'error');
+          if (isSessionError(error)) await askForLogin(navigate, '/reports', true);
+          else { setReload(value => value + 1); Swal.fire('삭제 실패', '목록을 다시 불러옵니다. 결과를 확인한 뒤 다시 시도해 주세요.', 'error'); }
+        } finally { setIsDeleting(false);
         }
       }
     });
@@ -216,7 +231,7 @@ const MyReport = () => {
           <button className="myreport-button3" onClick={handleSelectAll}>
             {selectedReportIds.size === articles.length ? '전체해제' : '전체선택'}
           </button>
-          <button className="myreport-button3" onClick={handleDelete}>삭제하기</button>
+          <button className="myreport-button3" onClick={handleDelete} disabled={isDeleting}>{isDeleting ? '삭제 중...' : '삭제하기'}</button>
         </div>
       </div>
 

@@ -1,14 +1,16 @@
+jest.mock('sweetalert2', () => ({ fire: jest.fn(() => Promise.resolve({})) }));
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
 import MyReport from './MyReport';
+import Swal from 'sweetalert2';
 
 jest.mock('axios');
 const report = { rep_id: '3043337986403649736', rep_title: '저장한 테스트 레포트',
   rep_content: '이 레포트의 저장된 본문입니다.\n두 번째 문단입니다.', rep_date: '2026-11-12', rep_img: null };
 const renderReports = () => render(<MemoryRouter><MyReport /></MemoryRouter>);
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => { jest.clearAllMocks(); Swal.fire.mockResolvedValue({}); });
 
 test('loads the signed-in report list and opens its full body with a visible button', async () => {
   axios.get.mockResolvedValueOnce({ data: [report] });

@@ -1,46 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { BACKEND_URL } from '../config/api';
+import { askForLogin, setCurrentUser, useUserId } from '../config/auth';
 import '../css/Baner.css';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 const logo = `${process.env.PUBLIC_URL}/images/cu-link-logo-v2.png`;
 
 function Baner() {
   const navigate = useNavigate();
-  const userId = sessionStorage.getItem('userId'); // 세션에서 userId 가져오기
-  const location = useLocation();
+  const userId = useUserId();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = () => {
+    if (isLoggingOut) return;
     Swal.fire({
       title: '로그아웃하시겠습니까?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No'
-    }).then((result) => {
+      confirmButtonText: '로그아웃',
+      cancelButtonText: '취소'
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        // Yes를 클릭하면 로그아웃 수행
-        sessionStorage.removeItem('userId'); // 세션에서 userId 삭제
-        Swal.fire('로그아웃 되었습니다', '', 'success').then(() => {
-          navigate('/'); // 로그아웃 후 메인 페이지로 이동
-        });
+        setIsLoggingOut(true);
+        try {
+          const response = await fetch(`${BACKEND_URL}/auth/logout`, {
+            method: 'POST', credentials: 'include', signal: AbortSignal.timeout(90000),
+          });
+          if (!response.ok) throw new Error('logout failed');
+          setCurrentUser(null, true);
+          navigate('/', { replace: true });
+          Swal.fire('로그아웃 되었습니다', '', 'success');
+        } catch {
+          Swal.fire('로그아웃 실패', '서버 응답을 받지 못했습니다. 다시 시도해 주세요.', 'error');
+        } finally { setIsLoggingOut(false); }
       }
       // No를 클릭하면 아무 작업도 하지 않음
     });
   };
   const handleMynews = () => {
     if (!userId) {
-      Swal.fire({
-        title: "로그인이 필요한 서비스 입니다.",
-        text: "내 기사 기능을 사용하려면 로그인 해주세요",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '확인',
-        cancelButtonText: '로그인 하러가기'
-      }).then((result) => {
-        if (result.isDismissed) {
-          navigate('/login', { state: { from: location.pathname } });
-        }
-      });
+      askForLogin(navigate, '/news');
     } else {
       navigate('/news'); // 로그인되어 있으면 '내 기사' 페이지로 이동
     }
@@ -63,7 +62,10 @@ function Baner() {
       <div className='right-item'>
         {userId ? (
           // 로그인 상태라면 로그아웃을 보여줌
-          <span onClick={handleLogout} style={{ cursor: 'pointer' }}>로그아웃</span>
+          <><span className="signed-in-user" title={userId}>{userId}님</span>
+          <button type="button" className="nav-button" onClick={handleLogout} disabled={isLoggingOut}>
+            {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
+          </button></>
         ) : (
           // 로그인 상태가 아니라면 로그인/회원가입을 보여줌
           <div>

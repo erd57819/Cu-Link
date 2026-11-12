@@ -1,10 +1,11 @@
 import { FASTAPI_URL, BACKEND_URL } from "../config/api";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../css/News.css';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
+import { askForLogin, currentUser } from '../config/auth';
 import pako from 'pako';
 import { ClimbingBoxLoader } from 'react-spinners';
 
@@ -14,11 +15,13 @@ const placeholderImage = `${process.env.PUBLIC_URL}/images/cu_image.webp`;
 const News = ({ searchResults }) => {
   console.log("Received searchResults:", searchResults || "No data received");
   const [articles, setArticles] = useState([]);
-  const [selectedArticleIds, setSelectedArticleIds] = useState(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedArticleIds, setSelectedArticleIds] = useState(() => { try { return new Set(JSON.parse(sessionStorage.getItem('newsDraft'))?.ids || []); } catch { return new Set(); } });
+  const [currentPage, setCurrentPage] = useState(() => { try { return JSON.parse(sessionStorage.getItem('newsDraft'))?.page || 1; } catch { return 1; } });
+  useEffect(() => { sessionStorage.removeItem('newsDraft'); }, []);
   const [summaryData, setSummaryData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [isFetchingArticles, setIsFetchingArticles] = useState(false);
   const [articleError, setArticleError] = useState('');
@@ -93,8 +96,10 @@ const News = ({ searchResults }) => {
     };
   }, [searchResults,currentPage, articlesPerPage, reloadArticles]);
 
+  const previousResults = useRef(searchResults);
   useEffect(() => {
-    setCurrentPage(1);
+    if (previousResults.current !== searchResults) { setCurrentPage(1); setSelectedArticleIds(new Set()); }
+    previousResults.current = searchResults;
   }, [searchResults]);
 
  
@@ -194,6 +199,7 @@ const News = ({ searchResults }) => {
   };
 
   const handleSave = async () => {
+    if (isSaving) return;
     if (selectedArticleIds.size === 0) {
       Swal.fire({
         title: "기사를 선택해주세요",
@@ -203,17 +209,16 @@ const News = ({ searchResults }) => {
       return;
     }
   
-    const userId = sessionStorage.getItem('userId');
+    const userId = currentUser();
   
     if (!userId) {
-      Swal.fire({
-        title: "로그인이 필요합니다",
-        text: "기사를 저장하려면 로그인이 필요합니다.",
-        icon: 'warning',
-      });
+      sessionStorage.setItem('newsDraft', JSON.stringify({ ids: Array.from(selectedArticleIds), page: currentPage, results: searchResults }));
+      const answer = await askForLogin(navigate, '/');
+      if (!answer.isConfirmed) sessionStorage.removeItem('newsDraft');
       return;
     }
   
+    setIsSaving(true);
     try {
       const response = await fetch(`${BACKEND_URL}/news/saved`, {
         method: 'POST',
@@ -227,6 +232,12 @@ const News = ({ searchResults }) => {
         }),
       });
   
+      if (response.status === 401) {
+        sessionStorage.setItem('newsDraft', JSON.stringify({ ids: Array.from(selectedArticleIds), page: currentPage, results: searchResults }));
+        const answer = await askForLogin(navigate, '/', true);
+        if (!answer.isConfirmed) sessionStorage.removeItem('newsDraft');
+        return;
+      }
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(`Server error: ${response.status} - ${errorMessage}`);
@@ -234,7 +245,7 @@ const News = ({ searchResults }) => {
   
       Swal.fire({
         title: "저장 완료",
-        text: "선택된 기사가 저장되었습니다.",
+        text: "상단의 내 기사 메뉴에서 다시 볼 수 있습니다.",
         icon: 'success',
       });
     } catch (error) {
@@ -244,10 +255,8 @@ const News = ({ searchResults }) => {
         text: "기사를 저장하는 중 오류가 발생했습니다.",
         icon: 'error',
       });
-    }
+    } finally { setIsSaving(false); }
   };
-  
-  
   
   //선택한 기사 예외처리
   const handleCreateReport = async () => {
@@ -396,7 +405,7 @@ const News = ({ searchResults }) => {
           </div>
         </div>
         <div className="fixed-buttons">
-          <button className="save-button" onClick={handleSave}>저장하기</button>
+          <button className="save-button" onClick={handleSave} disabled={isSaving}>{isSaving ? '저장 중...' : '저장하기'}</button>
           <button className="summarize-button" onClick={handleSummarize}>요약하기</button>
           <button className="create-report-button_news" onClick={handleCreateReport}>레포트 생성</button>
         </div>

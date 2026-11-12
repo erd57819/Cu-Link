@@ -3,7 +3,7 @@ import SearchBar from "../components/SearchBar";
 import News from "../components/News";
 
 function Main() {
-  const [searchResults, setSearchResults] = useState(null);
+  const [searchResults, setSearchResults] = useState(() => { try { return JSON.parse(sessionStorage.getItem('newsDraft'))?.results ?? null; } catch { return null; } });
 
   return (
     <div className="app-container main-search-page">

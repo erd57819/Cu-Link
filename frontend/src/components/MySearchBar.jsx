@@ -1,30 +1,13 @@
-import { FASTAPI_URL, BACKEND_URL } from "../config/api";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import '../css/MySearchBar.css';
-import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const MySearchBar = ({ setFilteredArticles, setView }) => {
-  const [articles, setArticles] = useState([]);
+const MySearchBar = ({ articles, setFilteredArticles, setView }) => {
   const [keyword, setKeyword] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedOption, setSelectedOption] = useState('articles');
   const selectRef = useRef(null);
-
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await axios.get(`${BACKEND_URL}/news/saved`, { withCredentials: true });
-        setArticles(response.data || []);
-        setFilteredArticles(response.data || []);
-      } catch (error) {
-        console.error('뉴스 데이터를 가져오는데 실패했습니다:', error);
-      }
-    };
-
-    fetchArticles();
-  }, [setFilteredArticles]);
 
   const parseKeywords = (keyword) => {
     const andKeywords = [];
@@ -52,21 +35,21 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
 
     andKeywords.forEach(andWord => {
       filtered = filtered.filter(article =>
-        (article.art_content || '').toLowerCase().includes(andWord)
+        (`${article.cr_art_title || ''} ${article.cr_art_content || ''}`).toLowerCase().includes(andWord)
       );
     });
 
     if (orKeywords.length > 0) {
       filtered = filtered.filter(article =>
         orKeywords.some(orWord =>
-          (article.art_content || '').toLowerCase().includes(orWord)
+          (`${article.cr_art_title || ''} ${article.cr_art_content || ''}`).toLowerCase().includes(orWord)
         )
       );
     }
 
     notKeywords.forEach(notWord => {
       filtered = filtered.filter(article =>
-        !(article.art_content || '').toLowerCase().includes(notWord)
+        !(`${article.cr_art_title || ''} ${article.cr_art_content || ''}`).toLowerCase().includes(notWord)
       );
     });
 
@@ -79,45 +62,18 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
         return;
       }
       filtered = filtered.filter(article => {
-        const articleDate = new Date(article.art_date);
+        const articleDate = new Date(article.cr_art_date);
         return articleDate >= new Date(startDate) && articleDate <= new Date(endDate);
       });
     }
     setFilteredArticles(filtered);
   };
 
-  const handleSearch = async () => {
-    const { andKeywords, orKeywords, notKeywords } = parseKeywords(keyword);
-    const dateValues = [startDate, endDate].filter(Boolean);
-
-    // 콘솔에 파싱된 데이터 확인
-    console.log("AND 조건:", andKeywords);
-    console.log("OR 조건:", orKeywords);
-    console.log("NOT 조건:", notKeywords);
-    console.log("날짜 범위:", dateValues);
-
-    // 검색 필터링 함수 호출
-    filterArticles();
-
-    // FastAPI 엔드포인트로 데이터 전송
-    try {
-      const response = await fetch(`${FASTAPI_URL}/search/keywords`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          andKeywords,
-          orKeywords,
-          notKeywords,
-          dateRange: dateValues,
-        }),
-      });
-      const data = await response.json();
-      console.log('서버 응답:', data);
-    } catch (error) {
-      console.error('서버 요청 중 오류 발생:', error);
+  const handleSearch = () => {
+    if (Boolean(startDate) !== Boolean(endDate)) {
+      Swal.fire({ title: '시작일과 종료일을 함께 선택해 주세요.', icon: 'info' }); return;
     }
+    filterArticles();
   };
   const currentDate = new Date().toISOString().split('T')[0];
   const minDate = "2024-11-01"; // 최소 선택 가능한 날짜 설정
@@ -197,7 +153,7 @@ const MySearchBar = ({ setFilteredArticles, setView }) => {
 
         {/* 검색 버튼 */}
         <div className="search-button-section1">
-          <button className="search-submit1" onClick={handleSearch}>
+          <button className="search-submit1" onClick={handleSearch} disabled={selectedOption !== 'articles'}>
             기사 찾기 ➨
           </button>
         </div>
