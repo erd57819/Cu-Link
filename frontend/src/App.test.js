@@ -1,26 +1,35 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import App from './App';
 
-jest.mock('./page/StartPage', () => () => <button>시작하기</button>);
+jest.mock('./page/StartPage', () => ({ onStart }) => <button onClick={onStart}>시작하기</button>);
+jest.mock('./page/IntroPage', () => () => <h1>사용법 안내 화면</h1>);
+jest.mock('./page/Main', () => () => <h1>기사 검색 화면</h1>);
 jest.mock('./page/MyPage', () => () => null);
-jest.mock('./page/IntroPage', () => () => null);
+jest.mock('./page/Report', () => () => null);
 jest.mock('react-chat-widget', () => ({ Widget: () => null, addResponseMessage: jest.fn() }));
 
-test('the landing page renders while both API servers prepare in the background', async () => {
-  global.fetch = jest.fn(() => new Promise(() => {}));
-  jest.useFakeTimers();
-  try {
-    render(<MemoryRouter initialEntries={['/start']}><App /></MemoryRouter>);
-    expect(screen.getByRole('button', { name: '시작하기' })).toBeVisible();
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
-    expect(global.fetch.mock.calls.map(([url]) => url)).toEqual([
-      expect.stringMatching(/\/health$/), expect.stringMatching(/\/$/),
-    ]);
-  } finally {
-    jest.clearAllTimers();
-    jest.useRealTimers();
-    delete global.fetch;
-  }
+function CurrentPath() { return <output aria-label="현재 경로">{useLocation().pathname}</output>; }
+beforeEach(() => { global.fetch = jest.fn().mockResolvedValue({ ok: true }); });
+afterEach(() => { delete global.fetch; sessionStorage.clear(); });
+
+test('keeps the welcome-to-search flow and exposes saved reports beside saved articles in the top menu', async () => {
+  render(<MemoryRouter initialEntries={['/']}><App /><CurrentPath /></MemoryRouter>);
+  const start = await screen.findByRole('button', { name: '시작하기' });
+  expect(screen.getByLabelText('현재 경로')).toHaveTextContent('/start');
+  await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
+  fireEvent.click(start);
+  expect(screen.getByRole('heading', { name: '기사 검색 화면' })).toBeVisible();
+  const menu = screen.getByRole('navigation', { name: '주요 메뉴' });
+  expect(within(menu).getByRole('button', { name: '내 기사' })).toBeVisible();
+  expect(within(menu).getByRole('link', { name: '내 레포트' })).toHaveAttribute('href', '/reports');
+  fireEvent.click(within(menu).getByRole('link', { name: '사용법' }));
+  expect(screen.getByRole('heading', { name: '사용법 안내 화면' })).toBeVisible();
+});
+
+test('keeps the usage page available at its existing address', () => {
+  render(<MemoryRouter initialEntries={['/intro']}><App /></MemoryRouter>);
+  expect(screen.getByRole('heading', { name: '사용법 안내 화면' })).toBeVisible();
+  expect(screen.getByRole('link', { name: 'Cu-Link 홈' })).toBeVisible();
 });

@@ -1,299 +1,51 @@
-/* 페이지 전체 레이아웃을 수직, 수평으로 중앙 정렬 */
 .intro-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #fff;
-    height: 100%; /* 화면 높이 전체를 사용하여 완전 중앙 정렬 */
-    box-sizing: border-box;
-    overflow: hidden;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 84px);
+  padding: 32px 24px;
+  background: #fff;
+  box-sizing: border-box;
 }
-
-/* 로고와 슬로건 배너 스타일 */
-.banner1 {
-    display: flex;
-    align-items: center;
-    text-align: left;
-    padding: 10px 20px;
-    position: absolute;
-    padding-top: 31.5px;
-    padding-left: 50.5px;
-    top: -1.95rem;
-    left: 10.75rem;
-    width: 100%;
-    background-color: white;
-}
-
-.banner1 .left-item h2 {
-    margin-bottom: 0;
-    color: black;
-}
-
-.banner1 .left-item h5 {
-    margin-top: 0;
-    color: black;
-}
-
-/* Swiper 슬라이드 컨테이너 중앙 정렬 */
-.swiper-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 900px;
-    padding: 0 60px; /* 화살표를 위한 여백 추가 */
-    box-sizing: border-box;
-    position: relative;
-    margin: 100px 0; /* 배너와 시작하기 버튼 사이에 공간 확보 */
-}
-
-/* 슬라이드 콘텐츠 박스 */
-.slide-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1.5px solid #000;
-    border-radius: 15px;
-    padding: 20px;
-    background-color: #fff;
-    width: 100%;
-    max-width: 800px;
-    height: 400px;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 1;
-    text-align: left;
-}
-
-.slide-content.reverse {
-    flex-direction: row-reverse;
-}
-
-.slide-content.center {
-    justify-content: center;
-    text-align: center;
-}
-
-/* 슬라이드 이미지 스타일 */
-.slide-image {
-    margin-left : 10%;
-    width: 250px;
-    height: 250px;
-    border-radius: 10px;
-    flex-shrink: 0;
-}
-
-.slide-image2{
-    margin-top : -10%;
-    margin-right : 3.5%;
-    border-radius : 10px;
-    flex-shrink : 0;
-    width : 380px;
-    height : auto;
-}
-
-/* 슬라이드 텍스트 스타일 */
-.slide-text {
-    flex: 1;
-    margin-left: 40px;
-    font-size: 1rem;
-    font-weight: 500;
-    word-wrap: break-word;
-    max-width: 500px;
-}
-
-.slide-text2{
-    flex: 1;
-    margin-right : -40%;
-    margin-bottom : -30%;
-    font-size: 1rem;
-    font-weight: 500;
-    max-width: none; /* 너비 제한 제거 */
-    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
-    text-overflow: ellipsis; /* 필요시 말줄임표 추가 */
-}
-
-.slide-text3{
-    text-align: center; /* 텍스트 가운데 정렬 */
-    font-size: 1rem; /* 텍스트 크기 */
-    line-height: 1.6; /* 줄 간격 */
-    margin: 20px 0; /* 위아래 여백 */
-}
-
-
-.slide-text .highlight {
-  color: #000; /* 강세를 주기 위한 색상 */
-  font-weight: bold; /* 굵게 표시 */
-  font-size: 2rem; /* 크기를 조금 더 키워 강조 */
-}
-
-.slide-text2 .highlight {
-    color: #000; /* 강세를 주기 위한 색상 */
-    font-weight: bold; /* 굵게 표시 */
-    font-size: 1.8rem; /* 크기를 조금 더 키워 강조 */
-  }
-
-  .slide-text3 .highlight {
-    color: #000; /* 강세를 주기 위한 색상 */
-    font-weight: bold; /* 굵게 표시 */
-    font-size: 1.8rem; /* 크기를 조금 더 키워 강조 */
-  }
-
-/* IntroPage SwiperSlide 정렬 스타일 */
-.slide-content.column {
-    flex-direction: column; /* 이미지 상단, 텍스트 하단 */
-    align-items: center; /* 가운데 정렬 */
-    gap: 20px; /* 이미지와 텍스트 간격 */
-  }
-
-/* IntroPage 이미지 스타일 */
-
-.intro-image1 {
-    order: 2; /* 이미지의 순서를 두 번째로 설정 */
-    right: 0; /* 이미지 정렬 */
-    width: 330px;
-    height: auto;
-    border-radius: 10px;
-    flex-shrink: 0;
-    box-shadow : 0px 10px 15px #F4F2F7;
-}
-
-.intro-image2{
-    margin-top : 5%;
-    margin-right : 0;
-    border-radius : 10px;
-    flex-shrink : 0;
-    width : 550px;
-    height : auto;
-    box-shadow : 0px 10px 15px #F4F2F7;
-}
-
-.intro-image3{
-    margin-top : 0;
-    border-radius : 10px;
-    flex-shrink : 0;
-    width : auto;
-    height : 220px;
-    box-shadow : 0px 10px 15px #F4F2F7;
-}
-/* IntroPage 텍스트 스타일 */
-
-.intro-text1 {
-    order: 1; /* 텍스트의 순서를 첫 번째로 설정 */
-    flex: 1;
-    font-size: 1.2rem;
-    font-weight: 500;
-    word-wrap: break-word;
-    max-width: 500px;
-    margin-left : 3%;
-}
-
-.intro-text1 .highlight {
-    color: #000; /* 강세를 주기 위한 색상 */
-    font-weight: bold; /* 굵게 표시 */
-    font-size: 1.5rem; /* 크기를 조금 더 키워 강조 */
-  }
-
-.intro-text2{
-    text-align : center;
-    font-size : 1.2rem;
-    line-height : 1.6;
-    font-weight : 500;
-}
-
-.intro-text2 .highlight{
-    font-weight : bold;
-}
-
-.intro-text3{
-    text-align : left;
-    font-size : 1rem;
-}
-.intro-text3 .highlight {
-    color: #000; /* 강세를 주기 위한 색상 */
-    font-weight: bold; /* 굵게 표시 */
-    font-size: 1.15rem; /* 크기를 조금 더 키워 강조 */
-  }
-
-.intro-text4{
-    text-align : left;
-    font-size : 1rem;
-}
-.intro-text4 .highlight {
-    color: #000; /* 강세를 주기 위한 색상 */
-    font-weight: bold; /* 굵게 표시 */
-    font-size: 1.15rem; /* 크기를 조금 더 키워 강조 */
-}
-
-/* Swiper 네비게이션 버튼 스타일 */
-.swiper-button-next, .swiper-button-prev {
-    color: #6200ea !important;
-    width: 30px;
-    height: 30px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-}
-
-/* Swiper 버튼이 슬라이드 박스 바깥에 위치하도록 조정 */
-.swiper-button-prev {
-    left: -25px;
-}
-
-.swiper-button-next {
-    right: -25px;
-}
-
-/* '시작하기' 버튼 중앙 정렬 */
-.start-button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.start-button {
-    background-color: #51017F;
-    color: white;
-    font-size: 18px;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    width : 300px;
-    height : 50px;
-    transition: background-color 0.3s ease;
-    margin-top: -5rem;
-}
-
-.start-button:hover {
-    background-color: #8F8F8F;
-}
-
-/* Custom Navigation Buttons */
-.custom-prev-button, .custom-next-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 5rem;
-    background-color: transparent;
-    border: none;
-    color: #51017F;
-    cursor: pointer;
-    z-index: 10;
-}
-
-/* 위치 조정 */
-.custom-prev-button {
-    left: 10px;
-}
-
-.custom-next-button {
-    right: 10px;
-}
-
-/* 버튼 호버 효과 */
-.custom-prev-button:hover, .custom-next-button:hover {
-    color: #8F8F8F;
+.intro-page.start-page { min-height: 100vh; }
+.banner1 { display: flex; align-items: center; width: 100%; max-width: 1000px; margin-bottom: 12px; }
+.banner1 .left-item { display: flex; flex-direction: column; align-items: flex-start; }
+.banner1 .welcome-logo { display: block; width: 174px; height: 58px; object-fit: contain; }
+.banner1 h5 { margin: 0 0 0 8px; color: #74627e; font-size: 14px; }
+.swiper-container { width: 100%; max-width: 1100px; padding: 0 48px; margin: 20px 0 28px; box-sizing: border-box; position: relative; }
+.intro-page .swiper { width: 100%; padding-bottom: 28px; }
+.intro-page .swiper-slide { height: auto; }
+.slide-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 32px; width: 100%; min-height: 420px; padding: 32px; border: 1px solid #e1d5e8; border-radius: 20px; background: #fff; box-sizing: border-box; text-align: left; }
+.slide-image, .slide-image2, .intro-image1, .intro-image3 { display: block; width: 100%; height: 280px; object-fit: contain; }
+.slide-content.reverse .slide-image2 { grid-column: 2; grid-row: 1; }
+.slide-content.reverse .slide-text2 { grid-column: 1; grid-row: 1; }
+.slide-text, .slide-text2 { min-width: 0; margin: 0; }
+.slide-text h2, .slide-text2 h2, .slide-text3 h2 { margin: 0; font-size: clamp(22px, 2.3vw, 30px); line-height: 1.7; font-weight: 500; }
+.slide-content.center { display: flex; justify-content: center; text-align: center; }
+.slide-text3 { max-width: 650px; }
+.intro-page .highlight { color: #51017f; font-weight: 700; }
+.intro-image1 { grid-column: 2; grid-row: 1; }
+.intro-text1 { grid-column: 1; grid-row: 1; font-size: 18px; line-height: 1.8; }
+.slide-content.column { display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+.intro-image2 { display: block; width: min(100%, 560px); height: 240px; object-fit: contain; }
+.intro-text2 { margin: 0; text-align: center; font-size: 18px; line-height: 1.7; }
+.slide-content.center .intro-image3 { width: 48%; flex-shrink: 0; }
+.intro-text3, .intro-text4 { text-align: left; font-size: 16px; line-height: 1.9; }
+.start-button-container { display: flex; justify-content: center; width: 100%; }
+.start-button { width: min(300px, 100%); min-height: 50px; border: 0; border-radius: 26px; padding: 12px 24px; background: #51017f; color: #fff; font-size: 18px; cursor: pointer; }
+.start-button:hover { background: #6a2790; }
+.custom-prev-button, .custom-next-button { position: absolute; top: calc(50% - 14px); transform: translateY(-50%); width: 42px; padding: 0; border: 0; background: transparent; color: #51017f; font-size: 58px; line-height: 1; cursor: pointer; z-index: 10; }
+.custom-prev-button { left: 0; }
+.custom-next-button { right: 0; }
+.intro-page .swiper-pagination-bullet-active { background: #51017f; }
+.start-button:focus-visible, .custom-prev-button:focus-visible, .custom-next-button:focus-visible { outline: 2px solid #9463b1; outline-offset: 4px; }
+@media (max-width: 700px) {
+  .intro-page { padding: 24px 16px; }
+  .swiper-container { padding: 0 28px; margin: 12px 0 20px; }
+  .slide-content, .slide-content.reverse, .slide-content.center { display: flex; flex-direction: column; gap: 18px; min-height: 440px; padding: 24px 20px; text-align: center; }
+  .slide-image, .slide-image2, .intro-image1, .intro-image2, .slide-content.center .intro-image3 { width: 100%; height: 200px; }
+  .intro-text1, .intro-text2 { font-size: 16px; }
+  .intro-text3, .intro-text4 { text-align: center; font-size: 15px; }
+  .custom-prev-button, .custom-next-button { width: 26px; font-size: 44px; }
 }

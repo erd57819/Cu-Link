@@ -2,67 +2,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 71%; /* 왼쪽과 오른쪽 공백을 합산하여 계산 */
-  height: 83px;
-  margin: 0 auto; /* 배너를 화면 중앙에 배치 */
-  padding-left: 14.5%; /* 양쪽에 추가 패딩 */
-  padding-right: 14.5%;
-  color: black; /* 모든 텍스트를 검정색으로 설정 */
-  border-bottom: 1px solid #787878;
+  gap: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 84px;
+  padding: 8px clamp(20px, 6vw, 96px);
+  color: #29232f;
+  background: #fff;
+  border-bottom: 1px solid #e5deea;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
-
-.left-item img {
-  padding-top: 5px;
-  width: 150px; /* 원하는 너비 */
-  object-fit: contain; /* 이미지가 박스를 넘지 않도록 */
-}
-
-
-
-.left-item {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 14.5px;
-}
-
-.mid-item {
-  display: flex;
-  align-items: center;
-  gap: 70px;
-}
-
-.right-item {
-  display: flex;
-  flex-direction: row;
-}
-
-/* 링크 스타일 수정: 모든 링크를 검정색으로 */
-.link {
-  color: black; /* 링크 텍스트 색상 검정으로 설정 */
-  text-decoration: none; /* 링크 밑줄 제거 */
-}
-
-/* 링크에 마우스를 올렸을 때 색상 유지 */
-.link:hover {
-  color: black;
-}
-
-
-.left-item h2 {
-  margin-bottom: 0; /* Cu-Link와 레포트가 쉬워지다 사이의 간격을 없앰 */
-  font-size: 26px;
-  
-}
-
-.left-item h5 {
-  margin-top: 0; /* p 태그의 상단 여백을 없앰 */
-  font-size: 16px;
-  
-}
-.mid-item { gap: clamp(12px, 2vw, 30px); white-space: nowrap; }
+.banner .left-item, .brand-home, .banner .mid-item, .banner .right-item { display: flex; align-items: center; }
+.brand-home { flex-shrink: 0; }
+.brand-home img { display: block; width: 174px; height: 58px; object-fit: contain; }
+.mid-item { gap: clamp(12px, 2vw, 28px); white-space: nowrap; }
+.mid-item > span { color: #b1a6b8; }
+.link { color: black; text-decoration: none; }
+.link:hover { color: #51017f; }
+.mid-item .link, .nav-button { font-size: 15px; font-weight: 600; }
+.nav-button { border: 0; padding: 0; background: transparent; color: inherit; cursor: pointer; font-family: inherit; }
+.mid-item .reports-nav-link { color: #51017f; border: 1px solid #d9c8e3; background: #f6f0fa; border-radius: 20px; padding: 8px 14px; }
+.brand-home:focus-visible, .mid-item a:focus-visible, .nav-button:focus-visible { outline: 2px solid #9463b1; outline-offset: 4px; }
+.right-item { flex-shrink: 0; white-space: nowrap; }
 @media (max-width: 700px) {
-  .banner { box-sizing: border-box; width: 100%; height: auto; min-height: 83px; padding: 12px 16px; flex-wrap: wrap; gap: 16px; }
-  .mid-item { order: 3; width: 100%; justify-content: center; }
+  .banner { padding: 8px 16px 12px; flex-wrap: wrap; gap: 10px 16px; }
+  .brand-home img { width: 144px; height: 48px; }
+  .mid-item { order: 3; width: 100%; justify-content: center; gap: 12px; }
+  .mid-item .link, .nav-button, .right-item { font-size: 14px; }
 }

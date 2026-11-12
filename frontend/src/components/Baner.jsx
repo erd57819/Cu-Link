@@ -2,8 +2,7 @@ import React from 'react';
 import '../css/Baner.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
-const Image = `${process.env.PUBLIC_URL}/images/cu-link-logo.png`;
+const logo = `${process.env.PUBLIC_URL}/images/cu-link-logo-v2.png`;
 
 function Baner() {
   const navigate = useNavigate();
@@ -48,17 +47,19 @@ function Baner() {
   };
 
   return (
-    <div className='banner'>
+    <header className='banner'>
       <div className='left-item'>
-      <Link to={'/'} className='link'><img src={Image} alt="cu-Link 로고"></img></Link>
+        <Link to='/' className='brand-home' aria-label='Cu-Link 홈'>
+          <img src={logo} alt='Cu-Link' width='174' height='58' />
+        </Link>
       </div>
-      <div className='mid-item'>
-        <span><Link to={'/intro'} className='link'>사용법</Link></span>
-        <span>|</span>
-        <span onClick={handleMynews} style={{ cursor: 'pointer' }}>내 기사</span>
-        <span>|</span>
-        <Link to='/reports' className='link'>내 레포트</Link>
-      </div>
+      <nav className='mid-item' aria-label='주요 메뉴'>
+        <Link to='/intro' className='link'>사용법</Link>
+        <span aria-hidden='true'>|</span>
+        <button type='button' className='nav-button' onClick={handleMynews}>내 기사</button>
+        <span aria-hidden='true'>|</span>
+        <Link to='/reports' className='link reports-nav-link'>내 레포트</Link>
+      </nav>
       <div className='right-item'>
         {userId ? (
           // 로그인 상태라면 로그아웃을 보여줌
@@ -72,7 +73,7 @@ function Baner() {
           </div>
         )}
       </div>
-    </div>
+    </header>
   );
 }
 
