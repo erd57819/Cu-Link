@@ -8,38 +8,12 @@ function CreateReport() {
   const navigate = useNavigate();
 
   const parsedData = location.state?.parsedData;
-  const [alertShown, setAlertShown] = useState(false); // 플래그 추가
-
-  const title = parsedData?.report_titles.map((item) => item) || [];
-  const image = parsedData?.report_images.map((item, index) => {
-    const cleanedImageData = item.image_data.trim();
-    
-    try {
-      const decodedData = atob(cleanedImageData); // Base64 디코딩
-      if (decodedData.includes('error') && !alertShown) {
-        console.error(`Image ${index + 1} contains error message:`, decodedData);
-        Swal.fire({
-          title: "이미지 생성 오류",
-          text: `Image ${index + 1} 생성 중 오류가 발생했습니다. 잠시 후 다시 시도하세요.`,
-          icon: 'error'
-        });
-        setAlertShown(true); // 오류 발생 후 플래그 업데이트
-        return null; // 오류가 발생한 이미지는 표시하지 않음
-      }
-    } catch (e) {
-      console.error("Base64 decoding failed:", e);
-      return null;
-    }
-
-    const imgSrc = `data:image/png;base64,${cleanedImageData}`;
-    return imgSrc;
-  }) || [];
+  const title = parsedData?.report_titles || [];
   const contents = parsedData?.report_data || [];
   
 
   //리포트 요소 false로 초기화
   const [selectedTitles, setSelectedTitles] = useState(Array(title.length).fill(false));
-  const [selectedImages, setSelectedImages] = useState(Array(image.length).fill(false));
   const [selectedContents, setSelectedContents] = useState(Array(contents.length).fill(false));
 
   const [previewContent, setPreviewContent] = useState(null);
@@ -50,13 +24,11 @@ function CreateReport() {
   //리포트 생성시 선택되지 않은 값 예외처리.
   const handleCreateReport = async () => {
     const isTitleSelected = selectedTitles.includes(true);
-    const isImageSelected = selectedImages.includes(true);
     const isContentSelected = selectedContents.includes(true);
 
-    if (!isTitleSelected || !isImageSelected || !isContentSelected) {
+    if (!isTitleSelected || !isContentSelected) {
       let missingItems = [];
       if (!isTitleSelected) missingItems.push("Title");
-      if (!isImageSelected) missingItems.push("Image");
       if (!isContentSelected) missingItems.push("Contents");
 
       Swal.fire({
@@ -68,7 +40,6 @@ function CreateReport() {
 
     //선택된 값 변수 저장
     const selectedTitle = title[getSelectedIndex(selectedTitles)];
-    const selectedImage = image[getSelectedIndex(selectedImages)];
     const selectedContent = contents[getSelectedIndex(selectedContents)];
 
     //저장된 값 세션으로 report 페이지로 전송
@@ -76,13 +47,15 @@ function CreateReport() {
       title: "리포트 생성 성공 o(〃＾▽＾〃)o",
       icon: 'success'
     }).then(() => {
+      sessionStorage.setItem('selectedArticleIds', JSON.stringify(
+        (parsedData?.metadata || []).map((item) => String(item.cr_art_id))
+      ));
       sessionStorage.setItem('reportData', JSON.stringify({
         title: selectedTitle,
-        image: selectedImage,
         content: selectedContent
       }));
       navigate('/report', {
-        state: { title: selectedTitle, image: selectedImage, content: selectedContent }
+        state: { title: selectedTitle, content: selectedContent }
       });
     });
   };
@@ -102,7 +75,7 @@ function CreateReport() {
   return (
     <div className="create-report-container">
       <div className='report_p'>
-      <p>생성할 레포트의 요소를 골라주세요!</p>
+      <p>레포트의 제목과 본문을 골라주세요!</p>
       </div>
       <div className="report-grid">
         
@@ -115,20 +88,6 @@ function CreateReport() {
           >
             {item}
           </div>
-        ))}
-
-        <div className="grid-label">Image</div>
-        {image.map((imgSrc, index) => (
-          imgSrc && (
-            <div
-              key={index}
-              className={`grid-item image ${selectedImages[index] ? 'selected' : ''}`}
-              onClick={() => handleSelect(index, setSelectedImages)}
-            >
-              <img src={imgSrc} alt={`Report ${index + 1}`} className="image-content" />
-              {selectedImages[index] && <div className="overlay"></div>}
-            </div>
-          )
         ))}
 
         <div className="grid-label">Contents</div>

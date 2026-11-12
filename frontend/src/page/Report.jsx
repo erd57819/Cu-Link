@@ -2,6 +2,7 @@ import { FASTAPI_URL } from "../config/api";
 import React, { useRef, useEffect, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { addReportPages } from '../utils/reportPdf';
 import '../css/Report.css';
 import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -54,7 +55,7 @@ function Report() {
         body: JSON.stringify({
           user_id: userId,
           title: reportData.title,
-          image: reportData.image,
+          image: reportData.image || null,
           content: reportData.content,
           art_ids: selectedArticleIds // 선택된 기사 ID 포함
         }),
@@ -81,19 +82,20 @@ function Report() {
     }
   };
 
-  const handleSaveAsPDF = () => {
+  const handleSaveAsPDF = async () => {
     const reportContent = document.getElementById("reportContent");
-
-    if (pdfButtonRef.current) pdfButtonRef.current.style.display = "none";
-
-    html2canvas(reportContent, { useCORS: true }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
+    const previousDisplay = pdfButtonRef.current?.style.display || '';
+    try {
+      if (pdfButtonRef.current) pdfButtonRef.current.style.display = "none";
+      const canvas = await html2canvas(reportContent, { useCORS: true });
       const pdf = new jsPDF('p', 'mm', 'a4');
-      pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+      addReportPages(pdf, canvas);
       pdf.save('report.pdf');
-
-      if (pdfButtonRef.current) pdfButtonRef.current.style.display = "flex";
-    });
+    } catch {
+      Swal.fire({ title: 'PDF 저장 실패', text: '잠시 후 다시 시도해 주세요.', icon: 'error' });
+    } finally {
+      if (pdfButtonRef.current) pdfButtonRef.current.style.display = previousDisplay;
+    }
   };
 
   return (
@@ -102,9 +104,11 @@ function Report() {
         <div className="title-box">
           <h3 className="report-title">{reportData.title}</h3>
         </div>
-        <div className="image-box">
-          <img src={reportData.image} alt="Report" />
-        </div>
+        {reportData.image && (
+          <div className="image-box">
+            <img src={reportData.image} alt="Report" />
+          </div>
+        )}
         <div className="content-box">
           <div className="content-scroll">{reportData.content}</div>
         </div>

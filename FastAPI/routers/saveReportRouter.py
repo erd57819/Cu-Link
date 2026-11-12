@@ -12,7 +12,7 @@ router = APIRouter()
 class ReportData(BaseModel):
     user_id: str
     title: str
-    image: str  # Base64 인코딩된 이미지
+    image: Optional[str] = None  # Text-only reports do not require an image.
     content: str
     art_ids: Optional[List[Union[int, str, Any]]] = []  # 선택한 기사 ID 리스트 (int 또는 str 가능)
 
@@ -27,12 +27,15 @@ def upload_image_to_firebase_with_fixed_url(image_data: str, rep_id: int):
 # 보고서 저장 엔드포인트
 @router.post("/savereport")
 async def save_report(report_data: ReportData):
+    db_connection = None
+    cursor = None
     try:
         # 63비트 숫자형 UUID 생성
         rep_id = uuid.uuid4().int & ((1 << 63) - 1)
 
         # 설정한 저장소에 이미지 업로드 및 고정 URL 가져오기
-        image_url = upload_image_to_firebase_with_fixed_url(report_data.image, rep_id)
+        image_url = (upload_image_to_firebase_with_fixed_url(report_data.image, rep_id)
+                     if report_data.image and report_data.image.strip() else None)
 
         # MySQL에 보고서 데이터 저장
         db_connection = get_db_connection(database_config)
@@ -58,11 +61,16 @@ async def save_report(report_data: ReportData):
         # 변경 사항을 커밋
         db_connection.commit()
         
-        # 연결 닫기
-        cursor.close()
-        db_connection.close()
-
         return {"message": "Report saved successfully", "rep_id": rep_id, "image_url": image_url}
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"Error saving report: {e}")
+        if db_connection is not None:
+            db_connection.rollback()
+        print(f"Error saving report: {type(e).__name__}")
         raise HTTPException(status_code=500, detail="Failed to save report")
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if db_connection is not None and db_connection.open:
+            db_connection.close()

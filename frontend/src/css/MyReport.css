@@ -86,6 +86,12 @@
   overflow: hidden;
 }
 
+.myreport-card-text-only {
+  height: auto;
+  flex: 1;
+  padding-top: 40px;
+}
+
 .myreport-select-icon {
   position: absolute;
   top: 10px;
@@ -304,6 +310,3 @@
 .myreport-modal-content::-webkit-scrollbar-thumb:hover {
   background: #4500b5; /* 스크롤바 호버 색상 */
 }
-
-
-

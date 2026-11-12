@@ -1,7 +1,8 @@
 /* A4 사이즈 고정 스타일 */
 .report-container3 {
   width: 210mm;
-  height: 297mm;
+  min-height: 297mm;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 20mm;
   border: 1px solid #ddd;
@@ -15,7 +16,7 @@
   color: black;
   text-align: center;
   margin-bottom: 15px;
-  margin-top: -60px;
+  margin-top: 0;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 10px;
@@ -38,8 +39,9 @@
 .content-box {
   font-size: 18px;
   line-height: 2.0;
-  max-height: 185mm; /* A4 본문 최대 높이 */
-  overflow: hidden; /* 스크롤 제거 */
+  overflow: visible;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   border: 1px solid #ccc;
   padding: 15px;
   border-radius: 10px;

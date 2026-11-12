@@ -45,7 +45,7 @@
 }
 .contents_reportcreate {
     width: 26.5rem;
-    height: 17rem;
+    height: 28rem;
     overflow-y: auto;
     padding: 10px; /* 내부 여백 */
     box-sizing: border-box;
@@ -151,7 +151,3 @@
     flex-grow: 1;
     border-radius: 10px;
   }
-
-
-  
-  

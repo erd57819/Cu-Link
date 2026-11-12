@@ -155,12 +155,14 @@ const MyReport = () => {
                 <div className="myreport-select-icon">
                   <AiOutlineCheckCircle size={20} color={selectedReportIds.has(article.rep_id) ? '#6200ee' : '#ccc'} />
                 </div>
-                <img
-                  src={article.rep_img}
-                  alt={article.rep_title || "리포트 이미지"}
-                  className="myreport-card-image"
-                />
-                <div className="myreport-card-content">
+                {article.rep_img && (
+                  <img
+                    src={article.rep_img}
+                    alt={article.rep_title || "리포트 이미지"}
+                    className="myreport-card-image"
+                  />
+                )}
+                <div className={`myreport-card-content ${article.rep_img ? '' : 'myreport-card-text-only'}`}>
                   <h3>{article.rep_title}</h3>
                   <p>{new Date(article.rep_date).toLocaleDateString()}</p>
                   <p>
@@ -220,11 +222,13 @@ const MyReport = () => {
               &times;
             </button>
             <div className="myreport-modal-header">{currentReport.rep_title}</div>
-            <img
-              src={currentReport.rep_img || "/images/cu_image.webp"}
-              alt={currentReport.rep_title}
-              className="myreport-modal-image"
-            />
+            {currentReport.rep_img && (
+              <img
+                src={currentReport.rep_img}
+                alt={currentReport.rep_title}
+                className="myreport-modal-image"
+              />
+            )}
             <div className="myreport-modal-content">{currentReport.rep_content}</div>
           </div>
         </div>

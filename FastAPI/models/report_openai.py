@@ -1,48 +1,4 @@
 from services.text_ai import TextAIError, chat_completion
-from services.image_prompt import validate_image_prompt
-
-def createReport_text(report_contents):
-    report_content = report_contents[0]
-        # 프롬프트 설정: 보고서에서 핵심 문장 생성 요청
-    summary_prompt = f"""
-    You're a skilled visual descriptor, and you're tasked with identifying key takeaways from a report and using them to generate specific sentences for image creation.
-
-    Using the following report as a guide, write key sentences that can be visualized as an image. As you write, keep in mind that you should
-
-    1. use specific and clear wording that is suitable for visualization in images.
-    2. include visual elements (e.g., people, places, key objects, or iconic scenes) that can effectively represent the topic of the report so that the key messages of that topic can be visualized.
-    3. Use language that reveals the main mood or setting of the report, and link to images that help readers understand the topic.
-    4. Key points should be clearly expressed, ending in complete sentences.
-    5. Write one short visual scene in English only, at most 350 characters.
-    6. Return only the image prompt: no headings, Markdown, captions, labels, or quotations.
-    7. Describe physical subjects, objects, and surroundings connected to the report.
-       Do not include written text, letters, numbers, logos, or watermarks in the image.
-
-    Report Content:
-    {report_content}
-
-    Key sentences for image generation : 
-    """
-
-    # Gemini API 호출
-    summary_response = chat_completion(
-        messages=[
-            {"role": "system", "content": "Describe a report as one concrete image scene in English. Output only that scene, without text or labels in the image."},
-            {"role": "user", "content": summary_prompt}
-        ],
-        max_tokens=200,
-        temperature=0.5
-    )
-
-    # 응답 유효성 확인
-    response_content = summary_response['choices'][0].get('message', {}).get('content', '').strip()
-    if not response_content:
-        raise ValueError("OpenAI 응답에서 유효한 내용을 찾을 수 없습니다.")
-    try:
-        return validate_image_prompt(response_content)
-    except ValueError:
-        raise TextAIError("Image description must be a short English scene; image generation was not started.") from None
-
 
 def createReport_openAI(article_contents):
     try:
@@ -117,7 +73,6 @@ def createReport_openAI(article_contents):
         # 보고서를 저장할 리스트
         reports = []
         report_titles = []
-        report_contents = []
 
         # 각 프롬프트로 보고서 생성
         for i, prompt_text in enumerate(prompt_text_templates):
@@ -144,22 +99,16 @@ def createReport_openAI(article_contents):
             if title_end_idx <= 0 or not response_content[title_end_idx:].strip():
                 raise TextAIError("Report response must include a title and body on separate lines.")
             report_title = response_content[:title_end_idx].strip()
-            report_content = response_content[title_end_idx:].strip()
 
             report_titles.append(report_title)
-            report_contents.append(report_content)
 
             # **디버깅용 출력** - 제목 확인
             print(f"프롬프트 {i+1}로 생성된 제목: {report_title}")
 
-        # 이미지 생성 텍스트
-        img_txt = createReport_text(report_contents)
-
         # 결과 반환
         return {
             "reports": reports,
-            "titles": report_titles,
-            "img_txt": img_txt
+            "titles": report_titles
         }
 
     except TextAIError:

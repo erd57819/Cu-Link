@@ -59,7 +59,7 @@ class ReportConnectionTests(unittest.TestCase):
         self.assertEqual(result["metadata"], [{"cr_art_id": 1}])
         self.assertEqual(result["report_data"], ["body"])
         self.ai.assert_called_once()
-        self.images.assert_called_once()
+        self.images.assert_not_called()
 
     def test_error_before_helper_cleanup_still_closes_connection(self):
         self.query.side_effect = RuntimeError("original metadata failure")
