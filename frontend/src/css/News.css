@@ -446,3 +446,7 @@
 .main-search-page .pagination-container { margin-left: 0; padding-top: 16px; gap: 16px; flex-wrap: wrap; }
 .main-search-page .pagination-buttons-container { position: static; margin: 0; }
 .main-search-page .fixed-buttons { position: static; transform: none; margin-top: 0; z-index: auto; flex-wrap: wrap; }
+.article-loading-message { margin-left: 12px; color: #6f4485; font-size: 0.8rem; }
+.article-load-error { margin: 8px 0; line-height: 1.6; color: #7b2739; }
+.article-load-error button { margin-left: 10px; }
+.news-container .articles[aria-busy="true"] { opacity: 0.65; }

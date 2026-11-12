@@ -319,17 +319,20 @@ const News = ({ searchResults }) => {
   return (
     <div className="news-container">
       <div className="select-all">
-        <span>{`선택된 기사 ${selectedArticleIds.size}개 / 총 ${totalCount}개`}</span>
+        <span>
+          {`선택된 기사 ${selectedArticleIds.size}개 / 총 ${totalCount}개`}
+          {isFetchingArticles && <small role="status" className="article-loading-message"
+            title={isWaitingForArticles ? '첫 접속은 약 1분 걸릴 수 있습니다.' : undefined}>
+            {isWaitingForArticles ? '서버 응답을 기다리는 중...' : '기사를 불러오는 중입니다...'}
+          </small>}
+        </span>
         <button onClick={handleSelectAll}>전체선택</button>
       </div>
-      <div className="articles">
-        {isFetchingArticles && <p role="status">{isWaitingForArticles
-          ? '기사를 준비하고 있습니다. 첫 접속은 약 1분 걸릴 수 있습니다.'
-          : '기사를 불러오는 중입니다...'}</p>}
-        {articleError && <div role="alert">{articleError}
-          <button onClick={() => setReloadArticles(value => value + 1)}>다시 시도</button>
-        </div>}
-        {articles.length > 0 ? (
+      {articleError && <div role="alert" className="article-load-error">{articleError}
+        <button onClick={() => setReloadArticles(value => value + 1)}>다시 시도</button>
+      </div>}
+      <div className="articles" aria-busy={isFetchingArticles}>
+        {articles.length > 0 && (
           articles.map((article) => (
             <div key={article.cr_art_id} className="article">
               <div
@@ -363,10 +366,9 @@ const News = ({ searchResults }) => {
               </div>
             </div>
           ))
-        ) : (
-          !isFetchingArticles && !articleError && <p>표시할 기사가 없습니다.</p>
         )}
       </div>
+      {articles.length === 0 && !isFetchingArticles && !articleError && <p>표시할 기사가 없습니다.</p>}
       <div className="pagination-container">
         <div className="pagination-buttons-container">
           <div className="pagination">
