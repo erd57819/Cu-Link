@@ -5,8 +5,8 @@
   gap: 24px;
   box-sizing: border-box;
   width: 100%;
-  min-height: 84px;
-  padding: 8px clamp(20px, 6vw, 96px);
+  min-height: 83px;
+  padding: 0 14.5%;
   color: #29232f;
   background: #fff;
   border-bottom: 1px solid #e5deea;
@@ -16,7 +16,7 @@
 }
 .banner .left-item, .brand-home, .banner .mid-item, .banner .right-item { display: flex; align-items: center; }
 .brand-home { flex-shrink: 0; }
-.brand-home img { display: block; width: 174px; height: 58px; object-fit: contain; }
+.brand-home img { display: block; width: 150px; height: 50px; object-fit: contain; }
 .mid-item { gap: clamp(12px, 2vw, 28px); white-space: nowrap; }
 .mid-item > span { color: #b1a6b8; }
 .link { color: black; text-decoration: none; }

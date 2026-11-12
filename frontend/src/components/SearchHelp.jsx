@@ -21,8 +21,11 @@ export default function SearchHelp({ onUseExample }) {
           </li>
         ))}
       </ul>
-      <p>쉼표 <b>,</b>는 OR, <b>+</b>는 AND, <b>-</b>는 제외입니다.</p>
-      <p>단어 하나로도 검색할 수 있습니다. 제외 조건만 입력하지 마세요. 기간을 지정하려면 시작일·종료일을 함께 선택하세요.</p>
+      <details>
+        <summary>추가 검색 안내</summary>
+        <p>쉼표 <b>,</b>는 OR, <b>+</b>는 AND, <b>-</b>는 제외입니다.</p>
+        <p>단어 하나로도 검색할 수 있습니다. 제외 조건만 입력하지 마세요. 기간을 지정하려면 시작일·종료일을 함께 선택하세요.</p>
+      </details>
     </section>
   );
 }

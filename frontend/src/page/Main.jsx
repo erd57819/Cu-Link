@@ -6,7 +6,7 @@ function Main() {
   const [searchResults, setSearchResults] = useState(null);
 
   return (
-      <div className="app-container">
+    <div className="app-container main-search-page">
         <div className="search-bar-container">
           {/* SearchBar에서 데이터를 받는 즉시 로그 출력 */}
           <SearchBar setSearchResults={(results) => {

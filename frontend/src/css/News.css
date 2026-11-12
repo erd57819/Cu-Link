@@ -437,3 +437,12 @@
     gap: 10px;
     flex-shrink: 0;
 }
+
+/* Keep the original article width; align controls within it at every window size. */
+.main-search-page .news-container { min-width: 0; }
+.main-search-page .articles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.main-search-page .select-all { gap: 12px; min-height: 42px; }
+.main-search-page .select-all span { margin-left: 0; white-space: nowrap; }
+.main-search-page .pagination-container { margin-left: 0; padding-top: 16px; gap: 16px; flex-wrap: wrap; }
+.main-search-page .pagination-buttons-container { position: static; margin: 0; }
+.main-search-page .fixed-buttons { position: static; transform: none; margin-top: 0; z-index: auto; flex-wrap: wrap; }

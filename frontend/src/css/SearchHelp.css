@@ -1,4 +1,4 @@
-.search-help { text-align: left; margin-top: 16px; width: 100%; color: #494052; font-size: 12px; line-height: 1.6; }
+.search-help { text-align: left; margin-top: 16px; width: 100%; min-width: 0; box-sizing: border-box; overflow-wrap: anywhere; color: #494052; font-size: 12px; line-height: 1.6; }
 .search-help h3 { margin: 0 0 6px; color: #51017f; font-size: 14px; }
 .search-help p { margin: 6px 0; }
 .search-help ul { list-style: none; padding: 0; margin: 12px 0; }
@@ -6,3 +6,4 @@
 .search-help li span { grid-column: 1 / -1; }
 .search-help button { justify-self: end; border: 1px solid #d2c3dc; border-radius: 6px; color: #51017f; background: #fff; padding: 4px 10px; cursor: pointer; font: inherit; font-weight: 600; }
 .search-help button:hover, .search-help button:focus-visible { background: #e9e0f0; outline-color: #51017f; }
+.search-help summary { color: #51017f; cursor: pointer; }

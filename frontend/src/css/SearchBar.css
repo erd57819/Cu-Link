@@ -146,11 +146,10 @@
   background-color: #5d3474;
 }
 
-.layout .left-space { display: none; }
-.layout .search-bar { width: 100%; height: auto; min-height: 90%; padding: 20px; margin-top: 24px; }
-.layout .search-section { width: 100%; }
+.layout .left-space { display: block; flex: 0 0 50%; }
+.layout .search-bar { flex: 0 0 50%; min-width: 0; padding: 1rem; margin-top: 3rem; }
+.layout .search-section { width: 100%; min-width: 0; }
 .layout .search-input-container { justify-content: center; }
-.layout .search-input { width: 100%; max-width: 240px; }
-.layout .search-button-section { margin-top: 18px; }
-.layout .search-submit { width: 100%; min-width: 150px; padding: 0 12px; }
-.layout .date-section { margin-top: 10px; }
+.layout .search-input { width: 10rem; max-width: 100%; }
+.layout .search-button-section { width: 100%; }
+.layout .search-submit { width: 12rem; max-width: 100%; padding: 0 12px; }
